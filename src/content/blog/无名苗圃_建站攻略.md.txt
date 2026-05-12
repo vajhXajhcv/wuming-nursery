@@ -1,0 +1,335 @@
+# 从域名到上线：个人网站搭建实战攻略
+
+适用场景：中国大陆用户，想搭建个人博客/内容站，预算极低（年花费 < 100元），有一定技术学习意愿但非专业开发者。
+
+---
+
+## 一、前置准备
+
+你需要什么：
+- 一台能上网的电脑（已有）
+- 一个域名（.me / .com，50-150元/年）
+- 一个 GitHub 账号（免费）
+- 一个 Cloudflare 账号（免费）
+- 代理工具（已有或购买）
+- 支付工具（PayPal + 外汇卡 / 国内信用卡）
+
+技术栈选择（本文使用）：
+- 框架：Astro（静态站生成器，Markdown 原生支持，构建快）
+- 托管：Cloudflare Pages（免费、自动部署、全球 CDN）
+- 域名：Cloudflare Registrar（成本价出售，不加价）
+- 源码管理：GitHub（与 Pages 集成，自动部署）
+
+不选其他方案的原因：
+- Hugo：也很好，但对工具页（数值计算）支持不如 Astro
+- Vercel：对中国大陆访问更友好，但免费版功能不如 Cloudflare 全
+- 自建服务器：成本高、维护麻烦，不适合个人站
+- WordPress：太重，不适合静态内容为主的站点
+
+---
+
+## 二、域名购买
+
+### 2.1 选域名
+
+命名原则：
+- 简短好记（建议 < 15 字符）
+- 有辨识度，能体现站点气质
+- 避免数字和连字符过多
+
+后缀选择：
+- .me — 个人站首选，但比 .com 贵 30-50元/年
+- .com — 全球通用，最稳妥，也最便宜
+- .zone / .space / .xyz — 创意后缀，价格低但辨识度稍弱
+
+本文案例：wumingmp.me（无名苗圃的缩写）
+
+### 2.2 注册商选择
+
+Cloudflare Registrar：
+- .com 价格：$9.77
+- .me 价格：~$15
+- 支付方式：信用卡
+- 中国大陆访问：需代理
+- 优点：续费不加价
+
+Namecheap：
+- .com 价格：$10.44
+- .me 价格：~$15
+- 支付方式：信用卡/PayPal
+- 中国大陆访问：直连可用
+
+阿里云：
+- .com 价格：55元
+- .me 价格：~80元
+- 支付方式：支付宝/微信
+- 中国大陆访问：直连
+
+腾讯云：
+- .com 价格：55元
+- .me 价格：~80元
+- 支付方式：支付宝/微信
+- 中国大陆访问：直连
+
+推荐：如果已有代理，选 Cloudflare Registrar，续费不加价。如果没有代理，选国内平台（阿里云/腾讯云），之后再考虑转入 Cloudflare。
+
+### 2.3 中国大陆用户的支付方案
+
+这是最容易卡住的地方。
+
+方案 A：国内平台直接买（最简单）
+- 阿里云/腾讯云/华为云
+- 支付宝/微信直接付款
+- 无需任何外币账户
+
+方案 B：Cloudflare Registrar + 外汇卡（本文采用）
+
+适用场景：你想在 Cloudflare 一站式管理域名 + 托管 + CDN。
+
+步骤：
+1. 在银行 App 购汇：工商银行手机银行 → 搜索「结售汇」→ 购买美元（建议 $50-100）
+2. 绑定 PayPal：注册 PayPal（中国大陆版）→ 绑定购汇用的银行卡
+3. 在 Cloudflare 购买：挂代理访问 dash.cloudflare.com → Domain Registration → 搜索域名 → 用 PayPal 付款
+
+注意：
+- 购汇时需要选择用途，选「旅游/留学」等合理用途即可
+- PayPal 绑卡时可能需要短信验证，确保银行预留手机号能收短信
+- 如果付款失败，大概率是银行卡未开通境外支付，打银行客服开通
+
+方案 C：港卡（长期最优解）
+
+如果有条件去香港，建议办理：
+- 汇丰银行 One 账户（无最低存款要求）
+- 中银香港（与内地中银同名互转免费）
+
+港卡绑定 PayPal 后，境外付款几乎不会被拦截。
+
+---
+
+## 三、搭建本地开发环境
+
+### 3.1 安装 Node.js
+
+Astro 需要 Node.js v18+。
+
+Windows 安装步骤：
+1. 访问 https://nodejs.org
+2. 下载 LTS 版本（.msi 安装包，约 30MB）
+3. 双击安装，一路 Next，安装路径可改（建议保持默认）
+4. 勾选「Add to PATH」选项（默认已勾选）
+
+验证安装：
+打开 CMD（Win+R → 输入 cmd → 回车），执行：
+    node -v
+看到版本号（如 v22.x.x）即成功。
+
+### 3.2 安装 Git
+
+代码推送到 GitHub 需要 Git。
+
+Windows 安装步骤：
+1. 访问清华镜像下载：https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/
+2. 下载最新版 .exe（如 Git-2.54.0-64-bit.exe）
+3. 双击安装，关键选项：
+   - 默认编辑器：选 Nano（最简单）或 Notepad
+   - 默认分支名：选 main
+   - PATH：选默认（添加到系统环境变量）
+
+验证安装：
+    git --version
+
+### 3.3 创建 Astro 项目
+
+在 CMD 中执行：
+    npx create-astro@latest wuming-nursery
+
+交互式配置（按提示选择）：
+- 模板：Use blog template（自带文章列表页）
+- TypeScript：Yes → Strict
+- 安装依赖：Yes
+- 初始化 Git：Yes
+- 使用 GitHub：Yes
+
+如果创建过程卡住（中国大陆常见问题），是因为 GitHub API 被墙：
+
+解决方案：挂代理后重新执行，或使用 --template 参数直接指定模板：
+    npx create-astro@latest wuming-nursery --template blog
+
+如果还卡住（证书问题），临时跳过证书验证：
+    set NODE_TLS_REJECT_UNAUTHORIZED=0
+    npx create-astro@latest wuming-nursery --template blog
+    set NODE_TLS_REJECT_UNAUTHORIZED=
+
+### 3.4 本地预览
+
+    cd wuming-nursery
+    npm run dev
+
+浏览器打开 http://localhost:4321，看到 Astro 默认页面即成功。
+
+---
+
+## 四、推送代码到 GitHub
+
+### 4.1 创建 GitHub 仓库
+
+1. 访问 https://github.com/new
+2. Repository name：wuming-nursery
+3. 选择 Public（Cloudflare Pages 免费版要求仓库公开）
+4. 不要勾选 README 或 .gitignore，保持空仓库
+5. 点击 Create repository
+
+### 4.2 本地关联并推送
+
+在项目目录下（cd wuming-nursery）执行：
+    git init
+    git remote add origin https://github.com/你的用户名/wuming-nursery.git
+    git add .
+    git commit -m "init: astro blog template"
+    git branch -M main
+    git push -u origin main
+
+如果 git commit 报错：
+    Author identity unknown
+需要先配置 Git 身份信息：
+    git config --global user.email "你的邮箱"
+    git config --global user.name "你的用户名"
+然后重新执行 git commit 和 git push。
+
+如果 git push 提示输入密码：
+- 用户名：你的 GitHub 用户名
+- 密码：
+  - 如果开了 2FA（双重验证），需要输入 Personal Access Token，不是登录密码
+  - 如果没开 2FA，输入登录密码即可
+
+关于 Personal Access Token：
+1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate new token
+3. 勾选 repo 权限
+4. 复制生成的 token，在 push 时作为密码输入
+
+---
+
+## 五、Cloudflare Pages 部署
+
+### 5.1 创建 Pages 项目
+
+1. 挂代理，访问 dash.cloudflare.com
+2. 左侧菜单 Pages → Create a project
+3. 选择 Connect to Git
+4. 授权 Cloudflare 访问你的 GitHub 账号
+5. 在仓库列表中找到 wuming-nursery，选中它
+
+### 5.2 配置构建设置（关键！容易出错）
+
+字段 - 填写内容 - 说明
+- Framework preset：Astro（下拉菜单选择）
+- Build command：npm run build（Astro 的构建命令）
+- Build output directory：dist（必须填这个！Astro 默认输出到 dist 目录）
+- Root directory：留空或 /（项目根目录）
+
+常见错误：如果 Build output directory 留空或填错，部署会成功但页面返回 404。
+
+### 5.3 绑定自定义域名
+
+1. 在 Pages 项目页面，点击 Custom domains
+2. 输入你的域名（如 wumingmp.me）
+3. 点击 Activate domain
+4. Cloudflare 自动添加 DNS 记录和 SSL 证书
+
+注意：
+- DNS 验证可能需要 5-30 分钟
+- 中国大陆访问可能需要额外等待 DNS 传播
+- 如果域名在 Cloudflare Registrar 购买，DNS 会自动配好；如果在其他平台购买，需要把 Nameserver 改为 Cloudflare 的
+
+### 5.4 验证部署
+
+访问你的域名：https://wumingmp.me
+
+如果看到 Astro 默认页面，说明部署成功。
+
+如果返回 404：
+1. 检查 Build output directory 是否为 dist
+2. 触发重新部署：本地执行 git commit --allow-empty -m "trigger rebuild" + git push
+3. 等 Cloudflare 重新构建（1-2 分钟）
+
+---
+
+## 六、常见问题排查
+
+Q1: 中国大陆访问 Cloudflare Dashboard 卡住
+- 原因：Cloudflare 后台在中国大陆受限
+- 解决：全程挂代理访问 dash.cloudflare.com
+
+Q2: Astro 创建项目时下载模板失败
+- 原因：GitHub API 被墙
+- 解决：挂代理后重试，或使用 --template blog 参数
+
+Q3: Git push 时提示 "fatal: unable to access"
+- 原因：Git 未安装或网络问题
+- 解决：确认 git --version 有输出，挂代理后重试
+
+Q4: 部署成功但页面 404
+- 原因：Build output directory 配置错误
+- 解决：Pages 项目 Settings → Build & deployments → 将 output directory 改为 dist → Save → 触发重新部署
+
+Q5: 域名 ping 不通但 Cloudflare 显示 Active
+- 原因：DNS 全球传播需要时间，或本地 DNS 缓存
+- 解决：执行 ipconfig /flushdns（Windows），等 30 分钟再试
+
+Q6: PayPal 绑卡成功但付款失败
+- 原因：银行卡未开通境外在线支付
+- 解决：打银行客服电话开通「境外网上支付」，或在银行 App 自助开通
+
+---
+
+## 七、后续维护
+
+### 更新站点内容
+
+1. 本地修改代码（编辑 Markdown 文件、改页面样式等）
+2. 保存后执行：
+    git add .
+    git commit -m "描述这次改了什么"
+    git push
+3. Cloudflare Pages 自动检测 push，重新构建部署（1-2 分钟）
+4. 刷新 wumingmp.me 即可看到更新
+
+### 添加新文章
+
+Astro blog 模板的文章放在 src/content/blog/ 目录下，新建 .md 文件即可。
+
+文章格式示例：
+    ---
+    title: "文章标题"
+    description: "简介"
+    pubDate: 2026-05-07
+    ---
+    
+    正文内容...
+
+### 修改首页
+
+编辑 src/pages/index.astro，改标题、文案、样式等。
+
+---
+
+## 八、成本总结
+
+项目 - 费用 - 说明
+- 域名（.me）：~100元/年，Cloudflare 成本价
+- 托管（Cloudflare Pages）：0元，免费额度完全够用
+- CDN + SSL：0元，Cloudflare 免费提供
+- 图床：0元，文章图片可放 GitHub 仓库 public/ 目录
+
+总计：~100元/年，极低成本的个人站
+
+---
+
+## 九、结语
+
+> 不要等所有条件齐备才开始。苗圃的价值不在于它有多整齐，而在于种子已经埋下去了。
+
+这份攻略记录了一个真实的建站过程——从域名购买到上线，包括所有踩过的坑和解决方案。如果你在搭建过程中遇到本文未覆盖的问题，欢迎留言讨论。
+
+本文适用于 Astro v5 + Cloudflare Pages + GitHub 组合，最后更新于 2026-05-07。
