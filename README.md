@@ -1,63 +1,59 @@
-# Astro Starter Kit: Blog
+# 无名苗圃
+
+一个存放记忆与故事的个人博客。
+
+基于 [Astro](https://astro.build) 构建，部署在 Cloudflare Pages。
+
+## 技术栈
+
+- **框架**: Astro 6.x
+- **语言**: TypeScript
+- **样式**: CSS
+- **部署**: Cloudflare Pages
+- **域名**: wumingmp.me
+
+## 本地开发
 
 ```sh
-npm create astro@latest -- --template blog
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 构建生产版本
+npm run build
+
+# 预览构建结果
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 项目结构
 
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
+```
+├── public/          # 静态资源
 ├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+│   ├── assets/      # 图片、字体等
+│   ├── components/  # 可复用组件
+│   ├── content/     # 博客文章 (Markdown)
+│   ├── layouts/     # 页面布局
+│   ├── pages/       # 路由页面
+│   └── styles/      # 全局样式
+└── astro.config.mjs
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 添加文章
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+在 `src/content/blog/` 目录下新建 `.md` 文件：
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+```markdown
+---
+title: "文章标题"
+description: "文章简介"
+pubDate: 2026-05-13
+---
 
-Any static assets, like images, can be placed in the `public/` directory.
+正文内容...
+```
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+提交并推送后，Cloudflare Pages 会自动构建部署。
