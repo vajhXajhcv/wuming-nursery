@@ -12,14 +12,44 @@ import HeaderLink from './HeaderLink.astro';
 			<HeaderLink href="/projects/docx-formatter-cn">项目</HeaderLink>
 			<HeaderLink href="/about">关于</HeaderLink>
 		</div>
+		<button id="theme-toggle" aria-label="切换主题" title="切换主题">
+			<span class="theme-icon" id="theme-icon">🌙</span>
+		</button>
 	</nav>
 </header>
+<script is:inline>
+	(function() {
+		const root = document.documentElement;
+		const saved = localStorage.getItem('theme');
+		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const theme = saved || (prefersDark ? 'dark' : 'light');
+		root.setAttribute('data-theme', theme);
+		const icon = document.getElementById('theme-icon');
+		if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+	})();
+	document.addEventListener('DOMContentLoaded', function() {
+		const toggle = document.getElementById('theme-toggle');
+		const icon = document.getElementById('theme-icon');
+		const root = document.documentElement;
+		if (!toggle) return;
+		toggle.addEventListener('click', function() {
+			const current = root.getAttribute('data-theme');
+			const next = current === 'dark' ? 'light' : 'dark';
+			root.setAttribute('data-theme', next);
+			localStorage.setItem('theme', next);
+			if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+		});
+	});
+</script>
 <style>
 	header {
 		margin: 0;
 		padding: 0 1em;
 		background: white;
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		position: sticky;
+		top: 0;
+		z-index: 100;
 	}
 	h2 {
 		margin: 0;
@@ -35,9 +65,13 @@ import HeaderLink from './HeaderLink.astro';
 		align-items: center;
 		justify-content: space-between;
 	}
+	.internal-links {
+		display: flex;
+		align-items: center;
+	}
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--black);
+		color: rgb(var(--black));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
 	}
@@ -45,9 +79,26 @@ import HeaderLink from './HeaderLink.astro';
 		text-decoration: none;
 		border-bottom-color: var(--accent);
 	}
+	#theme-toggle {
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 1.2em;
+		padding: 0.4em;
+		margin-left: 0.5em;
+		border-radius: 8px;
+		transition: background 0.2s;
+	}
+	#theme-toggle:hover {
+		background: rgb(var(--gray-light));
+	}
 	@media (max-width: 720px) {
 		nav {
-			gap: 1em;
+			gap: 0.5em;
+		}
+		.internal-links a {
+			padding: 1em 0.35em;
+			font-size: 0.9em;
 		}
 	}
 </style>

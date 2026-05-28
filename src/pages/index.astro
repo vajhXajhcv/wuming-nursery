@@ -22,6 +22,18 @@ const posts = (await getCollection('blog')).sort(
 				padding: 4em 1em 3em;
 				position: relative;
 			}
+			.hero .avatar {
+				width: 100px;
+				height: 100px;
+				border-radius: 50%;
+				margin-bottom: 1em;
+				box-shadow: var(--box-shadow);
+				border: 3px solid rgba(var(--gray-light), 1);
+				transition: transform 0.3s ease;
+			}
+			.hero .avatar:hover {
+				transform: scale(1.05) rotate(3deg);
+			}
 			.hero h1 {
 				font-size: 3em;
 				margin: 0 0 0.3em;
@@ -188,6 +200,7 @@ const posts = (await getCollection('blog')).sort(
 		<main>
 			<!-- Hero -->
 			<section class="hero">
+				<img src="/avatar.png" alt="头像" class="avatar" />
 				<h1>无名苗圃</h1>
 				<p class="subtitle" id="typewriter"></p>
 				<p class="desc">一个存放记忆与故事的地方。<br />游戏攻略、生活碎片、还有一些没名字的故事。</p>
@@ -247,6 +260,14 @@ const posts = (await getCollection('blog')).sort(
 					</div>
 				</a>
 			</section>
+
+			<!-- Site stats -->
+			<section class="site-stats" style="text-align: center; margin-top: 3em; padding-top: 2em; border-top: 1px solid rgb(var(--gray-light)); color: rgb(var(--gray)); font-size: 0.9em;">
+				<p>🌱 本站已运行 <span id="site-days">0</span> 天</p>
+				<p style="margin-top: 0.5em;">
+					<img src="https://count.getloli.com/get/@wumingmp.me?theme=rule34" alt="visitor count" style="height: 24px; vertical-align: middle;" />
+				</p>
+			</section>
 		</main>
 		<Footer />
 
@@ -285,6 +306,16 @@ const posts = (await getCollection('blog')).sort(
 				setTimeout(type, speed);
 			}
 			type();
+
+			// Site uptime
+			const startDate = new Date('2026-05-01T00:00:00');
+			function updateUptime() {
+				const now = new Date();
+				const diff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+				const el = document.getElementById('site-days');
+				if (el) el.textContent = diff;
+			}
+			updateUptime();
 		</script>
 	</body>
 </html>
