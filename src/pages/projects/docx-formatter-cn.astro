@@ -1,0 +1,215 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+---
+
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="docx-formatter-cn - 无名苗圃" description="中文 Word 文档智能排版工具" />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 3em 1em;
+			}
+			.hero {
+				text-align: center;
+				padding: 2em 0;
+			}
+			.hero h1 {
+				margin: 0 0 0.3em 0;
+				font-size: 2.4em;
+			}
+			.hero p {
+				color: rgb(var(--gray));
+				margin: 0;
+			}
+			.actions {
+				display: flex;
+				gap: 1em;
+				justify-content: center;
+				margin: 2em 0;
+				flex-wrap: wrap;
+			}
+			.btn {
+				display: inline-block;
+				padding: 0.6em 1.2em;
+				border-radius: 8px;
+				text-decoration: none;
+				font-weight: 600;
+				transition: transform 0.15s ease;
+			}
+			.btn:hover {
+				transform: translateY(-2px);
+			}
+			.btn-primary {
+				background: var(--accent);
+				color: white;
+			}
+			.btn-secondary {
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
+			section {
+				margin: 2.5em 0;
+			}
+			section h2 {
+				font-size: 1.6em;
+				margin-bottom: 0.6em;
+				border-bottom: 2px solid rgb(var(--gray-light));
+				padding-bottom: 0.3em;
+			}
+			.feature-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 1.2em;
+				margin-top: 1em;
+			}
+			.feature-card {
+				background: white;
+				border-radius: 12px;
+				padding: 1.2em;
+				box-shadow: 0 2px 8px rgba(var(--gray), 12%);
+			}
+			.feature-card h3 {
+				margin: 0 0 0.4em 0;
+				font-size: 1.15em;
+				color: var(--accent-dark);
+			}
+			.feature-card p {
+				margin: 0;
+				font-size: 0.95em;
+				color: rgb(var(--gray));
+			}
+			pre {
+				background: #f6f8fa;
+				padding: 1em;
+				border-radius: 8px;
+				overflow-x: auto;
+				font-size: 0.85em;
+			}
+			code {
+				font-family: 'Courier New', Courier, monospace;
+			}
+			.tag {
+				display: inline-block;
+				padding: 0.2em 0.6em;
+				border-radius: 999px;
+				background: rgb(var(--gray-light));
+				font-size: 0.8em;
+				margin-right: 0.4em;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="hero">
+				<h1>docx-formatter-cn</h1>
+				<p>中文 Word 文档智能排版工具 — Markdown 一键转为符合学术规范的 docx</p>
+				<div class="actions">
+					<a class="btn btn-primary" href="https://github.com/vajhXajhcv/docx-formatter-cn" target="_blank">GitHub 仓库</a>
+					<a class="btn btn-secondary" href="/docx-formatter-cn-demo.docx" download>下载示例文档</a>
+				</div>
+				<div>
+					<span class="tag">Python</span>
+					<span class="tag">Markdown</span>
+					<span class="tag">LaTeX</span>
+					<span class="tag">Word</span>
+					<span class="tag">PySide6</span>
+				</div>
+			</div>
+
+			<section>
+				<h2>功能特性</h2>
+				<div class="feature-grid">
+					<div class="feature-card">
+						<h3>Markdown → Word</h3>
+						<p>一键将 Markdown 转为符合中文学术规范的 docx，支持标题、段落、列表、表格、图片。</p>
+					</div>
+					<div class="feature-card">
+						<h3>LaTeX 公式</h3>
+						<p>LaTeX 转换为 Word 原生 OMML 公式，可编辑、非图片，支持分数、根号、矩阵等。</p>
+					</div>
+					<div class="feature-card">
+						<h3>三线表</h3>
+						<p>自动生成标准学术三线表，顶线、栏目线、底线粗细可调。</p>
+					</div>
+					<div class="feature-card">
+						<h3>中文字体</h3>
+						<p>SimSun/SimHei + Cambria Math，中英文混排优化，自动首行缩进。</p>
+					</div>
+					<div class="feature-card">
+						<h3>自动编号</h3>
+						<p>标题、图表、公式自动编号，支持目录生成和上标引用 [n]。</p>
+					</div>
+					<div class="feature-card">
+						<h3>模板系统</h3>
+						<p>预设课程论文、毕业论文、数学建模、公文四种模板，支持 JSON/YAML 自定义。</p>
+					</div>
+					<div class="feature-card">
+						<h3>YAML Frontmatter</h3>
+						<p>自动提取 Markdown 文件顶部的 YAML 元数据，渲染为封面页。</p>
+					</div>
+					<div class="feature-card">
+						<h3>GUI + CLI</h3>
+						<p>PySide6 桌面应用支持拖拽文件，CLI 支持批量转换和模板导出。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>安装</h2>
+				<pre><code>git clone https://github.com/vajhXajhcv/docx-formatter-cn.git
+cd docx-formatter-cn
+pip install -e .</code></pre>
+			</section>
+
+			<section>
+				<h2>快速开始</h2>
+				<h3>命令行</h3>
+				<pre><code># Markdown 转 Word
+python -m docx_formatter.cli convert input.md -o output.docx -t 课程论文
+
+# 批量转换
+python -m docx_formatter.cli batch input_dir/ -o output_dir/ -t 课程论文
+
+# 修正现有 Word
+python -m docx_formatter.cli format input.docx -o output.docx -t 毕业论文 --add-toc</code></pre>
+				<h3>Python API</h3>
+				<pre><code>from docx_formatter import convert_markdown_to_docx
+
+with open("论文.md", "r", encoding="utf-8") as f:
+    md_text = f.read()
+
+convert_markdown_to_docx(md_text, "output.docx", template="课程论文")</code></pre>
+			</section>
+
+			<section>
+				<h2>Markdown 语法支持</h2>
+				<ul>
+					<li>YAML Frontmatter（title / author / date / abstract / keywords）</li>
+					<li>标题、粗体、斜体、下划线、删除线、行内代码</li>
+					<li>行内公式 <code>$...$</code> 或 <code>\(...\)</code>，块级公式 <code>$$...$$</code> 或 <code>\[...\]</code></li>
+					<li>表格（含行内公式）、图片（支持尺寸控制 <code>=WxH</code>）</li>
+					<li>上标引用 <code>[n]</code>、超链接 <code>[text](url)</code></li>
+					<li>引用块、任务列表、分页符</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>技术栈</h2>
+				<ul>
+					<li><strong>公式引擎</strong>：自研 MathML → OMML 转换器（基于 lxml）</li>
+					<li><strong>Markdown 解析</strong>：轻量级手写解析器</li>
+					<li><strong>Word 生成</strong>：python-docx + lxml 直接操作 XML</li>
+					<li><strong>GUI</strong>：PySide6</li>
+					<li><strong>测试</strong>：pytest + GitHub Actions CI</li>
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
