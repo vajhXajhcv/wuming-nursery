@@ -101,6 +101,24 @@ const ogImage = new URL(image.src, Astro.url);
 	})} />
 )}
 
+<!-- Prefetch internal links on hover -->
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function() {
+		var prefetched = new Set();
+		document.addEventListener('mouseover', function(e) {
+			var a = e.target.closest('a');
+			if (!a) return;
+			var href = a.getAttribute('href');
+			if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:') || prefetched.has(href)) return;
+			prefetched.add(href);
+			var link = document.createElement('link');
+			link.rel = 'prefetch';
+			link.href = href;
+			document.head.appendChild(link);
+		});
+	});
+</script>
+
 {!article && (
 	<script is:inline type="application/ld+json" set:html={JSON.stringify({
 		"@context": "https://schema.org",

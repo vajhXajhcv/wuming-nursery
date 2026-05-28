@@ -378,6 +378,69 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				border-color: var(--accent);
 				color: var(--accent);
 			}
+			/* Lightbox */
+			.lightbox-overlay {
+				position: fixed;
+				top: 0; left: 0;
+				width: 100%; height: 100%;
+				background: rgba(0,0,0,0.9);
+				z-index: 2000;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: zoom-out;
+				opacity: 0;
+				transition: opacity 0.2s;
+				pointer-events: none;
+			}
+			.lightbox-overlay.active {
+				opacity: 1;
+				pointer-events: auto;
+			}
+			.lightbox-overlay img {
+				max-width: 90vw;
+				max-height: 90vh;
+				object-fit: contain;
+				border-radius: 8px;
+				cursor: default;
+			}
+			.lightbox-close {
+				position: absolute;
+				top: 1em; right: 1em;
+				color: white;
+				font-size: 2em;
+				cursor: pointer;
+				line-height: 1;
+			}
+			/* Code fold */
+			.code-fold-wrapper.collapsed pre {
+				max-height: 300px;
+				overflow: hidden;
+			}
+			.code-fold-wrapper.collapsed::after {
+				content: '';
+				position: absolute;
+				bottom: 0; left: 0; right: 0;
+				height: 60px;
+				background: linear-gradient(transparent, var(--bg-code));
+				pointer-events: none;
+			}
+			.code-fold-btn {
+				display: block;
+				width: 100%;
+				padding: 0.5em;
+				background: var(--bg-code);
+				border: 1px solid rgb(var(--gray-light));
+				border-top: none;
+				border-radius: 0 0 8px 8px;
+				color: rgb(var(--gray));
+				font-size: 0.8em;
+				cursor: pointer;
+				text-align: center;
+			}
+			.code-fold-btn:hover {
+				color: var(--accent);
+			}
 			@media (max-width: 720px) {
 				.post-nav {
 					grid-template-columns: 1fr;
@@ -628,6 +691,55 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 						a.classList.add('external-link');
 					}
 				});
+
+			// Image lightbox
+			document.querySelectorAll('.prose img').forEach(function(img) {
+				img.style.cursor = 'zoom-in';
+				img.addEventListener('click', function(e) {
+					e.preventDefault();
+					var overlay = document.createElement('div');
+					overlay.className = 'lightbox-overlay';
+					var bigImg = document.createElement('img');
+					bigImg.src = img.src;
+					bigImg.alt = img.alt || '';
+					var closeBtn = document.createElement('span');
+					closeBtn.className = 'lightbox-close';
+					closeBtn.innerHTML = '&times;';
+					overlay.appendChild(bigImg);
+					overlay.appendChild(closeBtn);
+					document.body.appendChild(overlay);
+					requestAnimationFrame(function() { overlay.classList.add('active'); });
+					function close() {
+						overlay.classList.remove('active');
+						setTimeout(function() { overlay.remove(); }, 200);
+					}
+					overlay.addEventListener('click', function(ev) {
+						if (ev.target === overlay || ev.target === closeBtn) close();
+					});
+					document.addEventListener('keydown', function keyHandler(ev) {
+						if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', keyHandler); }
+					});
+				});
+			});
+
+			// Code block fold (for blocks > 15 lines)
+			document.querySelectorAll('pre').forEach(function(pre) {
+				var lines = pre.textContent.split('\n').length;
+				if (lines > 15) {
+					var wrapper = pre.parentNode;
+					if (wrapper.classList.contains('code-block-wrapper')) {
+						wrapper.classList.add('code-fold-wrapper', 'collapsed');
+						var btn = document.createElement('button');
+						btn.className = 'code-fold-btn';
+						btn.textContent = '展开 ' + lines + ' 行代码';
+						btn.addEventListener('click', function() {
+							var isCollapsed = wrapper.classList.contains('collapsed');
+							wrapper.classList.toggle('collapsed');
+							btn.textContent = isCollapsed ? '收起代码' : '展开 ' + lines + ' 行代码';
+						});
+						wrapper.appendChild(btn);
+					}
+				}
 			});
 		</script>
 	</body>
