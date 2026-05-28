@@ -1,0 +1,75 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_DESCRIPTION } from '../consts';
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="404 - 页面走丢了" description={SITE_DESCRIPTION} />
+		<style>
+			.container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				min-height: 60vh;
+				text-align: center;
+				padding: 2rem;
+			}
+			.code {
+				font-size: clamp(4rem, 15vw, 10rem);
+				font-weight: 800;
+				color: var(--accent);
+				opacity: 0.3;
+				line-height: 1;
+				margin-bottom: 1rem;
+			}
+			.text {
+				font-size: 1.5rem;
+				color: var(--text-secondary);
+				margin-bottom: 0.5rem;
+			}
+			.sub {
+				color: var(--text-tertiary);
+				margin-bottom: 2rem;
+			}
+			.back-btn {
+				display: inline-block;
+				padding: 0.75rem 2rem;
+				border-radius: 9999px;
+				background: var(--accent);
+				color: white;
+				font-weight: 600;
+				text-decoration: none;
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+			.back-btn:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(99,102,241,0.35);
+			}
+			.emoji {
+				font-size: 3rem;
+				margin-bottom: 1rem;
+				display: inline-block;
+				animation: float 3s ease-in-out infinite;
+			}
+			@keyframes float {
+				0%, 100% { transform: translateY(0); }
+				50% { transform: translateY(-10px); }
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="container">
+			<div class="emoji">🌱</div>
+			<div class="code">404</div>
+			<div class="text">这页苗圃里还没种下什么</div>
+			<div class="sub">页面可能已经搬家了，或者本来就不存在</div>
+			<a href="/" class="back-btn">🏠 回苗圃看看</a>
+		</main>
+		<Footer />
+	</body>
+</html>

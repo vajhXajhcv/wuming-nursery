@@ -25,6 +25,7 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 // Estimate reading time (~500 chars per minute for Chinese)
 const wordCount = post.body?.length || 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / 500));
+const displayWordCount = wordCount;
 
 // Find related posts by tag overlap
 const currentTags = new Set(post.data.tags || []);
@@ -41,6 +42,6 @@ const relatedPosts = allPosts
 	.map((p) => p.post);
 ---
 
-<BlogPost {...post.data} prevPost={prevPost} nextPost={nextPost} readingTime={readingTime} relatedPosts={relatedPosts}>
+<BlogPost {...post.data} prevPost={prevPost} nextPost={nextPost} readingTime={readingTime} wordCount={displayWordCount} relatedPosts={relatedPosts}>
 	<Content />
 </BlogPost>

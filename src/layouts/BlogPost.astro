@@ -10,15 +10,16 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	prevPost?: CollectionEntry<'blog'> | null;
 	nextPost?: CollectionEntry<'blog'> | null;
 	readingTime?: number;
+	wordCount?: number;
 	relatedPosts?: CollectionEntry<'blog'>[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime, relatedPosts } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime, wordCount, relatedPosts } = Astro.props;
 ---
 
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} article={true} pubDate={pubDate} tags={tags} />
 		<style>
 			main {
 				width: calc(100% - 2em);
@@ -312,6 +313,52 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				-webkit-box-orient: vertical;
 				overflow: hidden;
 			}
+			/* Progress bar */
+			.read-progress {
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 3px;
+				background: var(--accent);
+				z-index: 1000;
+				width: 0%;
+				transition: width 0.1s linear;
+			}
+			/* Share buttons */
+			.share-bar {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 2em auto 0;
+				padding: 1em;
+				display: flex;
+				align-items: center;
+				gap: 0.5em;
+				flex-wrap: wrap;
+			}
+			.share-label {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				margin-right: 0.5em;
+			}
+			.share-btn {
+				padding: 0.4em 0.9em;
+				border-radius: 8px;
+				background: var(--bg-card, #fff);
+				border: 1px solid rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				font-size: 0.85em;
+				cursor: pointer;
+				transition: background 0.2s, border-color 0.2s, transform 0.2s;
+				text-decoration: none;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.3em;
+			}
+			.share-btn:hover {
+				transform: translateY(-2px);
+				border-color: var(--accent);
+				color: var(--accent);
+			}
 			@media (max-width: 720px) {
 				.post-nav {
 					grid-template-columns: 1fr;
@@ -324,6 +371,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 	</head>
 
 	<body>
+		<div class="read-progress" id="read-progress"></div>
 		<Header />
 		<main>
 			<article>
@@ -335,6 +383,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 						<div class="meta-bar">
 							<span><FormattedDate date={pubDate} /></span>
 							{readingTime && <span>⏱️ 约 {readingTime} 分钟</span>}
+							{wordCount && <span>📝 {wordCount.toLocaleString()} 字</span>}
 							{
 								updatedDate && (
 									<span class="last-updated-on">
@@ -356,6 +405,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 					<slot />
 				</div>
 			</article>
+			<!-- Share Bar -->
+			<div class="share-bar">
+				<span class="share-label">分享：</span>
+				<button class="share-btn" id="share-weibo" title="分享到微博">📢 微博</button>
+				<button class="share-btn" id="share-weixin" title="复制链接">🔗 复制链接</button>
+				<button class="share-btn" id="share-x" title="分享到 X">𝕏 X</button>
+			</div>
 		</main>
 
 		<!-- Prev/Next Navigation -->
@@ -478,6 +534,45 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 					}
 					window.addEventListener('scroll', onScroll, { passive: true });
 					onScroll();
+				}
+
+				// Reading progress bar
+				var progressBar = document.getElementById('read-progress');
+				if (progressBar) {
+					function updateProgress() {
+						var scrollTop = window.scrollY;
+						var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+						var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+						progressBar.style.width = pct + '%';
+					}
+					window.addEventListener('scroll', updateProgress, { passive: true });
+					updateProgress();
+				}
+
+				// Share buttons
+				var shareUrl = encodeURIComponent(window.location.href);
+				var shareTitle = encodeURIComponent(document.title);
+				var weiboBtn = document.getElementById('share-weibo');
+				if (weiboBtn) {
+					weiboBtn.addEventListener('click', function() {
+						window.open('https://service.weibo.com/share/share.php?url=' + shareUrl + '&title=' + shareTitle, '_blank', 'width=600,height=400');
+					});
+				}
+				var xBtn = document.getElementById('share-x');
+				if (xBtn) {
+					xBtn.addEventListener('click', function() {
+						window.open('https://twitter.com/intent/tweet?url=' + shareUrl + '&text=' + shareTitle, '_blank', 'width=600,height=400');
+					});
+				}
+				var copyBtn = document.getElementById('share-weixin');
+				if (copyBtn) {
+					copyBtn.addEventListener('click', function() {
+						navigator.clipboard.writeText(window.location.href).then(function() {
+							var orig = copyBtn.textContent;
+							copyBtn.textContent = '✅ 已复制';
+							setTimeout(function() { copyBtn.textContent = orig; }, 2000);
+						});
+					});
 				}
 			});
 		</script>

@@ -1,0 +1,17 @@
+{
+  "name": "无名苗圃",
+  "short_name": "无名苗圃",
+  "description": "一个存放记忆与故事的地方",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "lang": "zh-CN"
+}
