@@ -10,9 +10,10 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	prevPost?: CollectionEntry<'blog'> | null;
 	nextPost?: CollectionEntry<'blog'> | null;
 	readingTime?: number;
+	relatedPosts?: CollectionEntry<'blog'>[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime, relatedPosts } = Astro.props;
 ---
 
 <html lang="zh-CN">
@@ -188,6 +189,129 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				padding-bottom: 0.3em;
 				border-bottom: 2px solid rgb(var(--gray-light));
 			}
+			/* Copy button for code blocks */
+			.code-block-wrapper {
+				position: relative;
+			}
+			.copy-btn {
+				position: absolute;
+				top: 0.5em;
+				right: 0.5em;
+				padding: 0.3em 0.7em;
+				border-radius: 6px;
+				background: rgba(255,255,255,0.1);
+				color: rgb(var(--gray));
+				border: 1px solid rgba(255,255,255,0.15);
+				cursor: pointer;
+				font-size: 0.8em;
+				opacity: 0;
+				transition: opacity 0.2s, background 0.2s;
+			}
+			.code-block-wrapper:hover .copy-btn {
+				opacity: 1;
+			}
+			.copy-btn:hover {
+				background: var(--accent);
+				color: white;
+			}
+			.copy-btn.copied {
+				background: #22c55e;
+				color: white;
+				opacity: 1;
+			}
+			/* TOC Sidebar */
+			.toc-wrapper {
+				display: none;
+			}
+			@media (min-width: 1200px) {
+				.toc-wrapper {
+					display: block;
+					position: fixed;
+					top: 100px;
+					right: calc((100% - 720px) / 2 - 220px);
+					width: 200px;
+					max-height: calc(100vh - 140px);
+					overflow-y: auto;
+				}
+				.toc-title {
+					font-size: 0.85em;
+					font-weight: 700;
+					color: rgb(var(--black));
+					margin-bottom: 0.5em;
+					padding-bottom: 0.3em;
+					border-bottom: 1px solid rgb(var(--gray-light));
+				}
+				.toc-list {
+					list-style: none;
+					padding: 0;
+					margin: 0;
+				}
+				.toc-list li {
+					margin: 0.3em 0;
+				}
+				.toc-list a {
+					display: block;
+					padding: 0.25em 0.5em;
+					border-radius: 4px;
+					color: rgb(var(--gray));
+					text-decoration: none;
+					font-size: 0.8em;
+					line-height: 1.4;
+					transition: background 0.15s, color 0.15s;
+				}
+				.toc-list a:hover,
+				.toc-list a.active {
+					background: rgb(var(--gray-light));
+					color: var(--accent);
+				}
+				.toc-list li.h3 {
+					padding-left: 1em;
+				}
+			}
+			/* Related posts */
+			.related-posts {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 2em auto 0;
+				padding: 1em;
+			}
+			.related-posts h3 {
+				font-size: 1.2em;
+				margin-bottom: 0.8em;
+				padding-bottom: 0.3em;
+				border-bottom: 2px solid rgb(var(--gray-light));
+			}
+			.related-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1em;
+			}
+			.related-card {
+				padding: 1em;
+				border-radius: 10px;
+				background: var(--bg-card, #fff);
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+			.related-card:hover {
+				transform: translateY(-3px);
+				box-shadow: var(--box-shadow);
+			}
+			.related-card .r-title {
+				font-weight: 600;
+				color: rgb(var(--black));
+				margin-bottom: 0.3em;
+			}
+			.related-card .r-desc {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
 			@media (max-width: 720px) {
 				.post-nav {
 					grid-template-columns: 1fr;
@@ -252,6 +376,26 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			</nav>
 		)}
 
+		{relatedPosts && relatedPosts.length > 0 && (
+			<div class="related-posts">
+				<h3>📎 相关文章</h3>
+				<div class="related-grid">
+					{relatedPosts.map((rp) => (
+						<a href={`/blog/${rp.id}/`} class="related-card">
+							<div class="r-title">{rp.data.title}</div>
+							<div class="r-desc">{rp.data.description}</div>
+						</a>
+					))}
+				</div>
+			</div>
+		)}
+
+		<!-- TOC Sidebar -->
+		<div class="toc-wrapper" id="toc-wrapper">
+			<div class="toc-title">目录</div>
+			<ul class="toc-list" id="toc-list"></ul>
+		</div>
+
 		<!-- Utterances Comments -->
 		<div class="comments">
 			<h3 class="comments-title">💬 留言</h3>
@@ -266,5 +410,76 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 		</div>
 
 		<Footer />
+
+		<script is:inline>
+			// Copy button for code blocks
+			document.addEventListener('DOMContentLoaded', function() {
+				document.querySelectorAll('pre').forEach(function(pre) {
+					var wrapper = document.createElement('div');
+					wrapper.className = 'code-block-wrapper';
+					pre.parentNode.insertBefore(wrapper, pre);
+					wrapper.appendChild(pre);
+
+					var btn = document.createElement('button');
+					btn.className = 'copy-btn';
+					btn.textContent = '复制';
+					btn.setAttribute('aria-label', '复制代码');
+					wrapper.appendChild(btn);
+
+					btn.addEventListener('click', function() {
+						var code = pre.querySelector('code');
+						var text = code ? code.textContent : pre.textContent;
+						navigator.clipboard.writeText(text).then(function() {
+							btn.textContent = '已复制';
+							btn.classList.add('copied');
+							setTimeout(function() {
+								btn.textContent = '复制';
+								btn.classList.remove('copied');
+							}, 2000);
+						});
+					});
+				});
+
+				// Generate TOC
+				var prose = document.querySelector('.prose');
+				var tocList = document.getElementById('toc-list');
+				if (prose && tocList) {
+					var headings = prose.querySelectorAll('h2, h3');
+					headings.forEach(function(h, i) {
+						var id = 'heading-' + i;
+						h.id = id;
+						var li = document.createElement('li');
+						li.className = h.tagName.toLowerCase() === 'h3' ? 'h3' : '';
+						var a = document.createElement('a');
+						a.href = '#' + id;
+						a.textContent = h.textContent;
+						a.addEventListener('click', function(e) {
+							e.preventDefault();
+							h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+							history.pushState(null, null, '#' + id);
+						});
+						li.appendChild(a);
+						tocList.appendChild(li);
+					});
+
+					// Highlight active TOC item on scroll
+					var tocLinks = tocList.querySelectorAll('a');
+					function onScroll() {
+						var scrollPos = window.scrollY + 120;
+						var activeId = '';
+						headings.forEach(function(h) {
+							if (h.offsetTop <= scrollPos) {
+								activeId = h.id;
+							}
+						});
+						tocLinks.forEach(function(a) {
+							a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+						});
+					}
+					window.addEventListener('scroll', onScroll, { passive: true });
+					onScroll();
+				}
+			});
+		</script>
 	</body>
 </html>

@@ -21,6 +21,20 @@ const posts = (await getCollection('blog')).sort(
 				text-align: center;
 				padding: 4em 1em 3em;
 				position: relative;
+				overflow: hidden;
+			}
+			#particle-canvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+				z-index: 0;
+			}
+			.hero > * {
+				position: relative;
+				z-index: 1;
 			}
 			.hero .avatar {
 				width: 100px;
@@ -200,6 +214,7 @@ const posts = (await getCollection('blog')).sort(
 		<main>
 			<!-- Hero -->
 			<section class="hero">
+				<canvas id="particle-canvas"></canvas>
 				<img src="/avatar.png" alt="头像" class="avatar" />
 				<h1>无名苗圃</h1>
 				<p class="subtitle" id="typewriter"></p>
@@ -316,6 +331,75 @@ const posts = (await getCollection('blog')).sort(
 				if (el) el.textContent = diff;
 			}
 			updateUptime();
+
+			// Particle effect
+			(function() {
+				var canvas = document.getElementById('particle-canvas');
+				if (!canvas) return;
+				var ctx = canvas.getContext('2d');
+				var particles = [];
+				var maxParticles = 40;
+				var connectionDist = 100;
+
+				function resize() {
+					var rect = canvas.parentElement.getBoundingClientRect();
+					canvas.width = rect.width;
+					canvas.height = rect.height;
+				}
+				resize();
+				window.addEventListener('resize', resize);
+
+				function createParticle() {
+					return {
+						x: Math.random() * canvas.width,
+						y: Math.random() * canvas.height,
+						vx: (Math.random() - 0.5) * 0.5,
+						vy: (Math.random() - 0.5) * 0.5,
+						radius: Math.random() * 2 + 1,
+					};
+				}
+
+				for (var i = 0; i < maxParticles; i++) {
+					particles.push(createParticle());
+				}
+
+				function draw() {
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+					var color = isDark ? 'rgba(129,140,248,' : 'rgba(99,102,241,';
+
+					for (var i = 0; i < particles.length; i++) {
+						var p = particles[i];
+						p.x += p.vx;
+						p.y += p.vy;
+
+						if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+						if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+						ctx.beginPath();
+						ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+						ctx.fillStyle = color + '0.3)';
+						ctx.fill();
+
+						for (var j = i + 1; j < particles.length; j++) {
+							var p2 = particles[j];
+							var dx = p.x - p2.x;
+							var dy = p.y - p2.y;
+							var dist = Math.sqrt(dx * dx + dy * dy);
+							if (dist < connectionDist) {
+								ctx.beginPath();
+								ctx.moveTo(p.x, p.y);
+								ctx.lineTo(p2.x, p2.y);
+								ctx.strokeStyle = color + (0.15 * (1 - dist / connectionDist)) + ')';
+								ctx.lineWidth = 1;
+								ctx.stroke();
+							}
+						}
+					}
+					requestAnimationFrame(draw);
+				}
+				draw();
+			})();
 		</script>
 	</body>
 </html>
