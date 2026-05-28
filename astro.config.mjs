@@ -8,6 +8,13 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://wumingmp.me',
 	integrations: [mdx(), sitemap()],
+	markdown: {
+		shikiConfig: {
+			theme: 'github-light',
+			darkTheme: 'github-dark',
+			wrap: true,
+		},
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),

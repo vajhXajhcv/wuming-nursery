@@ -123,6 +123,19 @@ body {
 	background: linear-gradient(135deg, #1a1d2b 0%, #141826 100%) !important;
 	border-color: #2a3045 !important;
 }
+
+/* Shiki code blocks */
+pre.astro-code {
+	border-radius: 8px;
+	padding: 1em;
+	overflow-x: auto;
+	font-size: 0.9em;
+}
+pre.astro-code code {
+	background: none;
+	padding: 0;
+	font-family: 'Courier New', Courier, monospace;
+}
 main {
 	width: 720px;
 	max-width: calc(100% - 2em);

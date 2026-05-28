@@ -6,9 +6,13 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	prevPost?: CollectionEntry<'blog'> | null;
+	nextPost?: CollectionEntry<'blog'> | null;
+	readingTime?: number;
+};
 
-const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime } = Astro.props;
 ---
 
 <html lang="zh-CN">
@@ -99,6 +103,16 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 			.title h1 {
 				margin: 0 0 0.5em 0;
 			}
+			.meta-bar {
+				display: flex;
+				gap: 1em;
+				justify-content: center;
+				align-items: center;
+				flex-wrap: wrap;
+				color: rgb(var(--gray));
+				font-size: 0.85em;
+				margin-bottom: 0.5em;
+			}
 			.date {
 				margin-bottom: 0.5em;
 				color: rgb(var(--gray));
@@ -126,6 +140,42 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				background: var(--accent);
 				color: white;
 			}
+			/* Prev/Next navigation */
+			.post-nav {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 2em auto 0;
+				padding: 1em;
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1em;
+			}
+			.nav-card {
+				padding: 1em;
+				border-radius: 12px;
+				background: var(--bg-card, #fff);
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+			.nav-card:hover {
+				transform: translateY(-3px);
+				box-shadow: var(--box-shadow);
+			}
+			.nav-card.next {
+				text-align: right;
+			}
+			.nav-label {
+				font-size: 0.75em;
+				color: rgb(var(--gray));
+				margin-bottom: 0.3em;
+			}
+			.nav-title {
+				font-size: 1em;
+				color: rgb(var(--black));
+				font-weight: 600;
+			}
 			.comments {
 				width: 720px;
 				max-width: calc(100% - 2em);
@@ -137,6 +187,14 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				margin-bottom: 0.8em;
 				padding-bottom: 0.3em;
 				border-bottom: 2px solid rgb(var(--gray-light));
+			}
+			@media (max-width: 720px) {
+				.post-nav {
+					grid-template-columns: 1fr;
+				}
+				.nav-card.next {
+					text-align: left;
+				}
 			}
 		</style>
 	</head>
@@ -150,13 +208,14 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				</div>
 				<div class="prose">
 					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
+						<div class="meta-bar">
+							<span><FormattedDate date={pubDate} /></span>
+							{readingTime && <span>⏱️ 约 {readingTime} 分钟</span>}
 							{
 								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
+									<span class="last-updated-on">
+										更新于 <FormattedDate date={updatedDate} />
+									</span>
 								)
 							}
 						</div>
@@ -174,6 +233,24 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				</div>
 			</article>
 		</main>
+
+		<!-- Prev/Next Navigation -->
+		{(prevPost || nextPost) && (
+			<nav class="post-nav">
+				{prevPost ? (
+					<a href={`/blog/${prevPost.id}/`} class="nav-card">
+						<div class="nav-label">← 上一篇</div>
+						<div class="nav-title">{prevPost.data.title}</div>
+					</a>
+				) : <div />}
+				{nextPost ? (
+					<a href={`/blog/${nextPost.id}/`} class="nav-card next">
+						<div class="nav-label">下一篇 →</div>
+						<div class="nav-title">{nextPost.data.title}</div>
+					</a>
+				) : <div />}
+			</nav>
+		)}
 
 		<!-- Utterances Comments -->
 		<div class="comments">
