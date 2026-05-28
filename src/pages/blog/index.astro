@@ -132,7 +132,11 @@ const posts = (await getCollection('blog')).sort(
 								<p class="desc">{post.data.description}</p>
 								<div class="meta">
 									<FormattedDate date={post.data.pubDate} />
-									<span class="tag">文章</span>
+									{post.data.tags && post.data.tags.length > 0 ? (
+										<span class="tag">{post.data.tags[0]}</span>
+									) : (
+										<span class="tag">文章</span>
+									)}
 								</div>
 							</div>
 						</a>
