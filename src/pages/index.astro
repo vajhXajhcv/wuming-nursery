@@ -9,6 +9,10 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 ).slice(0, 3);
+
+const latestNotes = (await getCollection('notes')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+).slice(0, 3);
 ---
 
 <!doctype html>
@@ -203,6 +207,67 @@ const posts = (await getCollection('blog')).sort(
 				color: rgb(var(--gray-dark));
 			}
 
+			/* Note list on home */
+			.note-list-home {
+				display: flex;
+				flex-direction: column;
+				gap: 0.8em;
+			}
+			.note-item-home {
+				background: var(--bg-card, #fff);
+				border-radius: 12px;
+				padding: 1em 1.2em;
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: transform 0.2s, box-shadow 0.2s;
+				display: flex;
+				align-items: flex-start;
+				gap: 0.8em;
+			}
+			.note-item-home:hover {
+				transform: translateY(-2px);
+				box-shadow: var(--box-shadow);
+			}
+			.note-icon-home {
+				font-size: 1.3em;
+				line-height: 1;
+				margin-top: 0.15em;
+				flex-shrink: 0;
+			}
+			.note-content-home {
+				flex: 1;
+			}
+			.note-content-home h3 {
+				margin: 0 0 0.2em;
+				font-size: 1em;
+				color: rgb(var(--black));
+			}
+			.note-content-home p {
+				margin: 0 0 0.4em;
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				line-height: 1.4;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+			.note-meta-home {
+				display: flex;
+				gap: 0.6em;
+				font-size: 0.75em;
+				color: rgb(var(--gray));
+				align-items: center;
+				flex-wrap: wrap;
+			}
+			.note-meta-home .tag {
+				font-size: 0.75em;
+				padding: 0.1em 0.4em;
+				border-radius: 999px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
 			@media (max-width: 720px) {
 				.hero h1 { font-size: 2.2em; }
 				.project-card { flex-direction: column; gap: 1em; }

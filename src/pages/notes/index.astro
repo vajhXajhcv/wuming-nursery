@@ -1,0 +1,130 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const notes = (await getCollection('notes')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`笔记 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+			}
+			.page-title {
+				font-size: 2em;
+				margin-bottom: 0.2em;
+				text-align: center;
+			}
+			.page-desc {
+				text-align: center;
+				color: rgb(var(--gray));
+				margin-bottom: 1.5em;
+			}
+			.note-list {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+			}
+			.note-item {
+				background: var(--bg-card, #fff);
+				border-radius: 12px;
+				padding: 1.2em 1.5em;
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: transform 0.2s, box-shadow 0.2s;
+				display: flex;
+				align-items: flex-start;
+				gap: 1em;
+			}
+			.note-item:hover {
+				transform: translateY(-2px);
+				box-shadow: var(--box-shadow);
+			}
+			.note-icon {
+				font-size: 1.5em;
+				line-height: 1;
+				margin-top: 0.1em;
+				flex-shrink: 0;
+			}
+			.note-content {
+				flex: 1;
+			}
+			.note-content h3 {
+				margin: 0 0 0.3em;
+				font-size: 1.1em;
+				color: rgb(var(--black));
+			}
+			.note-content p {
+				margin: 0 0 0.5em;
+				font-size: 0.9em;
+				color: rgb(var(--gray));
+				line-height: 1.5;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+			.note-meta {
+				display: flex;
+				gap: 0.8em;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+				align-items: center;
+				flex-wrap: wrap;
+			}
+			.note-meta .tag {
+				font-size: 0.75em;
+				padding: 0.15em 0.5em;
+				border-radius: 999px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 4em 0;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1 class="page-title">笔记</h1>
+			<p class="page-desc">技术片段、工具用法和随手记录</p>
+			<div class="note-list">
+				{notes.length === 0 && (
+					<div class="empty">🌱 苗圃还在整理，笔记即将发芽...</div>
+				)}
+				{notes.map((note) => (
+					<a href={`/notes/${note.id}/`} class="note-item">
+						<span class="note-icon">📌</span>
+						<div class="note-content">
+							<h3>{note.data.title}</h3>
+							<p>{note.data.description}</p>
+							<div class="note-meta">
+								<FormattedDate date={note.data.pubDate} />
+								{note.data.tags && note.data.tags.length > 0 && (
+									note.data.tags.map((tag) => <span class="tag">{tag}</span>)
+								)}
+							</div>
+						</div>
+					</a>
+				))}
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
