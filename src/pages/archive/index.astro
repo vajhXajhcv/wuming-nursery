@@ -1,0 +1,172 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const allPosts = [...(await getCollection('blog')), ...(await getCollection('notes'))]
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Group by year
+const yearMap = new Map<number, typeof allPosts>();
+allPosts.forEach((post) => {
+	const year = post.data.pubDate.getFullYear();
+	if (!yearMap.has(year)) yearMap.set(year, []);
+	yearMap.get(year)!.push(post);
+});
+
+const sortedYears = Array.from(yearMap.entries()).sort((a, b) => b[0] - a[0]);
+const totalPosts = allPosts.length;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`归档 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+			}
+			.page-title {
+				font-size: 2em;
+				margin-bottom: 0.2em;
+				text-align: center;
+			}
+			.page-desc {
+				text-align: center;
+				color: rgb(var(--gray));
+				margin-bottom: 2em;
+			}
+			.timeline {
+				position: relative;
+				padding-left: 2em;
+			}
+			.timeline::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				width: 2px;
+				background: rgb(var(--gray-light));
+				border-radius: 1px;
+			}
+			.year-group {
+				position: relative;
+				margin-bottom: 2em;
+			}
+			.year-group::before {
+				content: '';
+				position: absolute;
+				left: -2.35em;
+				top: 0.5em;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: var(--accent);
+				border: 2px solid var(--bg-body, #fff);
+			}
+			.year-label {
+				font-size: 1.5em;
+				font-weight: 700;
+				color: rgb(var(--black));
+				margin-bottom: 0.5em;
+			}
+			.year-count {
+				font-size: 0.6em;
+				font-weight: 400;
+				color: rgb(var(--gray));
+				margin-left: 0.3em;
+			}
+			.post-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				padding: 0.6em 0;
+				border-bottom: 1px dashed rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: color 0.2s;
+			}
+			.post-item:hover {
+				color: var(--accent);
+			}
+			.post-item:hover .post-title {
+				color: var(--accent);
+			}
+			.post-item:last-child {
+				border-bottom: none;
+			}
+			.post-title {
+				color: rgb(var(--gray-dark));
+				font-size: 1em;
+				transition: color 0.2s;
+			}
+			.post-type {
+				font-size: 0.75em;
+				padding: 0.1em 0.5em;
+				border-radius: 4px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray));
+				margin-left: 0.5em;
+				flex-shrink: 0;
+			}
+			.post-date {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				flex-shrink: 0;
+				margin-left: 1em;
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 4em 0;
+			}
+			@media (max-width: 720px) {
+				.timeline {
+					padding-left: 1.5em;
+				}
+				.year-group::before {
+					left: -1.85em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1 class="page-title">归档</h1>
+			<p class="page-desc">共 {totalPosts} 篇文章，按时间倒序排列</p>
+
+			{allPosts.length === 0 && (
+				<div class="empty">🌱 苗圃还很新，等种子发芽...</div>
+			)}
+
+			<div class="timeline">
+				{sortedYears.map(([year, posts]) => (
+					<div class="year-group">
+						<div class="year-label">
+							{year}
+							<span class="year-count">{posts.length} 篇</span>
+						</div>
+						{posts.map((post) => (
+							<a href={`/${post.collection}/${post.id}/`} class="post-item">
+								<span style="display:flex;align-items:center;gap:0.4em;">
+									<span class="post-title">{post.data.title}</span>
+									<span class="post-type">{post.collection === 'blog' ? '文章' : '笔记'}</span>
+								</span>
+								<span class="post-date"><FormattedDate date={post.data.pubDate} /></span>
+							</a>
+						))}
+					</div>
+				))}
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

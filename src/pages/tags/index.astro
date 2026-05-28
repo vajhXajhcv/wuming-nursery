@@ -1,0 +1,180 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const allPosts = [...(await getCollection('blog')), ...(await getCollection('notes'))];
+
+// Build tag map: tag -> posts[]
+const tagMap = new Map<string, typeof allPosts>();
+allPosts.forEach((post) => {
+	const tags = post.data.tags || [];
+	tags.forEach((tag) => {
+		if (!tagMap.has(tag)) tagMap.set(tag, []);
+		tagMap.get(tag)!.push(post);
+	});
+});
+
+// Sort tags by post count desc, then alphabetically
+const sortedTags = Array.from(tagMap.entries()).sort((a, b) => {
+	const diff = b[1].length - a[1].length;
+	return diff !== 0 ? diff : a[0].localeCompare(b[0]);
+});
+
+const totalTags = sortedTags.length;
+const totalPosts = allPosts.length;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`标签 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+			}
+			.page-title {
+				font-size: 2em;
+				margin-bottom: 0.2em;
+				text-align: center;
+			}
+			.page-desc {
+				text-align: center;
+				color: rgb(var(--gray));
+				margin-bottom: 2em;
+			}
+			.tag-cloud {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.6em;
+				justify-content: center;
+				margin-bottom: 3em;
+				padding: 1.5em;
+				background: var(--bg-card, #fff);
+				border-radius: 16px;
+				border: 1px solid rgb(var(--gray-light));
+			}
+			.tag-pill {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.3em;
+				padding: 0.4em 1em;
+				border-radius: 999px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				text-decoration: none;
+				font-size: 0.9em;
+				transition: background 0.2s, color 0.2s, transform 0.2s;
+			}
+			.tag-pill:hover {
+				background: var(--accent);
+				color: white;
+				transform: translateY(-2px);
+			}
+			.tag-pill .count {
+				font-size: 0.75em;
+				opacity: 0.7;
+			}
+			.tag-section {
+				margin-bottom: 2em;
+			}
+			.tag-section h3 {
+				display: flex;
+				align-items: center;
+				gap: 0.5em;
+				font-size: 1.2em;
+				margin-bottom: 0.8em;
+				padding-bottom: 0.3em;
+				border-bottom: 2px solid rgb(var(--gray-light));
+			}
+			.tag-section h3 .badge {
+				font-size: 0.7em;
+				padding: 0.1em 0.5em;
+				border-radius: 999px;
+				background: var(--accent);
+				color: white;
+			}
+			.post-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.6em;
+			}
+			.post-list a {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0.7em 1em;
+				border-radius: 8px;
+				background: var(--bg-card, #fff);
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: background 0.2s, border-color 0.2s;
+			}
+			.post-list a:hover {
+				border-color: var(--accent);
+				background: rgba(var(--gray-light), 0.3);
+			}
+			.post-list a .title {
+				color: rgb(var(--black));
+				font-weight: 500;
+			}
+			.post-list a .date {
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+				flex-shrink: 0;
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 4em 0;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1 class="page-title">标签</h1>
+			<p class="page-desc">共 {totalTags} 个标签，{totalPosts} 篇文章</p>
+
+			{sortedTags.length === 0 && (
+				<div class="empty">🌱 还没有标签，等文章长出来...</div>
+			)}
+
+			{sortedTags.length > 0 && (
+				<div class="tag-cloud">
+					{sortedTags.map(([tag, posts]) => (
+						<a href={`#tag-${tag}`} class="tag-pill">
+							{tag}
+							<span class="count">{posts.length}</span>
+						</a>
+					))}
+				</div>
+			)}
+
+			{sortedTags.map(([tag, posts]) => (
+				<div class="tag-section" id={`tag-${tag}`}>
+					<h3>
+						{tag}
+						<span class="badge">{posts.length}</span>
+					</h3>
+					<div class="post-list">
+						{posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).map((post) => (
+							<a href={`/${post.collection}/${post.id}/`}>
+								<span class="title">{post.data.title}</span>
+								<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+							</a>
+						))}
+					</div>
+				</div>
+			))}
+		</main>
+		<Footer />
+	</body>
+</html>

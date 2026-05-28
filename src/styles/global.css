@@ -249,3 +249,75 @@ hr {
 	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
+
+/* External link indicator */
+.external-link::after {
+	content: ' ↗';
+	font-size: 0.75em;
+	opacity: 0.6;
+}
+
+/* Print styles */
+@media print {
+	header,
+	footer,
+	.toc-wrapper,
+	.comments,
+	.share-bar,
+	.post-nav,
+	.related-posts,
+	.read-progress,
+	.back-to-top,
+	.site-stats {
+		display: none !important;
+	}
+	body {
+		background: white !important;
+		color: black !important;
+		font-size: 12pt;
+		line-height: 1.6;
+	}
+	.prose {
+		width: 100% !important;
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+	.prose a {
+		color: #000 !important;
+		text-decoration: underline;
+	}
+	.prose pre {
+		background: #f5f5f5 !important;
+		border: 1px solid #ddd;
+		white-space: pre-wrap;
+		word-wrap: break-word;
+	}
+	.prose blockquote {
+		border-left: 3px solid #999;
+		background: #f9f9f9;
+	}
+	.prose img {
+		max-width: 100%;
+		page-break-inside: avoid;
+	}
+	.prose h1, .prose h2, .prose h3 {
+		page-break-after: avoid;
+	}
+	.prose p, .prose li {
+		orphans: 3;
+		widows: 3;
+	}
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

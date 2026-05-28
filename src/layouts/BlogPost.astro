@@ -220,6 +220,25 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				color: white;
 				opacity: 1;
 			}
+			/* Heading anchor links */
+			.prose h2,
+			.prose h3 {
+				position: relative;
+			}
+			.heading-anchor {
+				display: inline-block;
+				margin-left: 0.3em;
+				color: rgb(var(--gray));
+				text-decoration: none;
+				font-size: 0.8em;
+				opacity: 0;
+				transition: opacity 0.2s;
+				cursor: pointer;
+			}
+			.prose h2:hover .heading-anchor,
+			.prose h3:hover .heading-anchor {
+				opacity: 1;
+			}
 			/* TOC Sidebar */
 			.toc-wrapper {
 				display: none;
@@ -455,11 +474,18 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 		<!-- Utterances Comments -->
 		<div class="comments">
 			<h3 class="comments-title">💬 留言</h3>
-			<script src="https://utteranc.es/client.js"
-				repo="vajhxajhcv/wuming-nursery"
-				issue-term="pathname"
-				label="comment"
-				theme="preferred-color-scheme"
+			<script src="https://giscus.app/client.js"
+				data-repo="vajhxajhcv/wuming-nursery"
+					data-repo-id="R_kgDOOeC-1A"
+				data-category="Announcements"
+					data-category-id="DIC_kwDOOeC-1M4CpZbD"
+					data-mapping="pathname"
+				data-strict="0"
+				data-reactions-enabled="1"
+					data-emit-metadata="0"
+					data-input-position="bottom"
+					data-theme="preferred_color_scheme"
+					data-lang="zh-CN"
 				crossorigin="anonymous"
 				async>
 			</script>
@@ -534,6 +560,24 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 					}
 					window.addEventListener('scroll', onScroll, { passive: true });
 					onScroll();
+
+					// Heading anchor links
+					headings.forEach(function(h) {
+						var anchor = document.createElement('a');
+						anchor.href = '#' + h.id;
+						anchor.className = 'heading-anchor';
+						anchor.innerHTML = '¶';
+						anchor.title = '复制链接';
+						anchor.addEventListener('click', function(e) {
+							e.preventDefault();
+							var url = window.location.origin + window.location.pathname + '#' + h.id;
+							navigator.clipboard.writeText(url).then(function() {
+								anchor.style.color = '#22c55e';
+								setTimeout(function() { anchor.style.color = ''; }, 1500);
+							});
+						});
+						h.appendChild(anchor);
+					});
 				}
 
 				// Reading progress bar
@@ -574,6 +618,16 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 						});
 					});
 				}
+
+				// External links: open in new tab + add icon
+				document.querySelectorAll('.prose a').forEach(function(a) {
+					var href = a.getAttribute('href') || '';
+					if (href.startsWith('http') && !href.includes(window.location.hostname)) {
+						a.setAttribute('target', '_blank');
+						a.setAttribute('rel', 'noopener noreferrer');
+						a.classList.add('external-link');
+					}
+				});
 			});
 		</script>
 	</body>
