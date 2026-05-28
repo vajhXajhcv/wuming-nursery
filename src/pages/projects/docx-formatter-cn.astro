@@ -101,6 +101,25 @@ import Header from '../../components/Header.astro';
 				font-size: 0.8em;
 				margin-right: 0.4em;
 			}
+			.screenshot-wrap {
+				text-align: center;
+				margin: 1em 0;
+			}
+			.screenshot {
+				max-width: 100%;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+				border: 1px solid rgb(var(--gray-light));
+				transition: transform 0.3s ease;
+			}
+			.screenshot:hover {
+				transform: scale(1.01);
+			}
+			.screenshot-caption {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				margin-top: 0.6em;
+			}
 		</style>
 	</head>
 	<body>
@@ -121,6 +140,14 @@ import Header from '../../components/Header.astro';
 					<span class="tag">PySide6</span>
 				</div>
 			</div>
+
+			<section>
+				<h2>效果预览</h2>
+				<div class="screenshot-wrap">
+					<img src="/docx-demo-screenshot.png" alt="docx-formatter-cn 效果预览" class="screenshot" />
+					<p class="screenshot-caption">由 Markdown 转换生成的 Word 文档示例</p>
+				</div>
+			</section>
 
 			<section>
 				<h2>功能特性</h2>
