@@ -1,0 +1,277 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+---
+
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="使用文档 - docx-formatter-cn" description="docx-formatter-cn 完整使用文档" />
+		<style>
+			main {
+				width: 800px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+			}
+			.doc-nav {
+				display: flex;
+				gap: 1em;
+				margin-bottom: 2em;
+				flex-wrap: wrap;
+			}
+			.doc-nav a {
+				padding: 0.4em 1em;
+				border-radius: 8px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				text-decoration: none;
+				font-size: 0.9em;
+				transition: all 0.2s;
+			}
+			.doc-nav a:hover {
+				background: var(--accent);
+				color: white;
+			}
+			.doc-nav a.back {
+				background: transparent;
+				border: 1px solid rgb(var(--gray-light));
+			}
+			.doc-section {
+				margin: 2em 0;
+			}
+			.doc-section h2 {
+				font-size: 1.5em;
+				padding-bottom: 0.3em;
+				border-bottom: 2px solid rgb(var(--gray-light));
+				margin-bottom: 0.8em;
+			}
+			.doc-section h3 {
+				font-size: 1.15em;
+				margin: 1.2em 0 0.5em;
+			}
+			.doc-section pre {
+				background: var(--bg-code, #f6f8fa);
+				padding: 1em;
+				border-radius: 8px;
+				overflow-x: auto;
+				font-size: 0.9em;
+			}
+			.doc-section code {
+				font-family: 'Courier New', Courier, monospace;
+				background: var(--bg-code, #f6f8fa);
+				padding: 0.15em 0.4em;
+				border-radius: 4px;
+				font-size: 0.9em;
+			}
+			.doc-section pre code {
+				background: none;
+				padding: 0;
+			}
+			.doc-section ul, .doc-section ol {
+				padding-left: 1.5em;
+			}
+			.doc-section li {
+				margin: 0.4em 0;
+			}
+			.doc-section table {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 1em 0;
+			}
+			.doc-section th, .doc-section td {
+				border: 1px solid rgb(var(--gray-light));
+				padding: 0.5em;
+				text-align: left;
+			}
+			.doc-section th {
+				background: rgba(var(--gray-light), 0.5);
+			}
+			.tip {
+				background: rgba(99, 102, 241, 0.08);
+				border-left: 4px solid var(--accent);
+				padding: 0.8em 1em;
+				border-radius: 0 8px 8px 0;
+				margin: 1em 0;
+			}
+			.tip strong {
+				color: var(--accent);
+			}
+			@media (max-width: 720px) {
+				main { padding: 1em; }
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<nav class="doc-nav">
+				<a href="/projects/docx-formatter-cn" class="back">← 返回项目页</a>
+				<a href="#install">安装</a>
+				<a href="#cli">CLI</a>
+				<a href="#api">Python API</a>
+				<a href="#markdown">Markdown 语法</a>
+				<a href="#template">模板</a>
+				<a href="#faq">常见问题</a>
+			</nav>
+
+			<h1>docx-formatter-cn 使用文档</h1>
+
+			<section class="doc-section" id="install">
+				<h2>📦 安装</h2>
+				<h3>从源码安装</h3>
+				<pre><code>git clone https://github.com/vajhXajhcv/docx-formatter-cn.git
+cd docx-formatter-cn
+pip install -e .</code></pre>
+
+				<h3>依赖要求</h3>
+				<ul>
+					<li>Python 3.10+</li>
+					<li>python-docx ≥ 1.1.0</li>
+					<li>latex2mathml ≥ 3.79.0</li>
+					<li>lxml ≥ 5.0.0</li>
+					<li>PyYAML ≥ 6.0</li>
+					<li>PySide6 ≥ 6.6.0（GUI 可选）</li>
+				</ul>
+			</section>
+
+			<section class="doc-section" id="cli">
+				<h2>🖥️ 命令行使用</h2>
+
+				<h3>Markdown 转 Word</h3>
+				<pre><code>python -m docx_formatter.cli convert input.md -o output.docx -t 课程论文</code></pre>
+
+				<h3>批量转换</h3>
+				<pre><code>python -m docx_formatter.cli batch input_dir/ -o output_dir/ -t 课程论文</code></pre>
+
+				<h3>修正现有 Word</h3>
+				<pre><code>python -m docx_formatter.cli format input.docx -o output.docx -t 毕业论文 --add-toc</code></pre>
+
+				<h3>查看模板信息</h3>
+				<pre><code>python -m docx_formatter.cli info -t 毕业论文
+python -m docx_formatter.cli export-template -t 课程论文 -o template.json</code></pre>
+
+				<h3>常用参数</h3>
+				<table>
+					<tr><th>参数</th><th>说明</th></tr>
+					<tr><td><code>-t, --template</code></td><td>模板预设：课程论文 / 毕业论文 / 数学建模 / 公文</td></tr>
+					<tr><td><code>--template-file</code></td><td>自定义模板 JSON/YAML 文件</td></tr>
+					<tr><td><code>--image-dir</code></td><td>图片基础目录</td></tr>
+					<tr><td><code>--add-toc</code></td><td>添加目录（format 命令）</td></tr>
+				</table>
+			</section>
+
+			<section class="doc-section" id="api">
+				<h2>🐍 Python API</h2>
+
+				<h3>Markdown 转 Word</h3>
+				<pre><code>from docx_formatter import convert_markdown_to_docx
+
+with open("论文.md", "r", encoding="utf-8") as f:
+    md_text = f.read()
+
+convert_markdown_to_docx(md_text, "output.docx", template="课程论文")</code></pre>
+
+				<h3>修正已有 docx</h3>
+				<pre><code>from docx_formatter import format_docx
+
+format_docx("old.docx", "formatted.docx", template="毕业论文", add_toc=True)</code></pre>
+			</section>
+
+			<section class="doc-section" id="markdown">
+				<h2>📝 Markdown 语法支持</h2>
+
+				<h3>YAML Frontmatter</h3>
+				<pre><code>---
+title: 论文标题
+author: 作者姓名
+date: 2026-05-28
+abstract: 摘要内容...
+keywords: [关键词1, 关键词2]
+---</code></pre>
+
+				<h3>基础语法</h3>
+				<table>
+					<tr><th>语法</th><th>效果</th></tr>
+					<tr><td><code># 标题</code></td><td>一级标题</td></tr>
+					<tr><td><code>**粗体**</code></td><td>粗体</td></tr>
+					<tr><td><code>*斜体*</code></td><td>斜体</td></tr>
+					<tr><td><code>&lt;u&gt;下划线&lt;/u&gt;</code></td><td>下划线</td></tr>
+					<tr><td><code>~~删除线~~</code></td><td>删除线</td></tr>
+					<tr><td><code>`code`</code></td><td>行内代码</td></tr>
+				</table>
+
+				<h3>公式</h3>
+				<pre><code>行内公式：$E = mc^2$ 或 \(E = mc^2\)
+
+块级公式：
+$$E = mc^2$$
+
+或：
+\[E = mc^2\]</code></pre>
+
+				<h3>图片尺寸控制</h3>
+				<pre><code>![图1](images/fig1.png)
+![图2](images/fig2.png =400x300)</code></pre>
+
+				<h3>表格</h3>
+				<pre><code>| 算法 | 时间复杂度 | 空间复杂度 |
+|------|-----------|-----------|
+| 快速排序 | O(n log n) | O(log n) |</code></pre>
+
+				<h3>其他</h3>
+				<ul>
+					<li>上标引用：<code>[1]</code> → 自动转为上标</li>
+					<li>超链接：<code>[text](url)</code></li>
+					<li>引用块：<code>&gt; text</code></li>
+					<li>任务列表：<code>- [x] 已完成</code></li>
+					<li>分页符：<code>---</code> 或 <code>&lt;page-break&gt;</code></li>
+				</ul>
+			</section>
+
+			<section class="doc-section" id="template">
+				<h2>🎨 模板系统</h2>
+
+				<h3>预设模板</h3>
+				<table>
+					<tr><th>模板</th><th>适用场景</th></tr>
+					<tr><td>课程论文</td><td>日常课程作业、小论文</td></tr>
+					<tr><td>毕业论文</td><td>本科/硕士毕业论文</td></tr>
+					<tr><td>数学建模</td><td>数学建模竞赛论文</td></tr>
+					<tr><td>公文</td><td>政府机关公文格式</td></tr>
+				</table>
+
+				<h3>自定义模板</h3>
+				<pre is:raw><code>{
+  "name": "我的模板",
+  "chinese": "宋体",
+  "english": "Times New Roman",
+  "size_pt": 12,
+  "line_spacing": 1.5,
+  "margin_top_mm": 25,
+  ...
+}</code></pre>
+				<div class="tip">
+					<strong>提示</strong>：使用 <code>export-template</code> 命令导出预设模板作为自定义模板的基础。
+				</div>
+			</section>
+
+			<section class="doc-section" id="faq">
+				<h2>❓ 常见问题</h2>
+
+				<h3>公式显示为乱码？</h3>
+				<p>确保文档中使用的是 Cambria Math 字体。该字体在 Windows 和 macOS 上默认安装。</p>
+
+				<h3>中文字体显示不正确？</h3>
+				<p>模板默认使用 SimSun（宋体）和 SimHei（黑体）。如果系统没有这些字体，可以在自定义模板中指定其他中文字体，如 <code>"chinese": "Source Han Serif CN"</code>。</p>
+
+				<h3>图片无法加载？</h3>
+				<p>支持相对路径和 HTTP/HTTPS URL。对于本地图片，请使用 <code>--image-dir</code> 指定图片所在目录。</p>
+
+				<h3>如何添加页眉页脚？</h3>
+				<p>在自定义模板中设置 <code>header_text</code> 和 <code>footer_page_number</code> 字段。</p>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

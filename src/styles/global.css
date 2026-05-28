@@ -36,6 +36,10 @@
 	--bg-code: #252a3a;
 }
 
+html {
+	scroll-behavior: smooth;
+	-webkit-text-size-adjust: 100%;
+}
 body {
 	font-family: var(--font-atkinson), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 	margin: 0;
@@ -49,6 +53,7 @@ body {
 	font-size: 20px;
 	line-height: 1.7;
 	transition: color 0.3s ease;
+	-webkit-tap-highlight-color: transparent;
 }
 
 /* Selection color */
@@ -204,11 +209,14 @@ hr {
 }
 @media (max-width: 720px) {
 	body {
-		font-size: 18px;
+		font-size: 17px;
 	}
 	main {
 		padding: 1em;
 	}
+	h1 { font-size: 2em; }
+	h2 { font-size: 1.6em; }
+	h3 { font-size: 1.3em; }
 }
 
 .sr-only {
