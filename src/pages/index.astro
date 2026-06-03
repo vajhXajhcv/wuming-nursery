@@ -155,7 +155,101 @@ const latestNotes = (await getCollection('notes')).sort(
 				color: rgb(var(--gray));
 			}
 
-			/* Project card */
+							/* Service cards */
+				.services-grid {
+					display: grid;
+					grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+					gap: 1em;
+				}
+				.service-card {
+					background: white;
+					border-radius: 12px;
+					padding: 1.5em;
+					border: 1px solid rgb(var(--gray-light));
+					transition: transform 0.2s ease, box-shadow 0.2s ease;
+				}
+				.service-card:hover {
+					transform: translateY(-3px);
+					box-shadow: var(--box-shadow);
+				}
+				.service-icon {
+					width: 40px;
+					height: 40px;
+					background: linear-gradient(135deg, var(--accent), #8b5cf6);
+					border-radius: 10px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					color: white;
+					font-size: 1.3em;
+					margin-bottom: 0.8em;
+				}
+				.service-card h3 {
+					margin: 0 0 0.4em;
+					font-size: 1.05em;
+					color: rgb(var(--black));
+				}
+				.service-card p {
+					margin: 0;
+					color: rgb(var(--gray));
+					font-size: 0.9em;
+					line-height: 1.5;
+				}
+
+				/* Newsletter */
+				.newsletter-box {
+					background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
+					border-radius: 16px;
+					padding: 2em;
+					text-align: center;
+					border: 1px solid rgb(var(--gray-light));
+				}
+				.newsletter-box h3 {
+					margin: 0 0 0.3em;
+					font-size: 1.3em;
+				}
+				.newsletter-box p {
+					margin: 0 0 1em;
+					color: rgb(var(--gray));
+					font-size: 0.95em;
+				}
+				.newsletter-form {
+					display: flex;
+					gap: 0.5em;
+					justify-content: center;
+					flex-wrap: wrap;
+					max-width: 420px;
+					margin: 0 auto;
+				}
+				.newsletter-form input {
+					flex: 1;
+					min-width: 200px;
+					padding: 0.6em 1em;
+					border: 1px solid rgb(var(--gray-light));
+					border-radius: 8px;
+					font-size: 0.95em;
+					font-family: inherit;
+				}
+				.newsletter-form input:focus {
+					outline: none;
+					border-color: var(--accent);
+				}
+				.newsletter-form button {
+					padding: 0.6em 1.4em;
+					background: var(--accent);
+					color: white;
+					border: none;
+					border-radius: 8px;
+					font-size: 0.95em;
+					font-family: inherit;
+					cursor: pointer;
+					transition: background 0.2s;
+				}
+				.newsletter-form button:hover {
+					background: rgb(var(--accent-dark, 99, 102, 241));
+				}
+
+				/* Project card */
 			.project-card {
 				background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
 				border-radius: 16px;
@@ -283,7 +377,10 @@ const latestNotes = (await getCollection('notes')).sort(
 				<img src="/avatar.png" alt="头像" class="avatar" />
 				<h1>无名苗圃</h1>
 				<p class="subtitle" id="typewriter"></p>
-				<p class="desc">一个存放记忆与故事的地方。<br />游戏攻略、生活碎片、还有一些没名字的故事。</p>
+				<p class="desc">
+						独立开发者 · 技术创作者 · 一人公司探索者<br />
+						用代码、内容与 AI 工具，构建可持续的创作者生意
+					</p>
 				<div class="social">
 					<a href="https://github.com/vajhxajhcv" target="_blank" rel="noopener">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -297,6 +394,46 @@ const latestNotes = (await getCollection('notes')).sort(
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.739-23.98-24-24.026v4.838z"/></svg>
 						RSS
 					</a>
+				</div>
+			</section>
+
+			<!-- Services -->
+			<section>
+				<h2 class="section-title">我能帮你做什么</h2>
+				<div class="services-grid">
+					<div class="service-card">
+						<div class="service-icon">🛠</div>
+						<h3>网站开发</h3>
+						<p>个人品牌站、Landing Page、博客。Astro + Cloudflare，快且省。</p>
+					</div>
+					<div class="service-card">
+						<div class="service-icon">🤖</div>
+						<h3>AI 自动化</h3>
+						<p>内容生成管线、智能客服、AI 工作流搭建，让重复劳动消失。</p>
+					</div>
+					<div class="service-card">
+						<div class="service-icon">📄</div>
+						<h3>文档工具</h3>
+						<p>Markdown 转学术 Word、批量排版、模板定制，基于自研工具链。</p>
+					</div>
+					<div class="service-card">
+						<div class="service-icon">✍️</div>
+						<h3>内容策略</h3>
+						<p>SEO 技术文章、Newsletter、产品文档。用内容换长期流量。</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Newsletter -->
+			<section>
+				<div class="newsletter-box">
+					<h3>📬 订阅更新</h3>
+					<p>不定期分享独立开发、AI 工具、一人公司的实践与踩坑记录。</p>
+					<form class="newsletter-form" action="https://buttondown.email/api/emails/embed-subscribe/wumingmp" method="post" target="_blank">
+						<input type="email" name="email" placeholder="your@email.com" required />
+						<button type="submit">订阅</button>
+					</form>
+					<p style="margin-top: 0.8em; font-size: 0.8em; color: rgb(var(--gray));">无垃圾邮件，随时退订。</p>
 				</div>
 			</section>
 
@@ -327,18 +464,32 @@ const latestNotes = (await getCollection('notes')).sort(
 					项目
 					<a href="/projects/docx-formatter-cn">查看详情 →</a>
 				</h2>
-				<a href="/projects/docx-formatter-cn" class="project-card">
-					<div class="project-icon">📄</div>
-					<div class="project-info">
-						<h3>docx-formatter-cn</h3>
-						<p>中文 Word 文档智能排版工具 — Markdown 一键转为符合学术规范的 docx</p>
-						<div class="tags">
-							<span>Python</span>
-							<span>LaTeX</span>
-							<span>Word</span>
+				<div style="display: flex; flex-direction: column; gap: 1em;">
+					<a href="/projects/docx-formatter-cn" class="project-card">
+						<div class="project-icon">📄</div>
+						<div class="project-info">
+							<h3>docx-formatter-cn</h3>
+							<p>中文 Word 文档智能排版工具 — Markdown 一键转为符合学术规范的 docx</p>
+							<div class="tags">
+								<span>Python</span>
+								<span>LaTeX</span>
+								<span>Word</span>
+							</div>
+						</div>
+					</a>
+					<div class="project-card" style="opacity: 0.7;">
+						<div class="project-icon" style="background: rgb(var(--gray-light)); color: rgb(var(--gray));">🌐</div>
+						<div class="project-info">
+							<h3>wumingmp.me</h3>
+							<p>这个网站本身 — Astro 驱动的个人品牌站与内容中心</p>
+							<div class="tags">
+								<span>Astro</span>
+								<span>Cloudflare</span>
+								<span>品牌</span>
+							</div>
 						</div>
 					</div>
-				</a>
+				</div>
 			</section>
 
 			<!-- Site stats -->
