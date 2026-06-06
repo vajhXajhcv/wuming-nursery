@@ -289,6 +289,74 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				}
 			}
 			/* Related posts */
+				/* Mobile TOC */
+				.toc-mobile {
+					display: none;
+				}
+				@media (max-width: 1199px) {
+					.toc-mobile {
+						display: block;
+						margin: 1em 0;
+					}
+					.toc-mobile-toggle {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						width: 100%;
+						padding: 0.6em 1em;
+						background: var(--bg-card, #fff);
+						border: 1px solid rgb(var(--gray-light));
+						border-radius: 8px;
+						font-size: 0.95em;
+						color: rgb(var(--black));
+						cursor: pointer;
+						transition: background 0.2s;
+					}
+					.toc-mobile-toggle:hover {
+						background: rgb(var(--gray-light));
+					}
+					.toc-mobile-toggle .toc-arrow {
+						font-size: 0.75em;
+						transition: transform 0.2s;
+					}
+					.toc-mobile.open .toc-arrow {
+						transform: rotate(180deg);
+					}
+					.toc-mobile-content {
+						max-height: 0;
+						overflow: hidden;
+						transition: max-height 0.3s ease;
+					}
+					.toc-mobile.open .toc-mobile-content {
+						max-height: 500px;
+					}
+					.toc-mobile-list {
+						list-style: none;
+						padding: 0.5em 0 0;
+						margin: 0;
+					}
+					.toc-mobile-list li {
+						margin: 0.3em 0;
+					}
+					.toc-mobile-list a {
+						display: block;
+						padding: 0.4em 0.8em;
+						border-radius: 4px;
+						color: rgb(var(--gray));
+						text-decoration: none;
+						font-size: 0.9em;
+						line-height: 1.4;
+						transition: background 0.15s, color 0.15s;
+					}
+					.toc-mobile-list a:hover,
+					.toc-mobile-list a.active {
+						background: rgb(var(--gray-light));
+						color: var(--accent);
+					}
+					.toc-mobile-list li.h3 {
+						padding-left: 1em;
+					}
+				}
 			.related-posts {
 				width: 720px;
 				max-width: calc(100% - 2em);
@@ -484,6 +552,16 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 						)}
 						<hr />
 					</div>
+
+						<!-- Mobile TOC -->
+						<div class="toc-mobile" id="toc-mobile">
+							<button class="toc-mobile-toggle" id="toc-mobile-toggle">
+								📑 目录 <span class="toc-arrow">▼</span>
+							</button>
+							<div class="toc-mobile-content" id="toc-mobile-content">
+								<ul class="toc-mobile-list" id="toc-mobile-list"></ul>
+							</div>
+						</div>
 					<slot />
 				</div>
 			</article>
@@ -588,6 +666,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				// Generate TOC
 				var prose = document.querySelector('.prose');
 				var tocList = document.getElementById('toc-list');
+						var tocMobileList = document.getElementById('toc-mobile-list');
 				if (prose && tocList) {
 					var headings = prose.querySelectorAll('h2, h3');
 					headings.forEach(function(h, i) {
@@ -605,14 +684,33 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 						});
 						li.appendChild(a);
 						tocList.appendChild(li);
+								if (tocMobileList) {
+									var mLi = li.cloneNode(true);
+									mLi.querySelector('a').addEventListener('click', function(e) {
+										e.preventDefault();
+										h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+										history.pushState(null, null, '#' + id);
+										document.getElementById('toc-mobile').classList.remove('open');
+									});
+									tocMobileList.appendChild(mLi);
+								}
 					});
 
 					// Highlight active TOC item on scroll
 					var tocLinks = tocList.querySelectorAll('a');
+							var tocMobileLinks = tocMobileList ? tocMobileList.querySelectorAll('a') : [];
 					function onScroll() {
 						var scrollPos = window.scrollY + 120;
 						var activeId = '';
 						headings.forEach(function(h) {
+							var tocMobileToggle = document.getElementById('toc-mobile-toggle');
+							var tocMobile = document.getElementById('toc-mobile');
+							if (tocMobileToggle && tocMobile) {
+								tocMobileToggle.addEventListener('click', function() {
+									tocMobile.classList.toggle('open');
+								});
+							}
+
 							if (h.offsetTop <= scrollPos) {
 								activeId = h.id;
 							}
@@ -620,6 +718,9 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 						tocLinks.forEach(function(a) {
 							a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
 						});
+								Array.from(tocMobileLinks).forEach(function(a) {
+									a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+								});
 					}
 					window.addEventListener('scroll', onScroll, { passive: true });
 					onScroll();

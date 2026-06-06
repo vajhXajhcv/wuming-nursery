@@ -32,6 +32,43 @@ const notes = (await getCollection('notes')).sort(
 				color: rgb(var(--gray));
 				margin-bottom: 1.5em;
 			}
+			.search-box {
+				max-width: 400px;
+				margin: 0 auto 2em;
+				position: relative;
+			}
+			.search-box input {
+				width: 100%;
+				padding: 0.7em 1em 0.7em 2.5em;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 999px;
+				font-size: 1em;
+				background: var(--bg-card, #fff);
+				color: rgb(var(--gray-dark));
+				transition: border-color 0.2s, box-shadow 0.2s;
+			}
+			.search-box input:focus {
+				outline: none;
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+			}
+			.search-box svg {
+				position: absolute;
+				left: 1em;
+				top: 50%;
+				transform: translateY(-50%);
+				color: rgb(var(--gray));
+				pointer-events: none;
+			}
+			.no-results {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 3em 0;
+				display: none;
+			}
+			.no-results.visible {
+				display: block;
+			}
 			.note-list {
 				display: flex;
 				flex-direction: column;
@@ -104,12 +141,17 @@ const notes = (await getCollection('notes')).sort(
 		<main>
 			<h1 class="page-title">笔记</h1>
 			<p class="page-desc">技术片段、工具用法和随手记录</p>
-			<div class="note-list">
+			<div class="search-box">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+				<input type="text" id="search-input" placeholder="搜索笔记..." />
+			</div>
+			<div class="no-results" id="no-results">没有找到匹配的笔记</div>
+			<div class="note-list" id="note-list">
 				{notes.length === 0 && (
 					<div class="empty">🌱 苗圃还在整理，笔记即将发芽...</div>
 				)}
 				{notes.map((note) => (
-					<a href={`/notes/${note.id}/`} class="note-item">
+					<a href={`/notes/${note.id}/`} class="note-item" data-search={`${note.data.title} ${note.data.description} ${note.data.tags?.join(" ") || ""}`}>
 						<span class="note-icon">📌</span>
 						<div class="note-content">
 							<h3>{note.data.title}</h3>
@@ -125,6 +167,29 @@ const notes = (await getCollection('notes')).sort(
 				))}
 			</div>
 		</main>
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', function() {
+				var input = document.getElementById('search-input');
+				var list = document.getElementById('note-list');
+				var noResults = document.getElementById('no-results');
+				if (!input || !list) return;
+				var items = list.querySelectorAll('.note-item');
+				input.addEventListener('input', function() {
+					var q = input.value.trim().toLowerCase();
+					var visible = 0;
+					items.forEach(function(item) {
+						var text = (item.dataset.search || '').toLowerCase();
+						if (!q || text.indexOf(q) !== -1) {
+							item.style.display = '';
+							visible++;
+						} else {
+							item.style.display = 'none';
+						}
+					});
+					noResults.classList.toggle('visible', visible === 0);
+				});
+			});
+		</script>
 		<Footer />
 	</body>
 </html>

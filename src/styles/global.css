@@ -127,14 +127,30 @@ body {
 /* Shiki code blocks */
 pre.astro-code {
 	border-radius: 8px;
-	padding: 1em;
+	padding: 1em 1em 1em 3em;
 	overflow-x: auto;
 	font-size: 0.9em;
+	counter-reset: line;
 }
 pre.astro-code code {
 	background: none;
 	padding: 0;
 	font-family: 'Courier New', Courier, monospace;
+}
+pre.astro-code .line {
+	display: block;
+	position: relative;
+}
+pre.astro-code .line::before {
+	counter-increment: line;
+	content: counter(line);
+	position: absolute;
+	left: -2.5em;
+	width: 2em;
+	text-align: right;
+	color: rgb(var(--gray));
+	font-size: 0.85em;
+	user-select: none;
 }
 main {
 	width: 720px;
