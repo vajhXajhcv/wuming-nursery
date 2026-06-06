@@ -2,6 +2,7 @@
 title: "外贸入门：Amazon、独立站、B2B 哪种更适合你？"
 description: "如果你担心独立站广告投入太大，先别急着换赛道。Amazon 和 B2B 的真实门槛可能比你想象的更高。"
 pubDate: 2026-06-01
+heroImage: ../../assets/blog-covers/cross-border-ecommerce-vs-b2b-guide.png
 tags: ["外贸", "跨境电商", "Amazon", "B2B", "独立站"]
 ---
 

@@ -2,6 +2,7 @@
 title: "Google AI Pro 创作者完全手册：如何把 ¥145/月用到超值"
 description: "订阅只是开始。从 Canvas 协作写作、Veo 视频生成到 NotebookLM 播客制作，这是一份把 Gemini Pro 榨出全部价值的实战手册。"
 pubDate: 2026-06-01
+heroImage: ../../assets/blog-covers/maximize-gemini-pro-for-creators.png
 tags: ["Google AI", "创作者工具", "效率", "Gemini"]
 ---
 

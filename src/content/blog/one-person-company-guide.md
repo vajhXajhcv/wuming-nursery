@@ -2,6 +2,7 @@
 title: "一人公司完全指南：为什么我放弃了 B2B 外贸"
 description: "如果你会写代码、会写作、会用 AI，One Person Company 是比外贸更现实的起点。基于个人实测的轻资产创业路径。"
 pubDate: 2026-06-01
+heroImage: ../../assets/blog-covers/one-person-company-guide.png
 tags: ["一人公司", "独立开发", "创作者经济", "副业", "SaaS"]
 ---
 

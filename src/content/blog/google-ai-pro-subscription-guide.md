@@ -2,6 +2,7 @@
 title: "中国大陆用户订阅 Google AI Pro 完全指南（2026 实测有效）"
 description: "无需虚拟信用卡、无需代购、无需美区 PayPal。使用招商银行万事达借记卡，Google 账号区域设为香港，一次扣款成功的完整实操攻略。"
 pubDate: 2026-06-01
+heroImage: ../../assets/blog-covers/google-ai-pro-subscription-guide.png
 tags: ["Google AI", "教程", "创作者工具", "支付攻略"]
 ---
 

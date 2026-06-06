@@ -2,6 +2,7 @@
 title: "docx-formatter-cn 开发札记：从需求到 Python 工具"
 description: "记录一个中文 Word 排版工具的诞生过程——公式引擎、模板系统和 GUI 的选择与取舍。"
 pubDate: 2026-05-25
+heroImage: ../../assets/blog-covers/docx-formatter-dev-notes.png
 tags: ["Python", "开源", "docx-formatter-cn"]
 ---
 
