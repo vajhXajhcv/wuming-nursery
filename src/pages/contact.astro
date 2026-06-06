@@ -1,0 +1,335 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const channels = [
+	{
+		icon: '📧',
+		title: '邮件',
+		desc: '最正式的沟通方式，适合详细需求描述',
+		value: 'hi@wumingmp.me',
+		href: 'mailto:hi@wumingmp.me',
+	},
+	{
+		icon: '💬',
+		title: '微信',
+		desc: '日常沟通、快速确认、发资料都很方便',
+		value: '添加微信: wumingmp',
+		href: '#wechat',
+	},
+	{
+		icon: '🐙',
+		title: 'GitHub',
+		desc: '看代码质量、开源项目、技术实力',
+		value: '@vajhxajhcv',
+		href: 'https://github.com/vajhxajhcv',
+	},
+	{
+		icon: '⚡',
+		title: '爱发电',
+		desc: '支持我的创作，也可以在这里私信我',
+		value: 'afdian.com/a/jk342joy',
+		href: 'https://afdian.com/a/jk342joy',
+	},
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`联系 - ${SITE_TITLE}`} description="有项目需求或合作意向？通过邮件、微信或爱发电联系我。" />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 3em 1em;
+			}
+			.hero {
+				text-align: center;
+				padding: 2em 0;
+			}
+			.hero h1 {
+				font-size: 2.2em;
+				margin: 0 0 0.3em;
+				background: linear-gradient(90deg, var(--accent), #8b5cf6);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.hero p {
+				color: rgb(var(--gray));
+				font-size: 1.05em;
+			}
+
+			/* Contact cards */
+			.contact-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+				gap: 1em;
+				margin: 2em 0;
+			}
+			.contact-card {
+				background: var(--bg-card, #fff);
+				border-radius: 12px;
+				padding: 1.5em;
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: transform 0.2s, box-shadow 0.2s;
+				display: flex;
+				align-items: flex-start;
+				gap: 1em;
+			}
+			.contact-card:hover {
+				transform: translateY(-3px);
+				box-shadow: var(--box-shadow);
+			}
+			.contact-icon {
+				width: 40px;
+				height: 40px;
+				background: linear-gradient(135deg, var(--accent), #8b5cf6);
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.2em;
+				color: white;
+				flex-shrink: 0;
+			}
+			.contact-info h3 {
+				margin: 0 0 0.2em;
+				font-size: 1.05em;
+				color: rgb(var(--black));
+			}
+			.contact-info p {
+				margin: 0 0 0.4em;
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				line-height: 1.4;
+			}
+			.contact-value {
+				font-size: 0.9em;
+				color: var(--accent);
+				font-weight: 600;
+				word-break: break-all;
+			}
+
+			/* Wechat modal */
+			.modal-overlay {
+				position: fixed;
+				top: 0; left: 0;
+				width: 100%; height: 100%;
+				background: rgba(0,0,0,0.5);
+				z-index: 2000;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				opacity: 0;
+				transition: opacity 0.2s;
+				pointer-events: none;
+			}
+			.modal-overlay.active {
+				opacity: 1;
+				pointer-events: auto;
+			}
+			.modal-box {
+				background: var(--bg-card, #fff);
+				border-radius: 16px;
+				padding: 2em;
+				text-align: center;
+				max-width: 320px;
+				width: 90%;
+				transform: translateY(20px);
+				transition: transform 0.2s;
+			}
+			.modal-overlay.active .modal-box {
+				transform: translateY(0);
+			}
+			.modal-box h3 {
+				margin: 0 0 0.5em;
+			}
+			.modal-box .wechat-id {
+				font-size: 1.3em;
+				font-weight: 700;
+				color: var(--accent);
+				margin: 0.5em 0;
+				user-select: all;
+			}
+			.modal-close {
+				margin-top: 1em;
+				padding: 0.5em 1.2em;
+				background: rgb(var(--gray-light));
+				border: none;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 0.9em;
+				color: rgb(var(--gray-dark));
+			}
+			.modal-close:hover {
+				background: var(--accent);
+				color: white;
+			}
+
+			/* Form section */
+			.form-section {
+				background: var(--bg-card, #fff);
+				border-radius: 16px;
+				padding: 2em;
+				border: 1px solid rgb(var(--gray-light));
+				margin: 2em 0;
+			}
+			.form-section h2 {
+				margin: 0 0 1em;
+				font-size: 1.3em;
+			}
+			.form-row {
+				margin-bottom: 1em;
+			}
+			.form-row label {
+				display: block;
+				font-size: 0.9em;
+				color: rgb(var(--gray-dark));
+				margin-bottom: 0.3em;
+				font-weight: 500;
+			}
+			.form-row input,
+			.form-row textarea,
+			.form-row select {
+				width: 100%;
+				padding: 0.6em 0.8em;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 8px;
+				font-size: 1em;
+				font-family: inherit;
+				background: var(--bg-body, #fff);
+				color: rgb(var(--gray-dark));
+				box-sizing: border-box;
+			}
+			.form-row input:focus,
+			.form-row textarea:focus,
+			.form-row select:focus {
+				outline: none;
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+			}
+			.form-row textarea {
+				resize: vertical;
+				min-height: 120px;
+			}
+			.submit-btn {
+				display: inline-block;
+				padding: 0.7em 2em;
+				background: var(--accent);
+				color: white;
+				border: none;
+				border-radius: 999px;
+				font-size: 1em;
+				font-weight: 600;
+				cursor: pointer;
+				transition: transform 0.15s, box-shadow 0.15s;
+			}
+			.submit-btn:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(99,102,241,0.35);
+			}
+
+			.note {
+				text-align: center;
+				color: rgb(var(--gray));
+				font-size: 0.9em;
+				margin-top: 1em;
+			}
+
+			@media (max-width: 720px) {
+				.hero h1 { font-size: 1.7em; }
+				.contact-grid { grid-template-columns: 1fr; }
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="hero">
+				<h1>联系我</h1>
+				<p>有项目需求、合作意向，或只是想聊聊？我都在。</p>
+			</section>
+
+			<section class="contact-grid">
+				{channels.map((c) => (
+					<a href={c.href} class="contact-card" target={c.href.startsWith('http') ? '_blank' : undefined} rel={c.href.startsWith('http') ? 'noopener' : undefined} data-channel={c.title}>
+						<div class="contact-icon">{c.icon}</div>
+						<div class="contact-info">
+							<h3>{c.title}</h3>
+							<p>{c.desc}</p>
+							<div class="contact-value">{c.value}</div>
+						</div>
+					</a>
+				))}
+			</section>
+
+			<section class="form-section">
+				<h2>📋 项目咨询表单</h2>
+				<form action="https://formspree.io/f/xoqgvjvq" method="POST">
+					<div class="form-row">
+						<label for="name">怎么称呼你</label>
+						<input type="text" id="name" name="name" placeholder="你的名字或公司名" required />
+					</div>
+					<div class="form-row">
+						<label for="email">联系邮箱</label>
+						<input type="email" id="email" name="email" placeholder="your@email.com" required />
+					</div>
+					<div class="form-row">
+						<label for="service">感兴趣的服务</label>
+						<select id="service" name="service">
+							<option value="">请选择...</option>
+							<option value="website">网站开发</option>
+							<option value="ai">AI 自动化</option>
+							<option value="docx">文档工具</option>
+							<option value="content">内容策略</option>
+							<option value="other">其他 / 还没想好</option>
+						</select>
+					</div>
+					<div class="form-row">
+						<label for="message">项目描述</label>
+						<textarea id="message" name="message" placeholder="简单描述一下你的需求、目标、预算范围和时间预期..." required></textarea>
+					</div>
+					<button type="submit" class="submit-btn">发送咨询</button>
+					<p class="note">提交后我会尽快回复，通常在 24 小时内。</p>
+				</form>
+			</section>
+		</main>
+		<Footer />
+
+		<!-- WeChat Modal -->
+		<div class="modal-overlay" id="wechat-modal">
+			<div class="modal-box">
+				<h3>添加微信</h3>
+				<p>搜索微信号或扫码添加</p>
+				<div class="wechat-id">wumingmp</div>
+				<button class="modal-close" id="modal-close">知道了</button>
+			</div>
+		</div>
+
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', function() {
+				document.querySelectorAll('.contact-card').forEach(function(card) {
+					card.addEventListener('click', function(e) {
+						if (card.dataset.channel === '微信') {
+							e.preventDefault();
+							document.getElementById('wechat-modal').classList.add('active');
+						}
+					});
+				});
+				document.getElementById('modal-close').addEventListener('click', function() {
+					document.getElementById('wechat-modal').classList.remove('active');
+				});
+				document.getElementById('wechat-modal').addEventListener('click', function(e) {
+					if (e.target === this) this.classList.remove('active');
+				});
+			});
+		</script>
+	</body>
+</html>

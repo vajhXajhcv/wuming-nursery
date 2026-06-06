@@ -1,0 +1,360 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const services = [
+	{
+		icon: '🛠',
+		title: '网站开发',
+		subtitle: '个人品牌站 · Landing Page · 博客',
+		desc: '从 0 到 1 搭建高性能、SEO 友好的网站。Astro + Cloudflare，快、省、可维护。支持自定义设计、CMS 对接、动画交互。',
+		features: ['Astro / Next.js / 纯静态', 'Cloudflare Pages 部署', 'SEO 与性能优化', '响应式设计'],
+		price: '¥3,000 起',
+	},
+	{
+		icon: '🤖',
+		title: 'AI 自动化',
+		subtitle: '内容管线 · 智能客服 · 工作流',
+		desc: '用 AI 替代重复劳动。搭建自动化的内容生产、客户响应、数据处理流程。让一个人也能跑出团队效率。',
+		features: ['AI 内容生成管线', '智能客服 / 自动回复', '多平台发布自动化', 'API 集成与数据处理'],
+		price: '¥2,000 起',
+	},
+	{
+		icon: '📄',
+		title: '文档工具',
+		subtitle: 'Markdown 转 Word · 批量排版 · 模板',
+		desc: '基于自研 docx-formatter-cn 工具链，解决中文文档排版痛点。支持学术规范、公文格式、自定义模板。',
+		features: ['Markdown → 学术 Word', 'LaTeX 公式转换', '自动编号与目录', '模板定制开发'],
+		price: '¥1,500 起',
+	},
+	{
+		icon: '✍️',
+		title: '内容策略',
+		subtitle: 'SEO 文章 · Newsletter · 产品文档',
+		desc: '用技术内容换长期流量。撰写对搜索引擎和人都有价值的文章，建立领域权威。',
+		features: ['技术 SEO 文章', 'Newsletter 策划', '产品文档体系', '内容分发策略'],
+		price: '¥500 / 篇起',
+	},
+];
+
+const process = [
+	{ step: '01', title: '需求沟通', desc: '15 分钟语音或文字，明确你的目标、预算和时间线。' },
+	{ step: '02', title: '方案报价', desc: '提供详细方案、交付物和报价，确认后签订合同。' },
+	{ step: '03', title: '开发交付', desc: '按里程碑推进，定期同步进度，确保方向不偏。' },
+	{ step: '04', title: '售后支持', desc: '交付后 30 天内免费修复问题，长期维护可续签。' },
+];
+
+const faqs = [
+	{ q: '没技术背景，能合作吗？', a: '完全没问题。我会用非技术语言沟通，你只需要告诉我「想要什么」，剩下的我来解决。' },
+	{ q: '可以先看案例或试做吗？', a: '可以。部分服务支持小范围试做（如一篇 SEO 文章、一个 Landing Page 原型），降低你的决策风险。' },
+	{ q: '交付周期一般多长？', a: '网站 1-2 周，AI 自动化 3-7 天，文档工具看复杂度 3-14 天。急单可商量。' },
+	{ q: '支持发票吗？', a: '支持。通过爱发电或企业转账均可开具发票。' },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`服务 - ${SITE_TITLE}`} description="独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务。" />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+			}
+			.hero {
+				text-align: center;
+				padding: 3em 0 2em;
+			}
+			.hero h1 {
+				font-size: 2.4em;
+				margin: 0 0 0.3em;
+				background: linear-gradient(90deg, var(--accent), #8b5cf6);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.hero p {
+				color: rgb(var(--gray));
+				font-size: 1.1em;
+				max-width: 600px;
+				margin: 0 auto;
+			}
+
+			/* Service cards */
+			.service-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 1.5em;
+				margin: 2em 0;
+			}
+			.service-card {
+				background: var(--bg-card, #fff);
+				border-radius: 16px;
+				padding: 1.8em;
+				border: 1px solid rgb(var(--gray-light));
+				transition: transform 0.25s, box-shadow 0.25s;
+				display: flex;
+				flex-direction: column;
+			}
+			.service-card:hover {
+				transform: translateY(-4px);
+				box-shadow: var(--box-shadow);
+			}
+			.service-card .icon {
+				width: 48px;
+				height: 48px;
+				background: linear-gradient(135deg, var(--accent), #8b5cf6);
+				border-radius: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.5em;
+				color: white;
+				margin-bottom: 1em;
+			}
+			.service-card h3 {
+				margin: 0 0 0.2em;
+				font-size: 1.2em;
+				color: rgb(var(--black));
+			}
+			.service-card .subtitle {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				margin-bottom: 0.8em;
+			}
+			.service-card .desc {
+				color: rgb(var(--gray-dark));
+				font-size: 0.95em;
+				line-height: 1.7;
+				margin-bottom: 1em;
+				flex: 1;
+			}
+			.service-card .features {
+				list-style: none;
+				padding: 0;
+				margin: 0 0 1em;
+			}
+			.service-card .features li {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				padding: 0.25em 0;
+				padding-left: 1.2em;
+				position: relative;
+			}
+			.service-card .features li::before {
+				content: '✓';
+				position: absolute;
+				left: 0;
+				color: var(--accent);
+				font-weight: 700;
+			}
+			.service-card .price {
+				font-size: 1.1em;
+				font-weight: 700;
+				color: var(--accent);
+				margin-top: auto;
+			}
+
+			/* Process */
+			.process-section {
+				margin: 3em 0;
+			}
+			.section-title {
+				font-size: 1.6em;
+				margin-bottom: 1em;
+				text-align: center;
+			}
+			.process-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1.2em;
+			}
+			.process-card {
+				background: var(--bg-card, #fff);
+				border-radius: 12px;
+				padding: 1.5em;
+				border: 1px solid rgb(var(--gray-light));
+				text-align: center;
+			}
+			.process-card .step {
+				font-size: 2em;
+				font-weight: 800;
+				color: var(--accent);
+				opacity: 0.2;
+				line-height: 1;
+				margin-bottom: 0.3em;
+			}
+			.process-card h4 {
+				margin: 0 0 0.4em;
+				font-size: 1.1em;
+			}
+			.process-card p {
+				margin: 0;
+				font-size: 0.9em;
+				color: rgb(var(--gray));
+				line-height: 1.5;
+			}
+
+			/* FAQ */
+			.faq-section {
+				margin: 3em 0;
+			}
+			.faq-item {
+				background: var(--bg-card, #fff);
+				border-radius: 12px;
+				border: 1px solid rgb(var(--gray-light));
+				margin-bottom: 0.8em;
+				overflow: hidden;
+			}
+			.faq-q {
+				padding: 1em 1.2em;
+				font-weight: 600;
+				cursor: pointer;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				color: rgb(var(--black));
+			}
+			.faq-q:hover {
+				background: rgba(var(--gray-light), 0.3);
+			}
+			.faq-arrow {
+				transition: transform 0.2s;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+			}
+			.faq-item.open .faq-arrow {
+				transform: rotate(180deg);
+			}
+			.faq-a {
+				max-height: 0;
+				overflow: hidden;
+				transition: max-height 0.3s ease;
+			}
+			.faq-item.open .faq-a {
+				max-height: 200px;
+			}
+			.faq-a-inner {
+				padding: 0 1.2em 1em;
+				color: rgb(var(--gray-dark));
+				font-size: 0.95em;
+				line-height: 1.7;
+			}
+
+			/* CTA */
+			.cta-box {
+				background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
+				border-radius: 16px;
+				padding: 2.5em 2em;
+				text-align: center;
+				border: 1px solid rgb(var(--gray-light));
+				margin: 3em 0;
+			}
+			.cta-box h2 {
+				margin: 0 0 0.3em;
+				font-size: 1.5em;
+			}
+			.cta-box p {
+				color: rgb(var(--gray));
+				margin: 0 0 1.2em;
+			}
+			.cta-btn {
+				display: inline-block;
+				padding: 0.7em 1.8em;
+				background: var(--accent);
+				color: white;
+				border-radius: 999px;
+				text-decoration: none;
+				font-weight: 600;
+				transition: transform 0.15s, box-shadow 0.15s;
+			}
+			.cta-btn:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(99,102,241,0.35);
+			}
+
+			@media (max-width: 720px) {
+				.hero h1 { font-size: 1.8em; }
+				.service-grid { grid-template-columns: 1fr; }
+				.process-grid { grid-template-columns: 1fr 1fr; }
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="hero">
+				<h1>我可以帮你做什么</h1>
+				<p>
+					一个人就是一家公司的时代，技术和内容是最好的杠杆。<br />
+					把重复劳动交给代码和 AI，把时间留给创造和决策。
+				</p>
+			</section>
+
+			<section class="service-grid">
+				{services.map((s) => (
+					<div class="service-card">
+						<div class="icon">{s.icon}</div>
+						<h3>{s.title}</h3>
+						<div class="subtitle">{s.subtitle}</div>
+						<p class="desc">{s.desc}</p>
+						<ul class="features">
+							{s.features.map((f) => <li>{f}</li>)}
+						</ul>
+						<div class="price">{s.price}</div>
+					</div>
+				))}
+			</section>
+
+			<section class="process-section">
+				<h2 class="section-title">合作流程</h2>
+				<div class="process-grid">
+					{process.map((p) => (
+						<div class="process-card">
+							<div class="step">{p.step}</div>
+							<h4>{p.title}</h4>
+							<p>{p.desc}</p>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<section class="faq-section">
+				<h2 class="section-title">常见问题</h2>
+				{faqs.map((f, i) => (
+					<div class="faq-item" data-faq={i}>
+						<div class="faq-q">
+							{f.q}
+							<span class="faq-arrow">▼</span>
+						</div>
+						<div class="faq-a">
+							<div class="faq-a-inner">{f.a}</div>
+						</div>
+					</div>
+				))}
+			</section>
+
+			<section class="cta-box">
+				<h2>有想法？聊聊看</h2>
+				<p>即使还没想清楚，也可以先沟通。我不会推销，只会给建议。</p>
+				<a href="/contact" class="cta-btn">开始咨询 →</a>
+			</section>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', function() {
+				document.querySelectorAll('.faq-item').forEach(function(item) {
+					var q = item.querySelector('.faq-q');
+					q.addEventListener('click', function() {
+						item.classList.toggle('open');
+					});
+				});
+			});
+		</script>
+	</body>
+</html>
