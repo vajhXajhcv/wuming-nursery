@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "astro build && wrangler pages deploy",
+    "pages:dev": "astro build && wrangler pages dev ./dist"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",

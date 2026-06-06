@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+  "name": "wuming-nursery",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-06-06"
+}
