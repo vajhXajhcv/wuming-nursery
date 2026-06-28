@@ -7,11 +7,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build:kaoyan": "node scripts/build-kaoyan.js",
+    "build": "npm run build:kaoyan && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "astro build && wrangler pages deploy",
-    "pages:dev": "astro build && wrangler pages dev ./dist"
+    "deploy": "npm run build && wrangler pages deploy",
+    "pages:dev": "npm run build && wrangler pages dev ./dist"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",
