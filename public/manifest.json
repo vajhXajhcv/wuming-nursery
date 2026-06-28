@@ -1,7 +1,7 @@
 {
   "name": "无名苗圃",
   "short_name": "无名苗圃",
-  "description": "独立开发者 · 技术创作者 · 一人公司探索者。用代码、内容与 AI 工具构建可持续的创作者生意。"
+  "description": "独立开发者 · 技术创作者 · 一人公司探索者。用代码、内容与 AI 工具构建可持续的创作者生意。",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

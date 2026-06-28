@@ -1,6 +1,6 @@
 # 无名苗圃
 
-一个存放记忆与故事的个人博客。
+独立开发者 · 技术创作者 · 一人公司探索者。
 
 基于 [Astro](https://astro.build) 构建，部署在 Cloudflare Pages。
 
@@ -35,7 +35,7 @@ npm run preview
 ├── src/
 │   ├── assets/      # 图片、字体等
 │   ├── components/  # 可复用组件
-│   ├── content/     # 博客文章 (Markdown)
+│   ├── content/     # 博客文章与笔记 (Markdown)
 │   ├── layouts/     # 页面布局
 │   ├── pages/       # 路由页面
 │   └── styles/      # 全局样式

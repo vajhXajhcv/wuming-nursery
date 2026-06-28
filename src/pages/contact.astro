@@ -1,7 +1,5 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_TITLE } from '../consts';
 
 const channels = [
@@ -9,14 +7,14 @@ const channels = [
 		icon: '📧',
 		title: '邮件',
 		desc: '最正式的沟通方式，适合详细需求描述',
-		value: 'hi@wumingmp.me',
-		href: 'mailto:hi@wumingmp.me',
+		value: 'hcf665qli@outlook.com',
+		href: 'mailto:hcf665qli@outlook.com',
 	},
 	{
 		icon: '💬',
 		title: '微信',
 		desc: '日常沟通、快速确认、发资料都很方便',
-		value: '添加微信: wumingmp',
+		value: '添加微信: ll1186607113',
 		href: '#wechat',
 	},
 	{
@@ -36,10 +34,7 @@ const channels = [
 ];
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={`联系 - ${SITE_TITLE}`} description="有项目需求或合作意向？通过邮件、微信或爱发电联系我。" />
+<BaseLayout title={`联系 - ${SITE_TITLE}`} description="有项目需求或合作意向？通过邮件、微信或爱发电联系我。" >
 		<style>
 			main {
 				width: 720px;
@@ -248,10 +243,7 @@ const channels = [
 				.contact-grid { grid-template-columns: 1fr; }
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<section class="hero">
 				<h1>联系我</h1>
 				<p>有项目需求、合作意向，或只是想聊聊？我都在。</p>
@@ -301,14 +293,12 @@ const channels = [
 				</form>
 			</section>
 		</main>
-		<Footer />
-
-		<!-- WeChat Modal -->
+<!-- WeChat Modal -->
 		<div class="modal-overlay" id="wechat-modal">
 			<div class="modal-box">
 				<h3>添加微信</h3>
 				<p>搜索微信号或扫码添加</p>
-				<div class="wechat-id">wumingmp</div>
+				<div class="wechat-id">ll1186607113</div>
 				<button class="modal-close" id="modal-close">知道了</button>
 			</div>
 		</div>
@@ -331,5 +321,4 @@ const channels = [
 				});
 			});
 		</script>
-	</body>
-</html>
+</BaseLayout>

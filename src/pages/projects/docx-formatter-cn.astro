@@ -1,12 +1,8 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
-<html lang="zh-CN">
-	<head>
-		<BaseHead title="docx-formatter-cn - 无名苗圃" description="中文 Word 文档智能排版工具" />
+<BaseLayout title="docx-formatter-cn - 无名苗圃" description="中文 Word 文档智能排版工具">
 		<style>
 			main {
 				width: 720px;
@@ -68,7 +64,7 @@ import Header from '../../components/Header.astro';
 				margin-top: 1em;
 			}
 			.feature-card {
-				background: white;
+				background: var(--bg-card);
 				border-radius: 12px;
 				padding: 1.2em;
 				box-shadow: 0 2px 8px rgba(var(--gray), 12%);
@@ -121,10 +117,7 @@ import Header from '../../components/Header.astro';
 				margin-top: 0.6em;
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<div class="hero">
 				<h1>docx-formatter-cn</h1>
 				<p>中文 Word 文档智能排版工具 — Markdown 一键转为符合学术规范的 docx</p>
@@ -241,11 +234,9 @@ convert_markdown_to_docx(md_text, "output.docx", template="课程论文")</code>
 			<section style="text-align: center; margin-top: 3em;">
 				<h2>支持我</h2>
 				<p>如果这个工具帮到了你，欢迎通过爱发电支持我继续创作 👇</p>
-				<a href="https://www.ifdian.net/a/jk342joy" target="_blank">
+				<a href="https://afdian.com/a/jk342joy" target="_blank" rel="noopener">
 					<img src="/afdian.jpg" alt="爱发电 - 花园主" style="max-width: 320px; border-radius: 12px; box-shadow: var(--box-shadow);" />
 				</a>
 			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+	</main>
+</BaseLayout>

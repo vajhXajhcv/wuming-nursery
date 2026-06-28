@@ -1,10 +1,8 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
@@ -12,10 +10,7 @@ const posts = (await getCollection('blog')).sort(
 );
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={`写作 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+<BaseLayout title={`写作 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} >
 		<style>
 			main {
 				width: 960px;
@@ -149,10 +144,7 @@ const posts = (await getCollection('blog')).sort(
 				}
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<h1 class="page-title">写作</h1>
 			<p class="page-desc">独立开发、AI 工具、一人公司与创作者生意的实践记录</p>
 			<div class="search-box">
@@ -209,6 +201,4 @@ const posts = (await getCollection('blog')).sort(
 				});
 			});
 		</script>
-		<Footer />
-	</body>
-</html>
+</BaseLayout>

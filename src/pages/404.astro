@@ -1,13 +1,8 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_DESCRIPTION } from '../consts';
 ---
-<!DOCTYPE html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title="404 - 页面走丢了" description={SITE_DESCRIPTION} />
+<BaseLayout title="404 - 页面走丢了" description={SITE_DESCRIPTION}>
 		<style>
 			.container {
 				display: flex;
@@ -60,16 +55,11 @@ import { SITE_DESCRIPTION } from '../consts';
 				50% { transform: translateY(-10px); }
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
 		<main class="container">
 			<div class="emoji">🌱</div>
 			<div class="code">404</div>
 			<div class="text">这页苗圃里还没种下什么</div>
 			<div class="sub">页面可能已经搬家了，或者本来就不存在</div>
 			<a href="/" class="back-btn">🏠 回苗圃看看</a>
-		</main>
-		<Footer />
-	</body>
-</html>
+	</main>
+</BaseLayout>

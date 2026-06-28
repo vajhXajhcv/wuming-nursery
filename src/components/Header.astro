@@ -6,17 +6,25 @@ import HeaderLink from './HeaderLink.astro';
 <header>
 	<nav>
 		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
+		<div class="internal-links" id="nav-links">
 			<HeaderLink href="/">首页</HeaderLink>
 			<HeaderLink href="/services">服务</HeaderLink>
 			<HeaderLink href="/blog">写作</HeaderLink>
 			<HeaderLink href="/notes">笔记</HeaderLink>
-			<HeaderLink href="/projects/docx-formatter-cn">项目</HeaderLink>
+			<HeaderLink href="/archive">归档</HeaderLink>
+			<HeaderLink href="/tags">标签</HeaderLink>
+			<HeaderLink href="/projects">项目</HeaderLink>
 			<HeaderLink href="/about">关于</HeaderLink>
 			<HeaderLink href="/contact">联系</HeaderLink>
-		<button id="theme-toggle" aria-label="切换主题" title="切换主题">
-			<span class="theme-icon" id="theme-icon">🌙</span>
-		</button>
+		</div>
+		<div class="nav-actions">
+			<button id="theme-toggle" aria-label="切换主题" title="切换主题">
+				<span class="theme-icon" id="theme-icon">🌙</span>
+			</button>
+			<button id="menu-toggle" aria-label="打开菜单" aria-expanded="false" aria-controls="nav-links">
+				<span class="menu-icon" aria-hidden="true"></span>
+			</button>
+		</div>
 	</nav>
 </header>
 <script is:inline>
@@ -33,21 +41,50 @@ import HeaderLink from './HeaderLink.astro';
 		const toggle = document.getElementById('theme-toggle');
 		const icon = document.getElementById('theme-icon');
 		const root = document.documentElement;
-		if (!toggle) return;
-		toggle.addEventListener('click', function() {
-			const current = root.getAttribute('data-theme');
-			const next = current === 'dark' ? 'light' : 'dark';
-			root.setAttribute('data-theme', next);
-			localStorage.setItem('theme', next);
-			if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
-		});
+		if (toggle) {
+			toggle.addEventListener('click', function() {
+				const current = root.getAttribute('data-theme');
+				const next = current === 'dark' ? 'light' : 'dark';
+				root.setAttribute('data-theme', next);
+				localStorage.setItem('theme', next);
+				if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+			});
+		}
+
+		const menuToggle = document.getElementById('menu-toggle');
+		const navLinks = document.getElementById('nav-links');
+		function closeMenu() {
+			if (!navLinks) return;
+			navLinks.classList.remove('open');
+			if (menuToggle) {
+				menuToggle.setAttribute('aria-expanded', 'false');
+				menuToggle.setAttribute('aria-label', '打开菜单');
+			}
+		}
+		if (menuToggle && navLinks) {
+			menuToggle.addEventListener('click', function() {
+				const isOpen = navLinks.classList.toggle('open');
+				menuToggle.setAttribute('aria-expanded', String(isOpen));
+				menuToggle.setAttribute('aria-label', isOpen ? '关闭菜单' : '打开菜单');
+			});
+			navLinks.querySelectorAll('a').forEach((link) => {
+				link.addEventListener('click', closeMenu);
+			});
+			document.addEventListener('click', function(event) {
+				const target = event.target;
+				if (!(target instanceof Node)) return;
+				if (!navLinks.contains(target) && !menuToggle.contains(target)) {
+					closeMenu();
+				}
+			});
+		}
 	});
 </script>
 <style>
 	header {
 		margin: 0;
 		padding: 0 1em;
-		background: white;
+		background: var(--bg-body);
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
 		position: sticky;
 		top: 0;
@@ -81,26 +118,93 @@ import HeaderLink from './HeaderLink.astro';
 		text-decoration: none;
 		border-bottom-color: var(--accent);
 	}
-	#theme-toggle {
+	.nav-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.3em;
+	}
+	#theme-toggle,
+	#menu-toggle {
 		background: none;
 		border: none;
 		cursor: pointer;
 		font-size: 1.2em;
 		padding: 0.4em;
-		margin-left: 0.5em;
 		border-radius: 8px;
 		transition: background 0.2s;
 	}
-	#theme-toggle:hover {
+	#theme-toggle:hover,
+	#menu-toggle:hover {
 		background: rgb(var(--gray-light));
 	}
+	#menu-toggle {
+		display: none;
+	}
+	.menu-icon {
+		display: block;
+		width: 1.2em;
+		height: 0.15em;
+		background: currentColor;
+		border-radius: 2px;
+		position: relative;
+	}
+	.menu-icon::before,
+	.menu-icon::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		width: 100%;
+		height: 0.15em;
+		background: currentColor;
+		border-radius: 2px;
+		transition: transform 0.2s, top 0.2s;
+	}
+	.menu-icon::before {
+		top: -0.4em;
+	}
+	.menu-icon::after {
+		top: 0.4em;
+	}
+	#menu-toggle[aria-expanded="true"] .menu-icon {
+		background: transparent;
+	}
+	#menu-toggle[aria-expanded="true"] .menu-icon::before {
+		top: 0;
+		transform: rotate(45deg);
+	}
+	#menu-toggle[aria-expanded="true"] .menu-icon::after {
+		top: 0;
+		transform: rotate(-45deg);
+	}
 	@media (max-width: 720px) {
-		nav {
-			gap: 0.5em;
+		.internal-links {
+			display: none;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			flex-direction: column;
+			align-items: stretch;
+			background: var(--bg-body);
+			box-shadow: 0 4px 12px rgba(var(--black), 8%);
+			padding: 0.5em 1em 1em;
+			border-top: 1px solid rgb(var(--gray-light));
+		}
+		.internal-links.open {
+			display: flex;
 		}
 		.internal-links a {
-			padding: 1em 0.35em;
-			font-size: 0.9em;
+			padding: 0.8em 0.5em;
+			border-bottom: none;
+			border-left: 4px solid transparent;
+		}
+		.internal-links a.active {
+			border-left-color: var(--accent);
+		}
+		#menu-toggle {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 		}
 	}
 </style>

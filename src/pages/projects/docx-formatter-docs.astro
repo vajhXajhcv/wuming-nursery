@@ -1,12 +1,8 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
-<html lang="zh-CN">
-	<head>
-		<BaseHead title="使用文档 - docx-formatter-cn" description="docx-formatter-cn 完整使用文档" />
+<BaseLayout title="使用文档 - docx-formatter-cn" description="docx-formatter-cn 完整使用文档">
 		<style>
 			main {
 				width: 800px;
@@ -101,10 +97,7 @@ import Header from '../../components/Header.astro';
 				main { padding: 1em; }
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<nav class="doc-nav">
 				<a href="/projects/docx-formatter-cn" class="back">← 返回项目页</a>
 				<a href="#install">安装</a>
@@ -271,7 +264,5 @@ $$E = mc^2$$
 				<h3>如何添加页眉页脚？</h3>
 				<p>在自定义模板中设置 <code>header_text</code> 和 <code>footer_page_number</code> 字段。</p>
 			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+	</main>
+</BaseLayout>

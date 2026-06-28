@@ -1,0 +1,30 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION } from '../consts';
+
+interface Props {
+	title: string;
+	description?: string;
+	article?: boolean;
+	pubDate?: Date;
+	updatedDate?: Date;
+	tags?: string[];
+}
+
+const { title, description = SITE_DESCRIPTION, article = false, pubDate, updatedDate, tags } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} article={article} pubDate={pubDate} updatedDate={updatedDate} tags={tags} />
+		<slot name="head" />
+	</head>
+	<body>
+		<Header />
+		<slot />
+		<Footer />
+	</body>
+</html>

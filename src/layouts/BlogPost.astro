@@ -1,10 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
+import BaseLayout from './BaseLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	prevPost?: CollectionEntry<'blog'> | null;
@@ -17,9 +15,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime, wordCount, relatedPosts } = Astro.props;
 ---
 
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={title} description={description} article={true} pubDate={pubDate} tags={tags} />
+<BaseLayout title={title} description={description} article={true} pubDate={pubDate} updatedDate={updatedDate} tags={tags}>
 		<style>
 			main {
 				width: calc(100% - 2em);
@@ -518,11 +514,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				}
 			}
 		</style>
-	</head>
-
-	<body>
 		<div class="read-progress" id="read-progress"></div>
-		<Header />
 		<main>
 			<article>
 				<div class="hero-image">
@@ -632,7 +624,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			</script>
 		</div>
 
-		<Footer />
+
 
 		<script is:inline>
 			// Copy button for code blocks
@@ -843,5 +835,4 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				}
 			});
 		</script>
-	</body>
-</html>
+</BaseLayout>

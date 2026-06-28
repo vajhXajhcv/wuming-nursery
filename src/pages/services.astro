@@ -1,7 +1,5 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_TITLE } from '../consts';
 
 const services = [
@@ -54,10 +52,7 @@ const faqs = [
 ];
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={`服务 - ${SITE_TITLE}`} description="独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务。" />
+<BaseLayout title={`服务 - ${SITE_TITLE}`} description="独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务。" >
 		<style>
 			main {
 				width: 960px;
@@ -283,10 +278,7 @@ const faqs = [
 				.process-grid { grid-template-columns: 1fr 1fr; }
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<section class="hero">
 				<h1>我可以帮你做什么</h1>
 				<p>
@@ -344,9 +336,7 @@ const faqs = [
 				<a href="/contact" class="cta-btn">开始咨询 →</a>
 			</section>
 		</main>
-		<Footer />
-
-		<script is:inline>
+<script is:inline>
 			document.addEventListener('DOMContentLoaded', function() {
 				document.querySelectorAll('.faq-item').forEach(function(item) {
 					var q = item.querySelector('.faq-q');
@@ -356,5 +346,4 @@ const faqs = [
 				});
 			});
 		</script>
-	</body>
-</html>
+</BaseLayout>

@@ -1,0 +1,152 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const title = `项目 - ${SITE_TITLE}`;
+const description = SITE_DESCRIPTION;
+
+const projects = [
+	{
+		name: 'docx-formatter-cn',
+		title: 'docx-formatter-cn',
+		tagline: '中文 Word 文档智能排版工具',
+		description: '把 Markdown 文本一键转换为符合中文排版规范的 Word 文档。支持标题、列表、代码块、表格等格式，适合技术写作与文档交付。',
+		href: '/projects/docx-formatter-cn/',
+		tags: ['Python', '工具', '中文排版'],
+		status: '已发布',
+	},
+	{
+		name: 'docx-formatter-docs',
+		title: 'docx-formatter-cn 文档',
+		tagline: '完整使用文档',
+		description: 'docx-formatter-cn 的安装、配置与使用指南，包含命令行参数、模板说明和常见问题。',
+		href: '/projects/docx-formatter-docs/',
+		tags: ['文档', '工具'],
+		status: '维护中',
+	},
+];
+---
+
+<BaseLayout title={title} description={description} >
+		<style>
+			main {
+				width: 800px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 2em 1em;
+			}
+			.page-title {
+				font-size: 2em;
+				margin-bottom: 0.2em;
+				text-align: center;
+			}
+			.page-desc {
+				text-align: center;
+				color: rgb(var(--gray));
+				margin-bottom: 2.5em;
+			}
+			.project-list {
+				display: flex;
+				flex-direction: column;
+				gap: 1.5em;
+			}
+			.project-card {
+				display: block;
+				padding: 1.5em;
+				border-radius: 16px;
+				background: var(--bg-card);
+				border: 1px solid rgb(var(--gray-light));
+				text-decoration: none;
+				color: inherit;
+				transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+			}
+			.project-card:hover {
+				border-color: var(--accent);
+				transform: translateY(-3px);
+				box-shadow: var(--box-shadow);
+			}
+			.project-header {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				gap: 1em;
+				margin-bottom: 0.6em;
+			}
+			.project-title {
+				font-size: 1.3em;
+				font-weight: 700;
+				color: rgb(var(--black));
+				margin: 0;
+			}
+			.project-tagline {
+				color: rgb(var(--gray));
+				font-size: 0.95em;
+				margin: 0.2em 0 0;
+			}
+			.project-status {
+				flex-shrink: 0;
+				padding: 0.2em 0.7em;
+				border-radius: 999px;
+				font-size: 0.75em;
+				background: rgba(99, 102, 241, 0.12);
+				color: var(--accent-dark);
+				font-weight: 500;
+			}
+			.project-description {
+				color: rgb(var(--gray-dark));
+				line-height: 1.7;
+				margin-bottom: 1em;
+			}
+			.project-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4em;
+			}
+			.project-tags span {
+				padding: 0.2em 0.6em;
+				border-radius: 4px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray));
+				font-size: 0.8em;
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 4em 0;
+			}
+			@media (max-width: 720px) {
+				.project-header {
+					flex-direction: column;
+					gap: 0.5em;
+				}
+			}
+		</style>
+	<main>
+			<h1 class="page-title">项目</h1>
+			<p class="page-desc">正在构建的工具与实验</p>
+
+			{projects.length === 0 && (
+				<div class="empty">🌱 项目列表还是空的，敬请期待。</div>
+			)}
+
+			<div class="project-list">
+				{projects.map((project) => (
+					<a href={project.href} class="project-card">
+						<div class="project-header">
+							<div>
+								<h2 class="project-title">{project.title}</h2>
+								<p class="project-tagline">{project.tagline}</p>
+							</div>
+							<span class="project-status">{project.status}</span>
+						</div>
+						<p class="project-description">{project.description}</p>
+						<div class="project-tags">
+							{project.tags.map((tag) => (
+								<span>{tag}</span>
+							))}
+						</div>
+					</a>
+				))}
+			</div>
+	</main>
+</BaseLayout>

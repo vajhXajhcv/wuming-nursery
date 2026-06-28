@@ -1,8 +1,6 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
@@ -19,10 +17,7 @@ const pages = [
 ];
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={`网站地图 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+<BaseLayout title={`网站地图 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} >
 		<style>
 			main {
 				width: 720px;
@@ -84,10 +79,7 @@ const pages = [
 				margin-left: 0.5em;
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<h1 class="page-title">网站地图</h1>
 			<p class="page-desc">快速导航到网站的每一个角落</p>
 
@@ -125,7 +117,5 @@ const pages = [
 					))}
 				</ul>
 			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+	</main>
+</BaseLayout>

@@ -1,8 +1,6 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
@@ -15,10 +13,7 @@ const latestNotes = (await getCollection('notes')).sort(
 ).slice(0, 3);
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION} >
 		<style>
 			/* Hero */
 			.hero {
@@ -121,7 +116,7 @@ const latestNotes = (await getCollection('notes')).sort(
 				gap: 1.2em;
 			}
 			.post-card {
-				background: white;
+				background: var(--bg-card);
 				border-radius: 12px;
 				padding: 1.2em;
 				box-shadow: 0 2px 8px rgba(var(--gray), 10%);
@@ -162,7 +157,7 @@ const latestNotes = (await getCollection('notes')).sort(
 					gap: 1em;
 				}
 				.service-card {
-					background: white;
+					background: var(--bg-card);
 					border-radius: 12px;
 					padding: 1.5em;
 					border: 1px solid rgb(var(--gray-light));
@@ -367,10 +362,7 @@ const latestNotes = (await getCollection('notes')).sort(
 				.project-card { flex-direction: column; gap: 1em; }
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
+	<main>
 			<!-- Hero -->
 			<section class="hero">
 				<canvas id="particle-canvas"></canvas>
@@ -500,9 +492,7 @@ const latestNotes = (await getCollection('notes')).sort(
 				</p>
 			</section>
 		</main>
-		<Footer />
-
-		<!-- Typewriter effect -->
+<!-- Typewriter effect -->
 		<script>
 			const phrases = [
 				"慢慢来，不急。",
@@ -617,5 +607,4 @@ const latestNotes = (await getCollection('notes')).sort(
 				draw();
 			})();
 		</script>
-	</body>
-</html>
+</BaseLayout>
