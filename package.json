@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build:kaoyan": "node scripts/build-kaoyan.js",
-    "build": "npm run build:kaoyan && astro build",
+    "build:triworld": "node scripts/build-triworld.js",
+    "build": "npm run build:kaoyan && npm run build:triworld && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "npm run build && wrangler pages deploy",
