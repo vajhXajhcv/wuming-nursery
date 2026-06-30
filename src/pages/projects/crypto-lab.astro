@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `Crypto Lab - ${SITE_TITLE}`;
+const description = '从零开始用 Python 跑通密码学核心概念：古典密码、AES-GCM、哈希/HMAC、RSA、TLS 与进阶主题。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: 800px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em;
+		}
+		h1 {
+			font-size: 2em;
+			margin-bottom: 0.3em;
+		}
+		.subtitle {
+			color: rgb(var(--gray));
+			font-size: 1.1em;
+			margin-bottom: 2em;
+		}
+		section {
+			margin-bottom: 2.5em;
+		}
+		h2 {
+			font-size: 1.4em;
+			margin-bottom: 0.6em;
+			color: rgb(var(--black));
+		}
+		p, li {
+			line-height: 1.8;
+			color: rgb(var(--gray-dark));
+		}
+		ul {
+			padding-left: 1.5em;
+		}
+		li {
+			margin-bottom: 0.4em;
+		}
+		.code-block {
+			background: #f6f8fa;
+			border-radius: 8px;
+			padding: 1em;
+			overflow-x: auto;
+			font-family: 'SFMono-Regular', Consolas, monospace;
+			font-size: 0.9em;
+			margin: 1em 0;
+		}
+		.cta {
+			display: inline-flex;
+			gap: 0.8em;
+			margin-top: 1em;
+		}
+		.cta a {
+			display: inline-block;
+			padding: 0.6em 1.2em;
+			border-radius: 8px;
+			background: var(--accent);
+			color: white;
+			text-decoration: none;
+			font-weight: 500;
+		}
+		.cta a.secondary {
+			background: transparent;
+			color: var(--accent);
+			border: 1px solid var(--accent);
+		}
+		@media (max-width: 720px) {
+			main {
+				padding: 1.5em 1em;
+			}
+		}
+	</style>
+
+	<main>
+		<h1>Crypto Lab · 密码学实验室</h1>
+		<p class="subtitle">一套从零开始的密码学动手练习，用 Python 跑通每一个核心概念。</p>
+
+		<section>
+			<h2>为什么做这个项目</h2>
+			<p>
+				密码学是互联网安全的基石，但入门时往往被数学公式吓退。这个实验室采用"先写代码，再补理论"的方式，
+				让你通过运行真实可执行的脚本来理解：加密到底在解决什么问题，以及现代系统是怎么保护数据的。
+			</p>
+		</section>
+
+		<section>
+			<h2>学习路线</h2>
+			<ul>
+				<li><strong>古典密码</strong>：凯撒密码、频率分析，理解"为什么简单替换不安全"</li>
+				<li><strong>对称加密</strong>：AES-256-GCM，同时保证机密性和完整性</li>
+				<li><strong>哈希与认证</strong>：SHA-256、HMAC、Argon2id 密码存储</li>
+				<li><strong>非对称加密</strong>：RSA 加密/签名，公钥与私钥的分工</li>
+				<li><strong>真实世界协议</strong>：检查 HTTPS 证书的 TLS 信息</li>
+				<li><strong>进阶主题</strong>：Diffie-Hellman、ECDSA、Fernet、JWT</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>快速开始</h2>
+			<div class="code-block">
+<pre>git clone https://github.com/vajhXajhcv/crypto-lab.git
+cd crypto-lab
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+pytest -v</pre>
+			</div>
+		</section>
+
+		<section>
+			<h2>项目特色</h2>
+			<ul>
+				<li>每个概念都有可独立运行的 Python 脚本</li>
+				<li>每个模块配有练习题和参考答案思路</li>
+				<li>包含 pytest 单元测试，CI 自动验证</li>
+				<li>支持 VS Code、虚拟环境和 Docker</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>安全声明</h2>
+			<p>
+				本仓库仅用于学习密码学原理，代码示例不应直接用于生产环境加密真实敏感数据。
+				实际生产请使用经过审计的库和最佳实践。
+			</p>
+		</section>
+
+		<div class="cta">
+			<a href="https://github.com/vajhXajhcv/crypto-lab" target="_blank" rel="noopener">查看 GitHub 仓库</a>
+			<a href="/projects/" class="secondary">返回项目列表</a>
+		</div>
+	</main>
+</BaseLayout>
