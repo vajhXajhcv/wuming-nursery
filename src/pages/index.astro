@@ -65,6 +65,43 @@ const latestNotes = (await getCollection('notes')).sort(
 				margin-top: 1em;
 				font-size: 1.05em;
 			}
+			.hero .hero-cta {
+				margin-top: 1.6em;
+				display: flex;
+				gap: 1em;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4em;
+				padding: 0.65em 1.4em;
+				border-radius: 10px;
+				text-decoration: none;
+				font-weight: 600;
+				transition: transform 0.15s ease, box-shadow 0.15s ease;
+				border: none;
+				cursor: pointer;
+				font-size: 1em;
+			}
+			.btn:hover {
+				transform: translateY(-2px);
+			}
+			.btn-primary {
+				background: var(--accent);
+				color: white;
+				box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+			}
+			.btn-secondary {
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
+			.btn-outline {
+				background: transparent;
+				color: var(--accent);
+				border: 2px solid var(--accent);
+			}
 			.hero .social {
 				margin-top: 1.5em;
 				display: flex;
@@ -109,6 +146,69 @@ const latestNotes = (await getCollection('notes')).sort(
 				text-decoration: underline;
 			}
 
+			/* Flagship product */
+			.flagship-card {
+				background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 20px;
+				padding: 2em;
+				display: flex;
+				gap: 1.5em;
+				align-items: flex-start;
+				margin-bottom: 1.5em;
+			}
+			[data-theme='dark'] .flagship-card {
+				background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+				border-color: #2a3045;
+			}
+			.flagship-icon {
+				width: 64px;
+				height: 64px;
+				background: linear-gradient(135deg, var(--accent), #8b5cf6);
+				border-radius: 16px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				font-size: 1.8em;
+				flex-shrink: 0;
+			}
+			.flagship-content h2 {
+				margin: 0 0 0.3em;
+				font-size: 1.5em;
+			}
+			.flagship-content p {
+				margin: 0 0 1em;
+				color: rgb(var(--gray-dark));
+				line-height: 1.7;
+			}
+			.flagship-features {
+				list-style: none;
+				padding: 0;
+				margin: 0 0 1.2em;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 0.5em;
+			}
+			.flagship-features li {
+				font-size: 0.9em;
+				color: rgb(var(--gray-dark));
+				padding-left: 1.3em;
+				position: relative;
+			}
+			.flagship-features li::before {
+				content: '✓';
+				position: absolute;
+				left: 0;
+				color: var(--accent);
+				font-weight: 700;
+			}
+			.flagship-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.7em;
+			}
+
 			/* Post cards */
 			.post-grid {
 				display: grid;
@@ -150,216 +250,171 @@ const latestNotes = (await getCollection('notes')).sort(
 				color: rgb(var(--gray));
 			}
 
-							/* Service cards */
-				.services-grid {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-					gap: 1em;
-				}
-				.service-card {
-					background: var(--bg-card);
-					border-radius: 12px;
-					padding: 1.5em;
-					border: 1px solid rgb(var(--gray-light));
-					transition: transform 0.2s ease, box-shadow 0.2s ease;
-				}
-				.service-card:hover {
-					transform: translateY(-3px);
-					box-shadow: var(--box-shadow);
-				}
-				.service-icon {
-					width: 40px;
-					height: 40px;
-					background: linear-gradient(135deg, var(--accent), #8b5cf6);
-					border-radius: 10px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					color: white;
-					font-size: 1.3em;
-					margin-bottom: 0.8em;
-				}
-				.service-card h3 {
-					margin: 0 0 0.4em;
-					font-size: 1.05em;
-					color: rgb(var(--black));
-				}
-				.service-card p {
-					margin: 0;
-					color: rgb(var(--gray));
-					font-size: 0.9em;
-					line-height: 1.5;
-				}
-
-				/* Newsletter */
-				.newsletter-box {
-					background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
-					border-radius: 16px;
-					padding: 2em;
-					text-align: center;
-					border: 1px solid rgb(var(--gray-light));
-				}
-				.newsletter-box h3 {
-					margin: 0 0 0.3em;
-					font-size: 1.3em;
-				}
-				.newsletter-box p {
-					margin: 0 0 1em;
-					color: rgb(var(--gray));
-					font-size: 0.95em;
-				}
-				.newsletter-form {
-					display: flex;
-					gap: 0.5em;
-					justify-content: center;
-					flex-wrap: wrap;
-					max-width: 420px;
-					margin: 0 auto;
-				}
-				.newsletter-form input {
-					flex: 1;
-					min-width: 200px;
-					padding: 0.6em 1em;
-					border: 1px solid rgb(var(--gray-light));
-					border-radius: 8px;
-					font-size: 0.95em;
-					font-family: inherit;
-				}
-				.newsletter-form input:focus {
-					outline: none;
-					border-color: var(--accent);
-				}
-				.newsletter-form button {
-					padding: 0.6em 1.4em;
-					background: var(--accent);
-					color: white;
-					border: none;
-					border-radius: 8px;
-					font-size: 0.95em;
-					font-family: inherit;
-					cursor: pointer;
-					transition: background 0.2s;
-				}
-				.newsletter-form button:hover {
-					background: rgb(var(--accent-dark, 99, 102, 241));
-				}
-
-				/* Project card */
-			.project-card {
-				background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
-				border-radius: 16px;
+			/* Service cards */
+			.services-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				gap: 1em;
+			}
+			.service-card {
+				background: var(--bg-card);
+				border-radius: 12px;
 				padding: 1.5em;
-				display: flex;
-				gap: 1.5em;
-				align-items: flex-start;
-				border: 1px solid rgba(var(--gray-light), 1);
+				border: 1px solid rgb(var(--gray-light));
 				transition: transform 0.2s ease, box-shadow 0.2s ease;
 				text-decoration: none;
 				color: inherit;
+				display: block;
 			}
-			.project-card:hover {
+			.service-card:hover {
 				transform: translateY(-3px);
 				box-shadow: var(--box-shadow);
 			}
-			.project-icon {
-				width: 48px;
-				height: 48px;
-				background: var(--accent);
-				border-radius: 12px;
+			.service-icon {
+				width: 40px;
+				height: 40px;
+				background: linear-gradient(135deg, var(--accent), #8b5cf6);
+				border-radius: 10px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				color: white;
-				font-size: 1.5em;
-				flex-shrink: 0;
+				font-size: 1.3em;
+				margin-bottom: 0.8em;
 			}
-			.project-info h3 {
+			.service-card h3 {
 				margin: 0 0 0.3em;
-				font-size: 1.2em;
+				font-size: 1.05em;
+				color: rgb(var(--black));
 			}
-			.project-info p {
+			.service-card p {
 				margin: 0;
+				color: rgb(var(--gray));
+				font-size: 0.9em;
+				line-height: 1.5;
+			}
+
+			/* Garden section */
+			.garden-box {
+				background: linear-gradient(135deg, #f0fdf4 0%, #f8fff9 100%);
+				border: 1px solid #bbf7d0;
+				border-radius: 16px;
+				padding: 1.8em;
+				text-align: center;
+				margin-top: 2em;
+			}
+			[data-theme='dark'] .garden-box {
+				background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+				border-color: #166534;
+			}
+			.garden-box h2 {
+				margin: 0 0 0.3em;
+				font-size: 1.4em;
+				color: rgb(var(--black));
+			}
+			.garden-box p {
+				margin: 0 0 1em;
 				color: rgb(var(--gray));
 				font-size: 0.95em;
 			}
-			.project-info .tags {
-				margin-top: 0.6em;
+			.garden-links {
 				display: flex;
-				gap: 0.4em;
+				gap: 0.8em;
+				justify-content: center;
 				flex-wrap: wrap;
 			}
-			.project-info .tags span {
-				font-size: 0.75em;
-				padding: 0.2em 0.6em;
+			.garden-links a {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.3em;
+				padding: 0.5em 1em;
 				border-radius: 999px;
 				background: rgb(var(--gray-light));
 				color: rgb(var(--gray-dark));
+				text-decoration: none;
+				font-size: 0.9em;
+				transition: all 0.2s;
+			}
+			.garden-links a:hover {
+				background: var(--accent);
+				color: white;
 			}
 
-			/* Note list on home */
-			.note-list-home {
-				display: flex;
-				flex-direction: column;
-				gap: 0.8em;
-			}
-			.note-item-home {
-				background: var(--bg-card, #fff);
-				border-radius: 12px;
-				padding: 1em 1.2em;
+			/* Newsletter */
+			.newsletter-box {
+				background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
+				border-radius: 16px;
+				padding: 2em;
+				text-align: center;
 				border: 1px solid rgb(var(--gray-light));
-				text-decoration: none;
-				color: inherit;
-				transition: transform 0.2s, box-shadow 0.2s;
-				display: flex;
-				align-items: flex-start;
-				gap: 0.8em;
+				margin-top: 2em;
 			}
-			.note-item-home:hover {
-				transform: translateY(-2px);
-				box-shadow: var(--box-shadow);
+			[data-theme='dark'] .newsletter-box {
+				background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+				border-color: #2a3045;
 			}
-			.note-icon-home {
+			.newsletter-box h3 {
+				margin: 0 0 0.3em;
 				font-size: 1.3em;
-				line-height: 1;
-				margin-top: 0.15em;
-				flex-shrink: 0;
 			}
-			.note-content-home {
-				flex: 1;
-			}
-			.note-content-home h3 {
-				margin: 0 0 0.2em;
-				font-size: 1em;
-				color: rgb(var(--black));
-			}
-			.note-content-home p {
-				margin: 0 0 0.4em;
-				font-size: 0.85em;
+			.newsletter-box p {
+				margin: 0 0 1em;
 				color: rgb(var(--gray));
-				line-height: 1.4;
-				display: -webkit-box;
-				-webkit-line-clamp: 2;
-				-webkit-box-orient: vertical;
-				overflow: hidden;
+				font-size: 0.95em;
 			}
-			.note-meta-home {
+			.newsletter-form {
 				display: flex;
-				gap: 0.6em;
-				font-size: 0.75em;
-				color: rgb(var(--gray));
-				align-items: center;
+				gap: 0.5em;
+				justify-content: center;
 				flex-wrap: wrap;
+				max-width: 420px;
+				margin: 0 auto;
 			}
-			.note-meta-home .tag {
-				font-size: 0.75em;
-				padding: 0.1em 0.4em;
-				border-radius: 999px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
+			.newsletter-form input {
+				flex: 1;
+				min-width: 200px;
+				padding: 0.6em 1em;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 8px;
+				font-size: 0.95em;
+				font-family: inherit;
 			}
+			.newsletter-form input:focus {
+				outline: none;
+				border-color: var(--accent);
+			}
+			.newsletter-form button {
+				padding: 0.6em 1.4em;
+				background: var(--accent);
+				color: white;
+				border: none;
+				border-radius: 8px;
+				font-size: 0.95em;
+				font-family: inherit;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			.newsletter-form button:hover {
+				background: rgb(var(--accent-dark, 99, 102, 241));
+			}
+
+			/* Site stats */
+			.site-stats {
+				text-align: center;
+				margin-top: 3em;
+				padding-top: 2em;
+				border-top: 1px solid rgb(var(--gray-light));
+				color: rgb(var(--gray));
+				font-size: 0.9em;
+			}
+
 			@media (max-width: 720px) {
 				.hero h1 { font-size: 2.2em; }
-				.project-card { flex-direction: column; gap: 1em; }
+				.hero-cta { flex-direction: column; align-items: center; }
+				.btn { width: 100%; max-width: 320px; justify-content: center; }
+				.flagship-card { flex-direction: column; gap: 1em; }
+				.flagship-actions { flex-direction: column; }
+				.flagship-actions .btn { width: 100%; }
 			}
 		</style>
 	<main>
@@ -370,9 +425,14 @@ const latestNotes = (await getCollection('notes')).sort(
 				<h1>无名苗圃</h1>
 				<p class="subtitle" id="typewriter"></p>
 				<p class="desc">
-						独立开发者 · 技术创作者 · 一人公司探索者<br />
-						用代码、内容与 AI 工具，构建可持续的创作者生意
-					</p>
+					独立开发者 · 技术创作者 · 一人公司探索者<br />
+					用代码、内容与 AI 工具，构建可持续的创作者生意
+				</p>
+				<div class="hero-cta">
+					<a href="/tools/md2docx" class="btn btn-primary">🚀 论文排版工具（免费试用）</a>
+					<a href="/services" class="btn btn-secondary">商业服务</a>
+					<a href="/tools" class="btn btn-outline">查看全部产品</a>
+				</div>
 				<div class="social">
 					<a href="https://github.com/vajhxajhcv" target="_blank" rel="noopener">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -389,9 +449,38 @@ const latestNotes = (await getCollection('notes')).sort(
 				</div>
 			</section>
 
+			<!-- Flagship Product -->
+			<section>
+				<h2 class="section-title">
+					主打产品
+					<a href="/tools">查看全部 →</a>
+				</h2>
+				<div class="flagship-card">
+					<div class="flagship-icon">📄</div>
+					<div class="flagship-content">
+						<h2>docx-formatter-cn</h2>
+						<p>把 Markdown 一键转成符合中文学术规范的 Word 文档。支持 LaTeX 公式原生转换、三线表、标题自动编号，内置毕业论文、课程论文、武汉理工毕业设计等中文学位论文模板，以及 arXiv / Nature / Science / IEEE / APA 等期刊/预印本近似格式。</p>
+						<ul class="flagship-features">
+							<li>Markdown → Word 一键转换</li>
+							<li>LaTeX 公式转可编辑 OMML</li>
+							<li>三线表与自动编号</li>
+							<li>在线工具 + Pro 桌面版</li>
+						</ul>
+						<div class="flagship-actions">
+							<a href="/tools/md2docx" class="btn btn-primary">🚀 在线免费试用</a>
+							<a href="/projects/docx-formatter-docs" class="btn btn-secondary">📖 阅读文档</a>
+							<a href="/pricing" class="btn btn-outline">💰 查看定价</a>
+						</div>
+					</div>
+				</div>
+			</section>
+
 			<!-- Services -->
 			<section>
-				<h2 class="section-title">我能帮你做什么</h2>
+				<h2 class="section-title">
+					我能帮你做什么
+					<a href="/services">全部服务 →</a>
+				</h2>
 				<div class="services-grid">
 					<a href="/services" class="service-card">
 						<div class="service-icon">🛠</div>
@@ -403,10 +492,10 @@ const latestNotes = (await getCollection('notes')).sort(
 						<h3>AI 自动化</h3>
 						<p>内容生成管线、智能客服、AI 工作流搭建，让重复劳动消失。</p>
 					</a>
-					<a href="/services" class="service-card">
+					<a href="/services/thesis-formatting" class="service-card">
 						<div class="service-icon">📄</div>
-						<h3>文档工具</h3>
-						<p>Markdown 转学术 Word、批量排版、模板定制，基于自研工具链。</p>
+						<h3>论文排版服务</h3>
+						<p>基于 docx-formatter-cn 工具链，按学校模板人工排版。</p>
 					</a>
 					<a href="/services" class="service-card">
 						<div class="service-icon">✍️</div>
@@ -450,43 +539,20 @@ const latestNotes = (await getCollection('notes')).sort(
 				</section>
 			)}
 
-			<!-- Projects -->
-			<section>
-				<h2 class="section-title">
-					项目
-					<a href="/projects/docx-formatter-cn">查看详情 →</a>
-				</h2>
-				<div style="display: flex; flex-direction: column; gap: 1em;">
-					<a href="/projects/docx-formatter-cn" class="project-card">
-						<div class="project-icon">📄</div>
-						<div class="project-info">
-							<h3>docx-formatter-cn</h3>
-							<p>中文 Word 文档智能排版工具 — Markdown 一键转为符合学术规范的 docx</p>
-							<div class="tags">
-								<span>Python</span>
-								<span>LaTeX</span>
-								<span>Word</span>
-							</div>
-						</div>
-					</a>
-					<div class="project-card" style="opacity: 0.7;">
-						<div class="project-icon" style="background: rgb(var(--gray-light)); color: rgb(var(--gray));">🌐</div>
-						<div class="project-info">
-							<h3>wumingmp.me</h3>
-							<p>这个网站本身 — Astro 驱动的个人品牌站与内容中心</p>
-							<div class="tags">
-								<span>Astro</span>
-								<span>Cloudflare</span>
-								<span>品牌</span>
-							</div>
-						</div>
-					</div>
+			<!-- Garden -->
+			<section class="garden-box">
+				<h2>🌱 自留区</h2>
+				<p>这里是我的个人创作空间：不成体系的写作、学习笔记，以及关于「花园主」本人的一点点介绍。</p>
+				<div class="garden-links">
+					<a href="/blog">✍️ 写作</a>
+					<a href="/notes">📝 笔记</a>
+					<a href="/about">👤 关于我</a>
 				</div>
 			</section>
 
 			<!-- Site stats -->
-			<section class="site-stats" style="text-align: center; margin-top: 3em; padding-top: 2em; border-top: 1px solid rgb(var(--gray-light)); color: rgb(var(--gray)); font-size: 0.9em;">
-				<p>🌱 本站已运行 <span id="site-days">0</span> 天</p>
+			<section class="site-stats">
+				<p>本站已运行 <span id="site-days">0</span> 天</p>
 				<p style="margin-top: 0.5em;">
 					<img src="https://count.getloli.com/get/@wumingmp.me?theme=rule34" alt="visitor count" style="height: 24px; vertical-align: middle;" />
 				</p>

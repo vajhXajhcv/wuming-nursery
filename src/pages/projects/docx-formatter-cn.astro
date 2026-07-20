@@ -1,242 +1,475 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'docx-formatter-cn - 中文论文排版工具';
+const description = '把 Markdown 一键转成符合中文学术规范的 Word 文档。支持毕业论文、课程论文、数学建模、公文模板，以及 arXiv / Nature / Science / IEEE / APA 等期刊/预印本格式；LaTeX 公式原生转换、三线表、自动编号。';
+
+const painPoints = [
+	{ icon: '😩', title: '格式反复被打回', desc: '封面、目录、页眉页脚、参考文献，每一处都可能成为退稿理由。' },
+	{ icon: '🧮', title: '公式不敢再改', desc: '公式截图放大就糊，修改一次就要重新截图、重新编号。' },
+	{ icon: '📊', title: '表格样式不统一', desc: '手动画三线表耗时，行距、字号、边框粗细很难保持一致。' },
+	{ icon: '📑', title: '编号和目录手敲', desc: '标题、图表、公式编号一改，全文引用都要手动更新。' },
+];
+
+const features = [
+	{ title: 'Markdown → Word', desc: '一键将 Markdown 转为符合中文学术规范的 docx，支持标题、段落、列表、表格、图片。' },
+	{ title: 'LaTeX 公式', desc: 'LaTeX 转换为 Word 原生 OMML 公式，可编辑、非图片，支持分数、根号、矩阵等。' },
+	{ title: '三线表', desc: '自动生成标准学术三线表，顶线、栏目线、底线粗细可调。' },
+	{ title: '中文字体', desc: 'SimSun/SimHei + Cambria Math，中英文混排优化，自动首行缩进。' },
+	{ title: '自动编号', desc: '标题、图表、公式自动编号，支持目录生成和上标引用 [n]。' },
+	{ title: '模板系统', desc: '中文学位论文 + arXiv / Nature / Science / IEEE / APA 等期刊/预印本模板，支持 JSON/YAML 自定义。' },
+	{ title: 'YAML Frontmatter', desc: '自动提取 Markdown 文件顶部的 YAML 元数据，渲染为封面页。' },
+	{ title: 'GUI + CLI', desc: 'PySide6 桌面应用支持拖拽文件，CLI 支持批量转换和模板导出。' },
+];
+
+const faqs = [
+	{ q: '和 Pandoc 有什么区别？', a: 'Pandoc 是通用转换器，对中文学术模板、三线表、LaTeX→OMML 公式编号等场景支持有限。本工具围绕中文论文排版做了专门优化。' },
+	{ q: '在线版能代替 Pro 版吗？', a: '在线版适合单次体验和轻量文档，不支持本地图片路径、批量转换和自定义复杂模板。Pro 桌面版功能更完整。' },
+	{ q: '可以按学校模板定制吗？', a: '可以。Pro 版支持 JSON/YAML 自定义模板；也可以购买论文排版服务，由人工按学校规范调整。' },
+	{ q: '参考文献能自动生成吗？', a: '当前版本支持 [n] 上标引用与列表格式；自动从 Zotero/EndNote 导入并排序的功能在规划中。' },
+];
+
+const pricingSnippet = [
+	{ name: '免费版', price: '¥0', desc: 'CLI 开源，4 种模板' },
+	{ name: 'Pro 个人版', price: '¥49', desc: 'GUI + 批量 + 自定义模板' },
+	{ name: '论文排版服务', price: '¥199/篇起', desc: '人工按学校模板排版' },
+];
 ---
 
-<BaseLayout title="docx-formatter-cn - 无名苗圃" description="中文 Word 文档智能排版工具">
-		<style>
-			main {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 3em 1em;
-			}
-			.hero {
-				text-align: center;
-				padding: 2em 0;
-			}
-			.hero h1 {
-				margin: 0 0 0.3em 0;
-				font-size: 2.4em;
-			}
-			.hero p {
-				color: rgb(var(--gray));
-				margin: 0;
-			}
-			.actions {
-				display: flex;
-				gap: 1em;
-				justify-content: center;
-				margin: 2em 0;
-				flex-wrap: wrap;
-			}
-			.btn {
-				display: inline-block;
-				padding: 0.6em 1.2em;
-				border-radius: 8px;
-				text-decoration: none;
-				font-weight: 600;
-				transition: transform 0.15s ease;
-			}
-			.btn:hover {
-				transform: translateY(-2px);
-			}
-			.btn-primary {
-				background: var(--accent);
-				color: white;
-			}
-			.btn-secondary {
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
-			}
-			section {
-				margin: 2.5em 0;
-			}
-			section h2 {
-				font-size: 1.6em;
-				margin-bottom: 0.6em;
-				border-bottom: 2px solid rgb(var(--gray-light));
-				padding-bottom: 0.3em;
-			}
-			.feature-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-				gap: 1.2em;
-				margin-top: 1em;
-			}
-			.feature-card {
-				background: var(--bg-card);
-				border-radius: 12px;
-				padding: 1.2em;
-				box-shadow: 0 2px 8px rgba(var(--gray), 12%);
-			}
-			.feature-card h3 {
-				margin: 0 0 0.4em 0;
-				font-size: 1.15em;
-				color: var(--accent-dark);
-			}
-			.feature-card p {
-				margin: 0;
-				font-size: 0.95em;
-				color: rgb(var(--gray));
-			}
-			pre {
-				background: #f6f8fa;
-				padding: 1em;
-				border-radius: 8px;
-				overflow-x: auto;
-				font-size: 0.85em;
-			}
-			code {
-				font-family: 'Courier New', Courier, monospace;
-			}
-			.tag {
-				display: inline-block;
-				padding: 0.2em 0.6em;
-				border-radius: 999px;
-				background: rgb(var(--gray-light));
-				font-size: 0.8em;
-				margin-right: 0.4em;
-			}
-			.screenshot-wrap {
-				text-align: center;
-				margin: 1em 0;
-			}
-			.screenshot {
-				max-width: 100%;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-				border: 1px solid rgb(var(--gray-light));
-				transition: transform 0.3s ease;
-			}
-			.screenshot:hover {
-				transform: scale(1.01);
-			}
-			.screenshot-caption {
-				font-size: 0.85em;
-				color: rgb(var(--gray));
-				margin-top: 0.6em;
-			}
-		</style>
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: 800px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			text-align: center;
+			padding: 2.5em 0 1.5em;
+		}
+		.hero h1 {
+			font-size: 2.6em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: rgb(var(--gray));
+			font-size: 1.1em;
+			max-width: 620px;
+			margin: 0 auto 1.2em;
+			line-height: 1.7;
+		}
+		.actions {
+			display: flex;
+			gap: 1em;
+			justify-content: center;
+			margin: 1.8em 0 1em;
+			flex-wrap: wrap;
+		}
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.65em 1.4em;
+			border-radius: 10px;
+			text-decoration: none;
+			font-weight: 600;
+			transition: transform 0.15s ease, box-shadow 0.15s ease;
+			border: none;
+			cursor: pointer;
+			font-size: 1em;
+		}
+		.btn:hover {
+			transform: translateY(-2px);
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+			box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+		}
+		.btn-secondary {
+			background: rgb(var(--gray-light));
+			color: rgb(var(--gray-dark));
+		}
+		.btn-outline {
+			background: transparent;
+			color: var(--accent);
+			border: 2px solid var(--accent);
+		}
+		.tag {
+			display: inline-block;
+			padding: 0.2em 0.7em;
+			border-radius: 999px;
+			background: rgb(var(--gray-light));
+			font-size: 0.82em;
+			margin: 0 0.3em 0.4em 0;
+			color: rgb(var(--gray-dark));
+		}
+
+		section {
+			margin: 3em 0;
+		}
+		section h2 {
+			font-size: 1.7em;
+			margin-bottom: 0.8em;
+			text-align: center;
+		}
+
+		.pain-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 1em;
+		}
+		.pain-card {
+			background: var(--bg-card, #fff);
+			border: 1px solid rgb(var(--gray-light));
+			border-radius: 12px;
+			padding: 1.2em;
+			text-align: center;
+		}
+		.pain-card .icon {
+			font-size: 1.8em;
+			margin-bottom: 0.3em;
+		}
+		.pain-card h3 {
+			font-size: 1.05em;
+			margin: 0 0 0.3em;
+		}
+		.pain-card p {
+			margin: 0;
+			font-size: 0.88em;
+			color: rgb(var(--gray));
+			line-height: 1.6;
+		}
+
+		.before-after {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 1.2em;
+		}
+		.ba-card {
+			background: var(--bg-card, #fff);
+			border: 1px solid rgb(var(--gray-light));
+			border-radius: 12px;
+			padding: 1.2em;
+		}
+		.ba-card h3 {
+			font-size: 1.1em;
+			margin: 0 0 0.6em;
+			color: var(--accent-dark);
+		}
+		.ba-card ul {
+			margin: 0;
+			padding-left: 1.2em;
+			color: rgb(var(--gray-dark));
+			font-size: 0.95em;
+			line-height: 1.8;
+		}
+
+		.feature-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 1.2em;
+		}
+		.feature-card {
+			background: var(--bg-card, #fff);
+			border-radius: 12px;
+			padding: 1.2em;
+			border: 1px solid rgb(var(--gray-light));
+			box-shadow: 0 2px 8px rgba(var(--gray), 8%);
+		}
+		.feature-card h3 {
+			margin: 0 0 0.4em;
+			font-size: 1.1em;
+			color: var(--accent-dark);
+		}
+		.feature-card p {
+			margin: 0;
+			font-size: 0.92em;
+			color: rgb(var(--gray));
+			line-height: 1.6;
+		}
+
+		.screenshot-wrap {
+			text-align: center;
+			margin: 1em 0;
+		}
+		.screenshot {
+			max-width: 100%;
+			border-radius: 12px;
+			box-shadow: var(--box-shadow);
+			border: 1px solid rgb(var(--gray-light));
+		}
+		.screenshot-caption {
+			font-size: 0.85em;
+			color: rgb(var(--gray));
+			margin-top: 0.6em;
+		}
+
+		.pre {
+			background: #f6f8fa;
+			padding: 1em;
+			border-radius: 8px;
+			overflow-x: auto;
+			font-size: 0.85em;
+		}
+		[data-theme='dark'] .pre {
+			background: #1f2937;
+		}
+		code {
+			font-family: 'Courier New', Courier, monospace;
+		}
+
+		.pricing-cards {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 1em;
+			margin-top: 1em;
+		}
+		.price-card {
+			background: var(--bg-card, #fff);
+			border: 2px solid rgb(var(--gray-light));
+			border-radius: 12px;
+			padding: 1.2em;
+			text-align: center;
+		}
+		.price-card h3 {
+			margin: 0 0 0.2em;
+			font-size: 1.1em;
+		}
+		.price-card .price {
+			font-size: 1.5em;
+			font-weight: 800;
+			color: var(--accent);
+			margin: 0.4em 0;
+		}
+		.price-card p {
+			margin: 0;
+			font-size: 0.88em;
+			color: rgb(var(--gray));
+		}
+
+		.faq-item {
+			background: var(--bg-card, #fff);
+			border-radius: 12px;
+			border: 1px solid rgb(var(--gray-light));
+			margin-bottom: 0.8em;
+			overflow: hidden;
+		}
+		.faq-q {
+			padding: 1em 1.2em;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.faq-q:hover {
+			background: rgba(var(--gray-light), 0.3);
+		}
+		.faq-arrow {
+			font-size: 0.8em;
+			color: rgb(var(--gray));
+			transition: transform 0.2s;
+		}
+		.faq-item.open .faq-arrow {
+			transform: rotate(180deg);
+		}
+		.faq-a {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+		}
+		.faq-item.open .faq-a {
+			max-height: 300px;
+		}
+		.faq-a-inner {
+			padding: 0 1.2em 1em;
+			color: rgb(var(--gray-dark));
+			line-height: 1.7;
+			font-size: 0.95em;
+		}
+
+		.support-box {
+			text-align: center;
+			margin-top: 3em;
+		}
+		.support-box img {
+			max-width: 280px;
+			border-radius: 12px;
+			box-shadow: var(--box-shadow);
+		}
+
+		@media (max-width: 720px) {
+			.hero h1 { font-size: 2em; }
+			.actions { flex-direction: column; align-items: center; }
+			.btn { width: 100%; max-width: 320px; justify-content: center; }
+		}
+	</style>
+
 	<main>
-			<div class="hero">
-				<h1>docx-formatter-cn</h1>
-				<p>中文 Word 文档智能排版工具 — Markdown 一键转为符合学术规范的 docx</p>
-				<div class="actions">
-					<a class="btn btn-primary" href="https://github.com/vajhxajhcv/docx-formatter-cn" target="_blank">GitHub 仓库</a>
-					<a class="btn btn-secondary" href="/docx-formatter-cn-demo.docx" download>下载示例文档</a>
-					<a class="btn btn-secondary" href="/projects/docx-formatter-docs">📖 使用文档</a>
+		<section class="hero">
+			<h1>毕业论文格式又被打回来了？</h1>
+			<p>用 <strong>docx-formatter-cn</strong> 把 Markdown 一键转成符合中文学术规范的 Word 文档。公式、三线表、目录、编号一次搞定。</p>
+			<div class="actions">
+				<a class="btn btn-primary" href="/tools/md2docx">🚀 在线免费试用</a>
+				<a class="btn btn-outline" href="/pricing">查看定价</a>
+				<a class="btn btn-secondary" href="/projects/docx-formatter-docs">📖 阅读文档</a>
+			</div>
+			<div>
+				<span class="tag">Python</span>
+				<span class="tag">Markdown</span>
+				<span class="tag">LaTeX</span>
+				<span class="tag">Word</span>
+				<span class="tag">PySide6</span>
+			</div>
+		</section>
+
+		<section>
+			<h2>这些问题，是不是也困扰你？</h2>
+			<div class="pain-grid">
+				{painPoints.map((p) => (
+					<div class="pain-card">
+						<div class="icon">{p.icon}</div>
+						<h3>{p.title}</h3>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section>
+			<h2>用它，排版从“体力活”变“一键事”</h2>
+			<div class="before-after">
+				<div class="ba-card">
+					<h3>之前你可能需要</h3>
+					<ul>
+						<li>手动设置各级标题字号、段前段后</li>
+						<li>公式截图并担心分辨率</li>
+						<li>逐个调整表格边框为三线表</li>
+						<li>手敲目录，一改页码就乱</li>
+					</ul>
 				</div>
-				<div>
-					<span class="tag">Python</span>
-					<span class="tag">Markdown</span>
-					<span class="tag">LaTeX</span>
-					<span class="tag">Word</span>
-					<span class="tag">PySide6</span>
+				<div class="ba-card">
+					<h3>现在你只需要</h3>
+					<ul>
+						<li>写 Markdown，保留专注力在内容</li>
+						<li>LaTeX 公式自动转为可编辑 OMML</li>
+						<li>表格自动渲染为标准三线表</li>
+						<li>标题、图表、目录自动生成</li>
+					</ul>
 				</div>
 			</div>
+		</section>
 
-			<section>
-				<h2>效果预览</h2>
-				<div class="screenshot-wrap">
-					<img src="/docx-demo-screenshot.png" alt="docx-formatter-cn 效果预览" class="screenshot" />
-					<p class="screenshot-caption">由 Markdown 转换生成的 Word 文档示例</p>
-				</div>
-			</section>
+		<section>
+			<h2>效果预览</h2>
+			<div class="screenshot-wrap">
+				<img src="/docx-demo-screenshot.png" alt="docx-formatter-cn 效果预览" class="screenshot" />
+				<p class="screenshot-caption">由 Markdown 转换生成的 Word 文档示例</p>
+			</div>
+		</section>
 
-			<section>
-				<h2>功能特性</h2>
-				<div class="feature-grid">
+		<section>
+			<h2>功能特性</h2>
+			<div class="feature-grid">
+				{features.map((f) => (
 					<div class="feature-card">
-						<h3>Markdown → Word</h3>
-						<p>一键将 Markdown 转为符合中文学术规范的 docx，支持标题、段落、列表、表格、图片。</p>
+						<h3>{f.title}</h3>
+						<p>{f.desc}</p>
 					</div>
-					<div class="feature-card">
-						<h3>LaTeX 公式</h3>
-						<p>LaTeX 转换为 Word 原生 OMML 公式，可编辑、非图片，支持分数、根号、矩阵等。</p>
-					</div>
-					<div class="feature-card">
-						<h3>三线表</h3>
-						<p>自动生成标准学术三线表，顶线、栏目线、底线粗细可调。</p>
-					</div>
-					<div class="feature-card">
-						<h3>中文字体</h3>
-						<p>SimSun/SimHei + Cambria Math，中英文混排优化，自动首行缩进。</p>
-					</div>
-					<div class="feature-card">
-						<h3>自动编号</h3>
-						<p>标题、图表、公式自动编号，支持目录生成和上标引用 [n]。</p>
-					</div>
-					<div class="feature-card">
-						<h3>模板系统</h3>
-						<p>预设课程论文、毕业论文、数学建模、公文四种模板，支持 JSON/YAML 自定义。</p>
-					</div>
-					<div class="feature-card">
-						<h3>YAML Frontmatter</h3>
-						<p>自动提取 Markdown 文件顶部的 YAML 元数据，渲染为封面页。</p>
-					</div>
-					<div class="feature-card">
-						<h3>GUI + CLI</h3>
-						<p>PySide6 桌面应用支持拖拽文件，CLI 支持批量转换和模板导出。</p>
-					</div>
-				</div>
-			</section>
+				))}
+			</div>
+		</section>
 
-			<section>
-				<h2>安装</h2>
-				<pre><code>git clone https://github.com/vajhXajhcv/docx-formatter-cn.git
+		<section>
+			<h2>定价方案</h2>
+			<div class="pricing-cards">
+				{pricingSnippet.map((p) => (
+					<div class="price-card">
+						<h3>{p.name}</h3>
+						<div class="price">{p.price}</div>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+			<div style="text-align:center; margin-top:1.2em;">
+				<a href="/pricing" class="btn btn-primary">查看完整定价 →</a>
+			</div>
+		</section>
+
+		<section>
+			<h2>快速开始</h2>
+			<h3>命令行</h3>
+			<div class="pre"><code>git clone https://github.com/vajhXajhcv/docx-formatter-cn.git
 cd docx-formatter-cn
-pip install -e .</code></pre>
-			</section>
+pip install -e .
 
-			<section>
-				<h2>快速开始</h2>
-				<h3>命令行</h3>
-				<pre><code># Markdown 转 Word
-python -m docx_formatter.cli convert input.md -o output.docx -t 课程论文
+# Markdown 转 Word
+python -m docx_formatter.cli convert input.md -o output.docx -t 毕业论文
 
 # 批量转换
-python -m docx_formatter.cli batch input_dir/ -o output_dir/ -t 课程论文
-
-# 修正现有 Word
-python -m docx_formatter.cli format input.docx -o output.docx -t 毕业论文 --add-toc</code></pre>
-				<h3>Python API</h3>
-				<pre><code>from docx_formatter import convert_markdown_to_docx
+python -m docx_formatter.cli batch input_dir/ -o output_dir/ -t 毕业论文</code></div>
+			<h3>Python API</h3>
+			<div class="pre"><code>from docx_formatter import convert_markdown_to_docx
 
 with open("论文.md", "r", encoding="utf-8") as f:
     md_text = f.read()
 
-convert_markdown_to_docx(md_text, "output.docx", template="课程论文")</code></pre>
-			</section>
+convert_markdown_to_docx(md_text, "output.docx", template="毕业论文")</code></div>
+		</section>
 
-			<section>
-				<h2>Markdown 语法支持</h2>
-				<ul>
-					<li>YAML Frontmatter（title / author / date / abstract / keywords）</li>
-					<li>标题、粗体、斜体、下划线、删除线、行内代码</li>
-					<li>行内公式 <code>$...$</code> 或 <code>\(...\)</code>，块级公式 <code>$$...$$</code> 或 <code>\[...\]</code></li>
-					<li>表格（含行内公式）、图片（支持尺寸控制 <code>=WxH</code>）</li>
-					<li>上标引用 <code>[n]</code>、超链接 <code>[text](url)</code></li>
-					<li>引用块、任务列表、分页符</li>
-				</ul>
-			</section>
+		<section>
+			<h2>常见问题</h2>
+			{faqs.map((f, i) => (
+				<div class="faq-item" data-faq={i}>
+					<div class="faq-q">
+						{f.q}
+						<span class="faq-arrow">▼</span>
+					</div>
+					<div class="faq-a">
+						<div class="faq-a-inner">{f.a}</div>
+					</div>
+				</div>
+			))}
+		</section>
 
-			<section>
-				<h2>技术栈</h2>
-				<ul>
-					<li><strong>公式引擎</strong>：自研 MathML → OMML 转换器（基于 lxml）</li>
-					<li><strong>Markdown 解析</strong>：轻量级手写解析器</li>
-					<li><strong>Word 生成</strong>：python-docx + lxml 直接操作 XML</li>
-					<li><strong>GUI</strong>：PySide6</li>
-					<li><strong>测试</strong>：pytest + GitHub Actions CI</li>
-				</ul>
-			</section>
-
-			<section style="text-align: center; margin-top: 3em;">
-				<h2>支持我</h2>
-				<p>如果这个工具帮到了你，欢迎通过爱发电支持我继续创作 👇</p>
-				<a href="https://afdian.com/a/jk342joy" target="_blank" rel="noopener">
-					<img src="/afdian.jpg" alt="爱发电 - 花园主" style="max-width: 320px; border-radius: 12px; box-shadow: var(--box-shadow);" />
-				</a>
-			</section>
+		<section class="support-box">
+			<h2>准备好开始了吗？</h2>
+			<p>在线免费试用，或升级到 Pro 桌面版获得批量转换、自定义模板与完整本地文件工作流。</p>
+			<div class="actions" style="justify-content: center;">
+				<a class="btn btn-primary" href="/tools/md2docx">🚀 在线免费试用</a>
+				<a class="btn btn-outline" href="/pricing">查看定价方案</a>
+			</div>
+			<p style="margin-top: 1.5em; font-size: 0.85em; color: rgb(var(--gray));">
+				开源 CLI 可在 <a href="https://github.com/vajhXajhcv/docx-formatter-cn" target="_blank" rel="noopener">GitHub</a> 获取。
+			</p>
+		</section>
 	</main>
+
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.faq-item').forEach(function(item) {
+				var q = item.querySelector('.faq-q');
+				q.addEventListener('click', function() {
+					item.classList.toggle('open');
+				});
+			});
+		});
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "SoftwareApplication",
+		"name": "docx-formatter-cn",
+		"applicationCategory": "OfficeApplication",
+		"description": "中文 Word 文档智能排版工具：Markdown 一键转 Word，支持 LaTeX 公式、三线表、自动编号与模板系统。",
+		"offers": {
+			"@type": "Offer",
+			"price": "0",
+			"priceCurrency": "CNY"
+		}
+	}
+	</script>
 </BaseLayout>

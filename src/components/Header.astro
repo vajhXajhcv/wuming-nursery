@@ -1,6 +1,19 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+
+const productLinks = [
+	{ href: '/tools', text: '工具总览' },
+	{ href: '/tools/md2docx', text: '在线 Markdown 转 Word' },
+	{ href: '/projects/docx-formatter-cn', text: 'docx-formatter-cn' },
+	{ href: '/projects/docx-formatter-docs', text: '使用文档' },
+];
+
+const gardenLinks = [
+	{ href: '/blog', text: '写作' },
+	{ href: '/notes', text: '笔记' },
+	{ href: '/about', text: '关于我' },
+];
 ---
 
 <header>
@@ -8,13 +21,34 @@ import HeaderLink from './HeaderLink.astro';
 		<h2><a href="/">{SITE_TITLE}</a></h2>
 		<div class="internal-links" id="nav-links">
 			<HeaderLink href="/">首页</HeaderLink>
+
+			<div class="dropdown" data-dropdown>
+				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+					产品
+					<span class="dropdown-chevron" aria-hidden="true">▾</span>
+				</button>
+				<div class="dropdown-menu">
+					{productLinks.map((link) => (
+						<a href={link.href}>{link.text}</a>
+					))}
+				</div>
+			</div>
+
 			<HeaderLink href="/services">服务</HeaderLink>
-			<HeaderLink href="/blog">写作</HeaderLink>
-			<HeaderLink href="/notes">笔记</HeaderLink>
-			<HeaderLink href="/archive">归档</HeaderLink>
-			<HeaderLink href="/tags">标签</HeaderLink>
-			<HeaderLink href="/projects">项目</HeaderLink>
-			<HeaderLink href="/about">关于</HeaderLink>
+			<HeaderLink href="/pricing">定价</HeaderLink>
+
+			<div class="dropdown" data-dropdown>
+				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+					🌱 自留区
+					<span class="dropdown-chevron" aria-hidden="true">▾</span>
+				</button>
+				<div class="dropdown-menu">
+					{gardenLinks.map((link) => (
+						<a href={link.href}>{link.text}</a>
+					))}
+				</div>
+			</div>
+
 			<HeaderLink href="/contact">联系</HeaderLink>
 		</div>
 		<div class="nav-actions">
@@ -27,6 +61,7 @@ import HeaderLink from './HeaderLink.astro';
 		</div>
 	</nav>
 </header>
+
 <script is:inline>
 	(function() {
 		const root = document.documentElement;
@@ -37,6 +72,7 @@ import HeaderLink from './HeaderLink.astro';
 		const icon = document.getElementById('theme-icon');
 		if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
 	})();
+
 	document.addEventListener('DOMContentLoaded', function() {
 		const toggle = document.getElementById('theme-toggle');
 		const icon = document.getElementById('theme-icon');
@@ -78,8 +114,50 @@ import HeaderLink from './HeaderLink.astro';
 				}
 			});
 		}
+
+		// Dropdowns
+		document.querySelectorAll('[data-dropdown]').forEach(function(dropdown) {
+			const btn = dropdown.querySelector('.dropdown-toggle');
+			const menu = dropdown.querySelector('.dropdown-menu');
+			if (!btn || !menu) return;
+
+			function open() {
+				dropdown.classList.add('open');
+				btn.setAttribute('aria-expanded', 'true');
+			}
+			function close() {
+				dropdown.classList.remove('open');
+				btn.setAttribute('aria-expanded', 'false');
+			}
+
+			btn.addEventListener('click', function(e) {
+				e.stopPropagation();
+				const isOpen = dropdown.classList.contains('open');
+				// Close others
+				document.querySelectorAll('[data-dropdown].open').forEach(function(d) {
+					if (d !== dropdown) d.classList.remove('open');
+				});
+				if (isOpen) close(); else open();
+			});
+
+			dropdown.addEventListener('mouseenter', open);
+			dropdown.addEventListener('mouseleave', close);
+
+			menu.querySelectorAll('a').forEach(function(link) {
+				link.addEventListener('click', close);
+			});
+		});
+
+		document.addEventListener('click', function() {
+			document.querySelectorAll('[data-dropdown].open').forEach(function(d) {
+				d.classList.remove('open');
+				const btn = d.querySelector('.dropdown-toggle');
+				if (btn) btn.setAttribute('aria-expanded', 'false');
+			});
+		});
 	});
 </script>
+
 <style>
 	header {
 		margin: 0;
@@ -108,15 +186,61 @@ import HeaderLink from './HeaderLink.astro';
 		display: flex;
 		align-items: center;
 	}
-	nav a {
-		padding: 1em 0.5em;
+	.internal-links > :global(a),
+	.internal-links > .dropdown > .dropdown-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.2em;
+		padding: 1em 0.6em;
 		color: rgb(var(--black));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
+		background: none;
+		border: none;
+		font: inherit;
+		cursor: pointer;
+		font-size: 1em;
 	}
-	nav a.active {
-		text-decoration: none;
+	.internal-links > :global(a.active) {
 		border-bottom-color: var(--accent);
+	}
+	.dropdown {
+		position: relative;
+	}
+	.dropdown-chevron {
+		font-size: 0.75em;
+		transition: transform 0.2s;
+	}
+	.dropdown.open .dropdown-chevron {
+		transform: rotate(180deg);
+	}
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		top: calc(100% - 4px);
+		left: 0;
+		min-width: 200px;
+		background: var(--bg-card);
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 12px;
+		box-shadow: var(--box-shadow);
+		padding: 0.4em;
+		z-index: 101;
+	}
+	.dropdown.open .dropdown-menu {
+		display: block;
+	}
+	.dropdown-menu a {
+		display: block;
+		padding: 0.6em 0.9em;
+		border-radius: 8px;
+		color: rgb(var(--black));
+		text-decoration: none;
+		font-size: 0.92em;
+		white-space: nowrap;
+	}
+	.dropdown-menu a:hover {
+		background: rgb(var(--gray-light));
 	}
 	.nav-actions {
 		display: flex;
@@ -193,13 +317,29 @@ import HeaderLink from './HeaderLink.astro';
 		.internal-links.open {
 			display: flex;
 		}
-		.internal-links a {
+		.internal-links > :global(a),
+		.internal-links > .dropdown > .dropdown-toggle {
 			padding: 0.8em 0.5em;
 			border-bottom: none;
 			border-left: 4px solid transparent;
+			justify-content: space-between;
 		}
-		.internal-links a.active {
+		.internal-links > :global(a.active) {
 			border-left-color: var(--accent);
+			border-bottom-color: transparent;
+		}
+		.dropdown-menu {
+			position: static;
+			box-shadow: none;
+			border: none;
+			background: transparent;
+			padding-left: 1em;
+		}
+		.dropdown.open .dropdown-menu {
+			display: block;
+		}
+		.dropdown-menu a {
+			padding: 0.5em 0.8em;
 		}
 		#menu-toggle {
 			display: inline-flex;

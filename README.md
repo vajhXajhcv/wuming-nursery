@@ -31,14 +31,19 @@ npm run preview
 ## 项目结构
 
 ```
-├── public/          # 静态资源
+├── public/                 # 静态资源
+│   └── tools/md2docx/      # 在线转换工具依赖 wheel
 ├── src/
-│   ├── assets/      # 图片、字体等
-│   ├── components/  # 可复用组件
-│   ├── content/     # 博客文章与笔记 (Markdown)
-│   ├── layouts/     # 页面布局
-│   ├── pages/       # 路由页面
-│   └── styles/      # 全局样式
+│   ├── assets/             # 图片、字体等
+│   ├── components/         # 可复用组件
+│   ├── content/            # 博客文章与笔记 (Markdown)
+│   ├── layouts/            # 页面布局
+│   ├── pages/              # 路由页面
+│   │   ├── tools/index.astro     # 产品工具总览页
+│   │   ├── tools/md2docx.astro   # 在线 Markdown 转 Word
+│   │   ├── pricing.astro         # 定价页
+│   │   └── services/thesis-formatting.astro  # 论文排版服务
+│   └── styles/             # 全局样式
 └── astro.config.mjs
 ```
 
@@ -57,3 +62,7 @@ pubDate: 2026-05-13
 ```
 
 提交并推送后，Cloudflare Pages 会自动构建部署。
+
+## 更新日志
+
+详见 [CHANGELOG.md](./CHANGELOG.md)。

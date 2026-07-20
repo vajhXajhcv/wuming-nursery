@@ -1,0 +1,507 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = '在线 Markdown 转 Word（论文排版） - 无名苗圃';
+const description = '免费在线把 Markdown 一键转为符合中文学术规范的 Word（docx），支持 LaTeX 公式、三线表、标题自动编号。毕业论文、课程论文、数学建模、公文模板。';
+
+const sampleMarkdown = `---
+title: "毕业论文格式在线预览"
+author: "张三"
+date: "2026-07-20"
+abstract: "这是一段摘要，用于演示在线转换工具生成的封面与正文排版效果。"
+keywords: ["Markdown", "Word", "论文排版"]
+---
+
+# 绪论
+
+## 研究背景
+
+随着学术写作工具的发展，研究者越来越需要将 Markdown 这样的轻量级标记语言转换为符合学校格式要求的 Word 文档。公式 $E=mc^2$ 可以直接渲染为 Word 原生 OMML 公式，而非图片。
+
+## 研究意义
+
+本工具希望解决以下问题：
+
+1. 格式反复被打回，手工调整效率低；
+2. 目录、图表编号、页码容易错乱；
+3. 公式截图在 Word 中放大后模糊。
+
+# 实验方法
+
+我们使用三线表展示实验数据：
+
+| 样本 | 准确率 | 召回率 |
+| ---: | ---: | ---: |
+| A | 0.92 | 0.89 |
+| B | 0.95 | 0.91 |
+
+块级公式示例：
+
+$$
+\\int_{-\\infty}^{+\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}
+$$
+
+# 结论
+
+在线轻量版已经能够完成标题、正文、列表、表格与公式的转换；如需本地图片、批量转换或自定义学校模板，可升级到桌面 Pro 版。
+`;
+---
+
+<BaseLayout title={title} description={description}>
+	<script is:inline define:vars={{ sampleMarkdown }}>
+		window.__MD2DOCX_SAMPLE__ = sampleMarkdown;
+	</script>
+
+	<style>
+		main {
+			width: 920px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			text-align: center;
+			padding: 2em 0 1.5em;
+		}
+		.hero h1 {
+			font-size: 2.2em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: rgb(var(--gray));
+			font-size: 1.05em;
+			max-width: 680px;
+			margin: 0 auto;
+			line-height: 1.7;
+		}
+
+		.editor-grid {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 1em;
+			margin: 1.5em 0 1em;
+		}
+		.panel {
+			background: var(--bg-card, #fff);
+			border: 1px solid rgb(var(--gray-light));
+			border-radius: 12px;
+			padding: 1em;
+		}
+		.panel label {
+			display: block;
+			font-weight: 600;
+			margin-bottom: 0.4em;
+			color: rgb(var(--black));
+		}
+		.panel textarea {
+			width: 100%;
+			min-height: 360px;
+			resize: vertical;
+			border: 1px solid rgb(var(--gray-light));
+			border-radius: 8px;
+			padding: 0.75em;
+			font-family: 'Courier New', Courier, monospace;
+			font-size: 0.9em;
+			line-height: 1.6;
+			background: transparent;
+			color: inherit;
+		}
+		.panel textarea:focus {
+			outline: 2px solid var(--accent);
+			outline-offset: -1px;
+		}
+
+		.toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.8em;
+			align-items: center;
+			margin-bottom: 1em;
+		}
+		.toolbar select {
+			padding: 0.45em 0.8em;
+			border-radius: 8px;
+			border: 1px solid rgb(var(--gray-light));
+			background: var(--bg-card, #fff);
+			color: inherit;
+			font-size: 0.95em;
+		}
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.55em 1.1em;
+			border-radius: 8px;
+			border: none;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+			font-size: 0.95em;
+			transition: transform 0.15s, opacity 0.15s;
+		}
+		.btn:hover:not(:disabled) {
+			transform: translateY(-1px);
+		}
+		.btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-secondary {
+			background: rgb(var(--gray-light));
+			color: rgb(var(--gray-dark));
+		}
+
+		.status {
+			font-size: 0.9em;
+			color: rgb(var(--gray));
+			min-height: 1.4em;
+			margin-top: 0.4em;
+		}
+		.status .dot {
+			display: inline-block;
+			width: 0.5em;
+			height: 0.5em;
+			border-radius: 50%;
+			background: var(--accent);
+			margin-right: 0.4em;
+			animation: pulse 1s infinite;
+			vertical-align: middle;
+		}
+		@keyframes pulse {
+			0%, 100% { opacity: 1; }
+			50% { opacity: 0.4; }
+		}
+
+		.result {
+			display: none;
+			margin-top: 1em;
+			padding: 1em;
+			border-radius: 12px;
+			background: #f0fdf4;
+			border: 1px solid #bbf7d0;
+		}
+		[data-theme='dark'] .result {
+			background: #14532d;
+			border-color: #166534;
+		}
+		.result.visible {
+			display: block;
+		}
+		.result h3 {
+			margin: 0 0 0.5em;
+			font-size: 1.1em;
+		}
+
+		.notice {
+			background: #fffbeb;
+			border: 1px solid #fde68a;
+			border-radius: 12px;
+			padding: 1em 1.2em;
+			margin: 1.5em 0;
+			font-size: 0.9em;
+			color: #92400e;
+			line-height: 1.7;
+		}
+		[data-theme='dark'] .notice {
+			background: #451a03;
+			border-color: #78350f;
+			color: #fde68a;
+		}
+		.notice strong {
+			color: inherit;
+		}
+
+		.pitch {
+			margin: 3em 0 2em;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 1em;
+		}
+		.pitch-card {
+			padding: 1.2em;
+			border-radius: 12px;
+			background: var(--bg-card, #fff);
+			border: 1px solid rgb(var(--gray-light));
+		}
+		.pitch-card h3 {
+			margin: 0 0 0.3em;
+			font-size: 1.05em;
+		}
+		.pitch-card p {
+			margin: 0;
+			font-size: 0.9em;
+			color: rgb(var(--gray));
+			line-height: 1.6;
+		}
+
+		.cta-box {
+			background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
+			border-radius: 16px;
+			padding: 2em;
+			text-align: center;
+			border: 1px solid rgb(var(--gray-light));
+			margin-top: 2em;
+		}
+		[data-theme='dark'] .cta-box {
+			background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.4em;
+		}
+		.cta-box p {
+			color: rgb(var(--gray));
+			margin: 0 0 1.2em;
+		}
+
+		@media (max-width: 720px) {
+			.hero h1 { font-size: 1.7em; }
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>在线 Markdown 转 Word</h1>
+			<p>在浏览器里一键把 Markdown 转成符合中文学术规范的 Word 文档。支持 LaTeX 公式、三线表、标题编号，适合毕业论文与课程论文快速出稿。</p>
+		</section>
+
+		<div class="notice">
+			<strong>使用提示：</strong>在线版为轻量体验版，支持文字、标题、列表、表格与公式转换，内置中文学位论文模板与 arXiv / Nature / Science / IEEE / APA 等期刊/预印本近似格式；暂不支持引用本地图片文件。如需批量转换、自定义学校模板、图片路径解析或离线使用，请下载 <a href="/pricing">Pro 桌面版</a>。
+		</div>
+
+		<section class="panel">
+			<div class="toolbar">
+				<div>
+					<label for="template" style="display:inline;margin-right:0.4em;font-weight:600;">选择模板</label>
+					<select id="template">
+						<optgroup label="中文学术">
+							<option value="毕业论文" selected>毕业论文</option>
+							<option value="课程论文">课程论文</option>
+							<option value="数学建模">数学建模</option>
+							<option value="公文">公文</option>
+							<option value="武汉理工毕业设计">武汉理工毕业设计</option>
+						</optgroup>
+						<optgroup label="期刊 / 预印本">
+							<option value="arxiv" data-source="json">arXiv Preprint</option>
+							<option value="nature" data-source="json">Nature</option>
+							<option value="science" data-source="json">Science</option>
+							<option value="ieee" data-source="json">IEEE Transactions（单栏近似）</option>
+							<option value="apa" data-source="json">APA Manuscript</option>
+						</optgroup>
+					</select>
+				</div>
+				<button id="load-sample" class="btn btn-secondary" type="button">载入示例</button>
+				<button id="convert" class="btn btn-primary" type="button">开始转换</button>
+			</div>
+
+			<label for="md-input">Markdown 源文件</label>
+			<textarea id="md-input" placeholder="在这里粘贴 Markdown..." spellcheck="false"></textarea>
+			<div class="status" id="status">就绪，粘贴 Markdown 后点击「开始转换」。</div>
+			<div class="result" id="result">
+				<h3>转换完成</h3>
+				<p id="result-msg"></p>
+				<a id="download" class="btn btn-primary" href="#" download="output.docx">下载 Word 文档</a>
+			</div>
+		</section>
+
+		<section class="pitch">
+			<div class="pitch-card">
+				<h3>🧮 原生公式</h3>
+				<p>LaTeX 自动转为 Word 可编辑的 OMML 公式，非截图，可二次修改。</p>
+			</div>
+			<div class="pitch-card">
+				<h3>📊 三线表</h3>
+				<p>Markdown 表格按学术规范渲染为三线表，顶线、底线加粗。</p>
+			</div>
+			<div class="pitch-card">
+				<h3>🌍 期刊模板</h3>
+				<p>内置 arXiv、Nature、Science、IEEE、APA 等英文期刊/预印本近似格式。</p>
+			</div>
+			<div class="pitch-card">
+				<h3>🔒 本地运行</h3>
+				<p>转换过程在浏览器内完成，文档内容不会上传到服务器。</p>
+			</div>
+		</section>
+
+		<section class="cta-box">
+			<h2>需要更多功能？</h2>
+			<p>Pro 桌面版支持批量转换、自定义学校模板、本地图片、GUI 拖拽，一次购买永久更新。</p>
+			<a href="/pricing" class="btn btn-primary">查看定价方案 →</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		(function() {
+			const PYODIDE_VERSION = '0.27.5';
+			const PYODIDE_INDEX = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/';
+			const WHEELS = [
+				'/tools/md2docx/wheels/python_docx-1.2.0-py3-none-any.whl',
+				'/tools/md2docx/wheels/latex2mathml-3.81.0-py3-none-any.whl',
+				'/tools/md2docx/wheels/docx_formatter_cn-0.1.0-py3-none-any.whl',
+			];
+
+			const input = document.getElementById('md-input');
+			const template = document.getElementById('template');
+			const convertBtn = document.getElementById('convert');
+			const sampleBtn = document.getElementById('load-sample');
+			const status = document.getElementById('status');
+			const result = document.getElementById('result');
+			const resultMsg = document.getElementById('result-msg');
+			const download = document.getElementById('download');
+
+			let pyodideReady = false;
+			let pyodideLoading = false;
+			let pyodide = null;
+
+			function setStatus(message, busy) {
+				status.innerHTML = busy ? '<span class="dot"></span>' + message : message;
+			}
+
+			function setError(message) {
+				status.innerHTML = '<span style="color:#dc2626;">错误：' + message + '</span>';
+			}
+
+			function absoluteWheelUrl(path) {
+				return new URL(path, location.href).href;
+			}
+
+			sampleBtn.addEventListener('click', function() {
+				if (window.__MD2DOCX_SAMPLE__) {
+					input.value = window.__MD2DOCX_SAMPLE__;
+					setStatus('已载入示例，可点击「开始转换」。', false);
+					result.classList.remove('visible');
+				}
+			});
+
+			async function ensurePyodide() {
+				if (pyodideReady && pyodide) return pyodide;
+				if (pyodideLoading) {
+					while (!pyodideReady) {
+						await new Promise(r => setTimeout(r, 200));
+					}
+					return pyodide;
+				}
+				pyodideLoading = true;
+				try {
+					setStatus('正在加载 Python 运行环境（首次约 10-20 MB）...', true);
+					if (typeof loadPyodide === 'undefined') {
+						await new Promise(function(resolve, reject) {
+							const s = document.createElement('script');
+							s.src = PYODIDE_INDEX + 'pyodide.js';
+							s.onload = resolve;
+							s.onerror = function() { reject(new Error('Pyodide 加载失败')); };
+							document.head.appendChild(s);
+						});
+					}
+					pyodide = await loadPyodide({ indexURL: PYODIDE_INDEX });
+					setStatus('正在加载基础依赖（lxml、PyYAML）...', true);
+					await pyodide.loadPackage(['lxml', 'pyyaml', 'typing-extensions']);
+					setStatus('正在安装文档转换组件...', true);
+					const micropip = pyodide.pyimport('micropip');
+					for (const wheel of WHEELS) {
+						await micropip.install(absoluteWheelUrl(wheel));
+					}
+					pyodideReady = true;
+					setStatus('环境就绪，可以转换了。', false);
+					return pyodide;
+				} catch (e) {
+					pyodideLoading = false;
+					throw e;
+				}
+			}
+
+			convertBtn.addEventListener('click', async function() {
+				const md = input.value.trim();
+				if (!md) {
+					setError('请先粘贴 Markdown 内容。');
+					return;
+				}
+				convertBtn.disabled = true;
+				result.classList.remove('visible');
+				try {
+					const py = await ensurePyodide();
+					setStatus('正在排版并生成 Word 文档...', true);
+
+					const templateName = template.value;
+					const selectedOption = template.options[template.selectedIndex];
+					const isJsonTemplate = selectedOption.dataset.source === 'json';
+					const mdB64 = btoa(unescape(encodeURIComponent(md)));
+					const tplB64 = btoa(unescape(encodeURIComponent(templateName)));
+
+					if (isJsonTemplate) {
+						const tplUrl = '/tools/md2docx/templates/' + templateName + '.json';
+						setStatus('正在加载期刊模板...', true);
+						const tplResp = await fetch(tplUrl);
+						if (!tplResp.ok) throw new Error('模板文件加载失败：' + tplUrl);
+						const tplBytes = new Uint8Array(await tplResp.arrayBuffer());
+						py.FS.writeFile('/home/pyodide/template_' + templateName + '.json', tplBytes);
+					}
+
+					const code = `
+from docx_formatter import convert_markdown_to_docx
+from docx_formatter.config import load_template_from_json, get_preset
+from docx_formatter.converter.markdown_parser import parse_markdown_with_meta
+from docx_formatter.converter.docx_builder import build_docx
+import base64, os
+
+md_text = base64.b64decode("${mdB64}").decode("utf-8")
+template_name = base64.b64decode("${tplB64}").decode("utf-8")
+output_path = "/home/pyodide/output.docx"
+if os.path.exists(output_path):
+    os.remove(output_path)
+
+builtin_templates = {"课程论文", "毕业论文", "数学建模", "公文", "武汉理工毕业设计"}
+meta, blocks = parse_markdown_with_meta(md_text)
+if template_name in builtin_templates:
+    config = get_preset(template_name)
+else:
+    config = load_template_from_json("/home/pyodide/template_" + template_name + ".json")
+build_docx(blocks, config, output_path, meta=meta)
+
+with open(output_path, "rb") as f:
+    data = f.read()
+base64.b64encode(data).decode("ascii")
+`;
+					const b64 = await py.runPythonAsync(code);
+					const raw = atob(b64);
+					const bytes = new Uint8Array(raw.length);
+					for (let i = 0; i < raw.length; i++) {
+						bytes[i] = raw.charCodeAt(i);
+					}
+					const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+					const url = URL.createObjectURL(blob);
+					download.href = url;
+					download.download = 'docx-formatter_' + templateName + '_' + new Date().toISOString().slice(0,10) + '.docx';
+					resultMsg.textContent = '已使用「' + templateName + '」模板生成文档，共 ' + bytes.length + ' 字节。';
+					result.classList.add('visible');
+					setStatus('转换完成。', false);
+				} catch (e) {
+					console.error(e);
+					setError((e && e.message) || String(e));
+				} finally {
+					convertBtn.disabled = false;
+				}
+			});
+		})();
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "在线 Markdown 转 Word（论文排版）",
+		"description": "在浏览器里把 Markdown 转成符合中文学术规范的 Word 文档，支持 LaTeX 公式与三线表。",
+		"applicationCategory": "OfficeApplication",
+		"offers": {
+			"@type": "Offer",
+			"price": "0",
+			"priceCurrency": "CNY"
+		},
+		"operatingSystem": "Any"
+	}
+	</script>
+</BaseLayout>

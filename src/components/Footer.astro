@@ -1,9 +1,60 @@
 ---
 const today = new Date();
+
+const productLinks = [
+	{ href: '/tools', text: '工具总览' },
+	{ href: '/tools/md2docx', text: '在线 Markdown 转 Word' },
+	{ href: '/projects/docx-formatter-cn', text: 'docx-formatter-cn' },
+	{ href: '/projects/docx-formatter-docs', text: '使用文档' },
+	{ href: '/pricing', text: '定价方案' },
+];
+
+const serviceLinks = [
+	{ href: '/services', text: '全部服务' },
+	{ href: '/services/thesis-formatting', text: '论文排版服务' },
+	{ href: '/contact', text: '开始咨询' },
+];
+
+const gardenLinks = [
+	{ href: '/blog', text: '写作' },
+	{ href: '/notes', text: '笔记' },
+	{ href: '/about', text: '关于我' },
+	{ href: '/archive', text: '归档' },
+];
 ---
 
 <footer>
-	&copy; {today.getFullYear()} 无名苗圃. All rights reserved.
+	<div class="footer-grid">
+		<div class="footer-col">
+			<div class="footer-brand">🌱 无名苗圃</div>
+			<p class="footer-desc">独立开发者 · 技术创作者 · 一人公司探索者。</p>
+		</div>
+		<div class="footer-col">
+			<h4>产品</h4>
+			<ul>
+				{productLinks.map((link) => (
+					<li><a href={link.href}>{link.text}</a></li>
+				))}
+			</ul>
+		</div>
+		<div class="footer-col">
+			<h4>服务</h4>
+			<ul>
+				{serviceLinks.map((link) => (
+					<li><a href={link.href}>{link.text}</a></li>
+				))}
+			</ul>
+		</div>
+		<div class="footer-col">
+			<h4>自留区</h4>
+			<ul>
+				{gardenLinks.map((link) => (
+					<li><a href={link.href}>{link.text}</a></li>
+				))}
+			</ul>
+		</div>
+	</div>
+	<div class="copyright">&copy; {today.getFullYear()} 无名苗圃. All rights reserved.</div>
 </footer>
 
 <!-- Back to Top -->
@@ -34,10 +85,58 @@ const today = new Date();
 
 <style>
 	footer {
-		padding: 2em 1em 2em 1em;
+		padding: 3em 1em 2em;
 		background: linear-gradient(var(--gray-gradient)) no-repeat;
 		color: rgb(var(--gray));
+	}
+	.footer-grid {
+		max-width: 960px;
+		margin: 0 auto 2em;
+		display: grid;
+		grid-template-columns: 1.5fr 1fr 1fr 1fr;
+		gap: 2em;
+	}
+	.footer-brand {
+		font-weight: 700;
+		color: rgb(var(--black));
+		font-size: 1.1em;
+		margin-bottom: 0.5em;
+	}
+	.footer-desc {
+		font-size: 0.9em;
+		line-height: 1.6;
+		margin: 0;
+	}
+	.footer-col h4 {
+		margin: 0 0 0.8em;
+		font-size: 0.95em;
+		color: rgb(var(--black));
+	}
+	.footer-col ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.footer-col li {
+		margin: 0.4em 0;
+	}
+	.footer-col a {
+		color: rgb(var(--gray));
+		text-decoration: none;
+		font-size: 0.9em;
+		transition: color 0.15s;
+	}
+	.footer-col a:hover {
+		color: var(--accent);
+		text-decoration: underline;
+	}
+	.copyright {
 		text-align: center;
+		font-size: 0.85em;
+		padding-top: 2em;
+		border-top: 1px solid rgb(var(--gray-light));
+		max-width: 960px;
+		margin: 0 auto;
 	}
 	#back-to-top {
 		position: fixed;
@@ -70,6 +169,13 @@ const today = new Date();
 		transform: translateY(-2px);
 	}
 	@media (max-width: 720px) {
+		.footer-grid {
+			grid-template-columns: 1fr 1fr;
+			gap: 1.5em;
+		}
+		.footer-col:first-child {
+			grid-column: 1 / -1;
+		}
 		#back-to-top {
 			bottom: 1em;
 			right: 1em;

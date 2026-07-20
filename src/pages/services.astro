@@ -26,6 +26,12 @@ const services = [
 		desc: '基于自研 docx-formatter-cn 工具链，解决中文文档排版痛点。支持学术规范、公文格式、自定义模板。',
 		features: ['Markdown → 学术 Word', 'LaTeX 公式转换', '自动编号与目录', '模板定制开发'],
 		price: '¥1,500 起',
+		links: [
+			{ text: '在线试用', href: '/tools/md2docx' },
+			{ text: '产品主页', href: '/tools' },
+			{ text: '查看定价', href: '/pricing' },
+			{ text: '论文排版服务', href: '/services/thesis-formatting' },
+		],
 	},
 	{
 		icon: '✍️',
@@ -152,6 +158,25 @@ const faqs = [
 				font-weight: 700;
 				color: var(--accent);
 				margin-top: auto;
+			}
+			.service-links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.6em;
+				margin-top: 0.8em;
+			}
+			.service-links a {
+				font-size: 0.85em;
+				color: var(--accent);
+				text-decoration: none;
+				padding: 0.2em 0.6em;
+				border: 1px solid var(--accent);
+				border-radius: 6px;
+				transition: background 0.15s, color 0.15s;
+			}
+			.service-links a:hover {
+				background: var(--accent);
+				color: white;
 			}
 
 			/* Process */
@@ -298,6 +323,13 @@ const faqs = [
 							{s.features.map((f) => <li>{f}</li>)}
 						</ul>
 						<div class="price">{s.price}</div>
+						{s.links && (
+							<div class="service-links">
+								{s.links.map((link) => (
+									<a href={link.href}>{link.text}</a>
+								))}
+							</div>
+						)}
 					</div>
 				))}
 			</section>
