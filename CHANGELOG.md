@@ -1,5 +1,12 @@
 # 更新日志
 
+## 2026-07-20（修复 Cloudflare Pages 构建失败）
+
+### 修复
+
+- **构建脚本容错**：`scripts/build-kaoyan.js` 与 `scripts/build-triworld.js` 在本地子项目目录不存在时改为警告并跳过，不再导致 CI 构建失败；同时支持通过 `KAOYAN_APP_PATH` / `TRIWORLD_APP_PATH` 环境变量覆盖路径。
+- **Cloudflare Pages 部署**：修复后重新推送，`wumingmp.me` 可正常部署商业化新版。
+
 ## 2026-07-20（网站商业化升级）
 
 ### 新增

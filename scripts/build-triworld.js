@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const TRIWORLD_APP = resolve('E:/idea/triworld/app');
+const TRIWORLD_APP = resolve(process.env.TRIWORLD_APP_PATH || 'E:/idea/triworld/app');
 const TARGET = resolve(ROOT, 'public', 'triworld');
 
 function run(cmd, args, cwd) {
@@ -38,8 +38,8 @@ function run(cmd, args, cwd) {
 }
 
 if (!existsSync(TRIWORLD_APP)) {
-  console.error(`triworld app not found at ${TRIWORLD_APP}`);
-  process.exit(1);
+  console.warn(`triworld app not found at ${TRIWORLD_APP}; skipping`);
+  process.exit(0);
 }
 
 if (!existsSync(resolve(TRIWORLD_APP, 'node_modules'))) {

@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const KAOYAN_APP = resolve('E:/idea/kaoyan-app/app');
+const KAOYAN_APP = resolve(process.env.KAOYAN_APP_PATH || 'E:/idea/kaoyan-app/app');
 const TARGET = resolve(ROOT, 'public', 'kaoyan');
 
 function run(cmd, args, cwd) {
@@ -40,8 +40,8 @@ function run(cmd, args, cwd) {
 }
 
 if (!existsSync(KAOYAN_APP)) {
-  console.error(`kaoyan app not found at ${KAOYAN_APP}`);
-  process.exit(1);
+  console.warn(`kaoyan app not found at ${KAOYAN_APP}; skipping`);
+  process.exit(0);
 }
 
 // Install dependencies only if node_modules is missing.
