@@ -27,4 +27,4 @@ pnpm-debug.log*
 .tmp-docx-src/
 
 # local private documents
-商业计划书.md
+商业计划书*.md
