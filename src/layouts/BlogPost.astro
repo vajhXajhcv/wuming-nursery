@@ -15,7 +15,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 const { title, description, pubDate, updatedDate, heroImage, tags, draft, prevPost, nextPost, readingTime, wordCount, relatedPosts } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} article={true} pubDate={pubDate} updatedDate={updatedDate} tags={tags} draft={draft}>
+<BaseLayout title={title} description={description} image={heroImage} article={true} pubDate={pubDate} updatedDate={updatedDate} tags={tags} draft={draft}>
 		<style>
 			main {
 				width: calc(100% - 2em);

@@ -2,6 +2,7 @@
 title: "docx-formatter-cn 更新：在线 Markdown 转 Word 与期刊模板"
 description: "docx-formatter-cn 推出浏览器在线版 /tools/md2docx，并新增 arXiv、Nature、Science、IEEE、APA 等期刊/预印本近似格式模板。"
 pubDate: 2026-07-20
+heroImage: ../../assets/blog-covers/docx-formatter-online-and-templates.png
 tags: ["docx-formatter-cn", "工具", "Markdown", "论文排版"]
 ---
 

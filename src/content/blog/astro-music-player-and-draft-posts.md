@@ -2,6 +2,7 @@
 title: "给 Astro 静态站加上背景音乐和「非公开文章」"
 description: "记录本站的一次小升级：用 CC BY 授权乐曲做背景音乐播放器的实现要点，以及在 Astro Content Collections 上实现 draft 非公开文章的完整改造路径。"
 pubDate: 2026-08-04
+heroImage: ../../assets/blog-covers/astro-music-player-and-draft-posts.png
 tags: ["Astro", "建站", "实践记录"]
 ---
 

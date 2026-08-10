@@ -2,6 +2,7 @@
 title: "海外发展参考指南"
 description: "以新加坡为重点，深度分析其教育学术、创业生态、金融环境、COMPASS移民政策与工作生活成本，并横向对比日本、美国、英国、新西兰、澳大利亚、韩国六国的身份难度、机会密度与转型友好度，为海外发展规划提供参考。"
 pubDate: 2026-07-05
+heroImage: ../../assets/blog-covers/overseas-development-guide.png
 tags: ["海外发展", "规划", "新加坡"]
 draft: true
 paid: true

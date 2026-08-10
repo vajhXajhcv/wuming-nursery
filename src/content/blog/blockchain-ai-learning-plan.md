@@ -2,6 +2,7 @@
 title: "区块链核心技术：AI 增强型 24 周系统进阶计划"
 description: "一份 24 周的区块链核心技术学习计划，涵盖密码学、以太坊、Layer 2、零知识证明与前沿架构，并给出配套的 AI 工具栈、Prompt 模板与防幻觉验证方法。"
 pubDate: 2026-06-28
+heroImage: ../../assets/blog-covers/blockchain-ai-learning-plan.png
 tags: ["区块链", "学习计划", "AI"]
 ---
 

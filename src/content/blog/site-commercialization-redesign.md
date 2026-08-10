@@ -2,6 +2,7 @@
 title: "从博客到产品站：我的网站商业化重构记录"
 description: "记录无名苗圃如何从个人博客升级为产品导向的站点：产品 / 服务 / 自留区三分结构、首页改造与 CTA 链路设计。"
 pubDate: 2026-07-20
+heroImage: ../../assets/blog-covers/site-commercialization-redesign.png
 tags: ["网站", "商业化", "独立开发", "创作者经济"]
 ---
 

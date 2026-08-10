@@ -2,6 +2,7 @@
 title: "有限者的广延：一次关于权力、信仰与行动的对话录"
 description: "一场关于权力、信仰与行动的对话整理：从政迷思的制度分析、动机的神学审视、福柯权力谱系学的行动空间，以及一套可执行的实验协议。"
 pubDate: 2026-07-13
+heroImage: ../../assets/blog-covers/finite-being-power-faith-dialogue.png
 tags: ["哲学", "对话录", "随笔"]
 draft: true
 paid: true

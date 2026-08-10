@@ -2,6 +2,7 @@
 title: "超常、神迹与形而上学的终结"
 description: "从超心理学、宗教神迹、神经科学到黑格尔之后的哲学，梳理一条从\"超常现象\"到\"神秘体验\"再到\"形而上学反思\"的完整路径，探讨理性与经验的边界。"
 pubDate: 2026-07-28
+heroImage: ../../assets/blog-covers/paranormal-miracles-metaphysics.png
 tags: ["哲学", "宗教", "随笔"]
 ---
 

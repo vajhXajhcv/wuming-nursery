@@ -2,6 +2,7 @@
 title: "联邦党人文集、精英概念与国家制度"
 description: "对《联邦党人文集》核心篇目的逐篇精读，解析'精英'（elite）的学术概念谱系，并借《Why Nations Fail》的包容性与攫取性制度框架，对照美国宪政的独特气质。"
 pubDate: 2026-07-20
+heroImage: ../../assets/blog-covers/federalist-papers-elite-discussion.png
 tags: ["政治思想", "读书笔记", "联邦党人文集"]
 paid: true
 ---
