@@ -1,12 +1,65 @@
 ---
 // 背景音乐播放器
-// 曲目均为 Kevin MacLeod (incompetech.com) 作品，CC BY 4.0 授权
+// 内置曲目均为 Kevin MacLeod (incompetech.com) 作品，CC BY 4.0 授权
 // https://creativecommons.org/licenses/by/4.0/
-const tracks = [
+//
+// 上传自己的音乐：把音频文件放进 public/music/uploads/，命名为「曲名 - 艺术家.mp3」
+// （艺术家可省略），构建时会自动扫描加入播放列表。注意只上传有权使用的音乐。
+import { readdirSync } from 'node:fs';
+
+const curatedTracks = [
 	{
 		src: '/music/gymnopedie-no-1.mp3',
 		title: 'Gymnopédie No. 1',
 		artist: 'Erik Satie · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/gymnopedie-no-2.mp3',
+		title: 'Gymnopédie No. 2',
+		artist: 'Erik Satie · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/gymnopedie-no-3.mp3',
+		title: 'Gymnopédie No. 3',
+		artist: 'Erik Satie · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/bach-prelude-in-c.mp3',
+		title: 'Prelude in C, BWV 846',
+		artist: 'J.S. Bach · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/bach-toccata-and-fugue.mp3',
+		title: 'Toccata and Fugue in D Minor',
+		artist: 'J.S. Bach · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/beethoven-egmont-overture.mp3',
+		title: 'Egmont Overture',
+		artist: 'Beethoven · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/saint-saens-danse-macabre.mp3',
+		title: 'Danse Macabre',
+		artist: 'Saint-Saëns · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/grieg-hall-of-the-mountain-king.mp3',
+		title: 'In the Hall of the Mountain King',
+		artist: 'Grieg · Kevin MacLeod 演奏',
+		genre: '古典',
+	},
+	{
+		src: '/music/tchaikovsky-sugar-plum-fairy.mp3',
+		title: 'Dance of the Sugar Plum Fairy',
+		artist: 'Tchaikovsky · Kevin MacLeod 演奏',
 		genre: '古典',
 	},
 	{
@@ -22,6 +75,26 @@ const tracks = [
 		genre: '轻松节拍',
 	},
 ];
+
+// 构建时扫描用户上传目录（public/music/uploads/）
+const uploads: { src: string; title: string; artist: string; genre: string }[] = [];
+try {
+	for (const f of readdirSync('public/music/uploads')) {
+		if (!/\.(mp3|ogg|m4a|flac|wav)$/i.test(f)) continue;
+		const base = f.replace(/\.[^.]+$/, '');
+		const [title, artist] = base.split(' - ').map((s) => s.trim());
+		uploads.push({
+			src: '/music/uploads/' + encodeURIComponent(f),
+			title,
+			artist: artist || '我的上传',
+			genre: '自选',
+		});
+	}
+} catch {
+	// 目录不存在时忽略（还没有上传过音乐）
+}
+
+const tracks = [...curatedTracks, ...uploads];
 ---
 
 <div id="music-player" class="collapsed">
@@ -354,6 +427,8 @@ const tracks = [
 		margin-top: 0.7em;
 		border-top: 1px solid var(--border);
 		padding-top: 0.6em;
+		max-height: 220px;
+		overflow-y: auto;
 	}
 	.mp-track {
 		display: flex;
