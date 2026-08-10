@@ -12,7 +12,9 @@ export async function getStaticPaths() {
 			.replace(/\s+/g, '-');
 	}
 
-	const allPosts = [...(await getCollection('blog')), ...(await getCollection('notes'))];
+	const allPosts = [...(await getCollection('blog')), ...(await getCollection('notes'))].filter(
+		(post) => !post.data.draft,
+	);
 	const tagMap = new Map<string, typeof allPosts>();
 
 	allPosts.forEach((post) => {
@@ -40,100 +42,84 @@ const description = `查看「${tag}」相关的内容，共 ${posts.length} 篇
 <BaseLayout title={title} description={description} >
 		<style>
 			main {
-				width: 800px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: auto;
-				padding: 2em 1em;
+				padding: 2.5em 1em;
 			}
 			.back-link {
 				display: inline-flex;
 				align-items: center;
 				gap: 0.3em;
 				margin-bottom: 1em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				text-decoration: none;
-				font-size: 0.9em;
+				font-size: 0.88em;
 			}
 			.back-link:hover {
 				color: var(--accent);
 			}
 			.page-title {
-				font-size: 2em;
-				margin-bottom: 0.2em;
+				font-size: 1.45em;
+				margin-bottom: 0.3em;
 			}
 			.page-title .tag {
 				color: var(--accent);
 			}
 			.page-desc {
-				color: rgb(var(--gray));
-				margin-bottom: 2em;
+				color: var(--text-secondary);
+				font-size: 0.95em;
+				margin-bottom: 1.8em;
 			}
 			.post-list {
 				display: flex;
 				flex-direction: column;
-				gap: 0.8em;
 			}
 			.post-card {
 				display: flex;
-				justify-content: space-between;
-				align-items: center;
+				align-items: baseline;
 				gap: 1em;
-				padding: 1em 1.2em;
-				border-radius: 12px;
-				background: var(--bg-card);
-				border: 1px solid rgb(var(--gray-light));
+				padding: 0.75em 0.2em;
+				border-bottom: 1px solid var(--border);
 				text-decoration: none;
 				color: inherit;
-				transition: border-color 0.2s, transform 0.2s;
 			}
-			.post-card:hover {
-				border-color: var(--accent);
-				transform: translateY(-2px);
-			}
-			.post-info {
-				display: flex;
-				flex-direction: column;
-				gap: 0.3em;
-				min-width: 0;
+			.post-card:hover .post-title {
+				color: var(--accent);
 			}
 			.post-title {
-				font-weight: 600;
-				color: rgb(var(--black));
-				white-space: nowrap;
+				font-size: 0.95em;
+				flex: 1;
+				min-width: 0;
 				overflow: hidden;
 				text-overflow: ellipsis;
-			}
-			.post-meta {
-				display: flex;
-				align-items: center;
-				gap: 0.5em;
-				font-size: 0.85em;
-				color: rgb(var(--gray));
+				white-space: nowrap;
+				transition: color 0.15s;
 			}
 			.post-type {
-				padding: 0.1em 0.5em;
-				border-radius: 4px;
-				background: rgb(var(--gray-light));
-				font-size: 0.85em;
+				font-size: 0.72em;
+				padding: 0.15em 0.6em;
+				border-radius: 999px;
+				background: var(--accent-soft);
+				color: var(--accent);
+				white-space: nowrap;
+				flex-shrink: 0;
 			}
 			.post-date {
+				font-size: 0.78em;
+				color: var(--text-secondary);
+				white-space: nowrap;
+				font-variant-numeric: tabular-nums;
 				flex-shrink: 0;
-				font-size: 0.85em;
-				color: rgb(var(--gray));
 			}
 			.empty {
 				text-align: center;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				padding: 4em 0;
 			}
 			@media (max-width: 720px) {
 				.post-card {
-					flex-direction: column;
-					align-items: flex-start;
-					gap: 0.5em;
-				}
-				.post-title {
-					white-space: normal;
+					gap: 0.6em;
 				}
 			}
 		</style>
@@ -149,14 +135,9 @@ const description = `查看「${tag}」相关的内容，共 ${posts.length} 篇
 			<div class="post-list">
 				{posts.map((post) => (
 					<a href={`/${post.collection}/${post.id}/`} class="post-card">
-						<div class="post-info">
-							<span class="post-title">{post.data.title}</span>
-							<span class="post-meta">
-								<span class="post-type">{post.collection === 'blog' ? '文章' : '笔记'}</span>
-								<span>{post.data.description}</span>
-							</span>
-						</div>
 						<span class="post-date"><FormattedDate date={post.data.pubDate} /></span>
+						<span class="post-title">{post.data.title}</span>
+						<span class="post-type">{post.collection === 'blog' ? '文章' : '笔记'}</span>
 					</a>
 				))}
 			</div>

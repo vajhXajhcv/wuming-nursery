@@ -3,7 +3,7 @@ import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 export async function GET(context) {
-	const posts = await getCollection('blog');
+	const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
 	const notes = await getCollection('notes');
 	const allItems = [...posts, ...notes].sort(
 		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),

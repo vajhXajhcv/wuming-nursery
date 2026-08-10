@@ -2,5 +2,22 @@
   "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
   "name": "wuming-nursery",
   "pages_build_output_dir": "./dist",
-  "compatibility_date": "2026-06-06"
+  "compatibility_date": "2026-06-05",
+  "kv_namespaces": [
+    {
+      "binding": "ORDERS",
+      "id": "0be1918c4e6e4a02bd5df73b34aa8172"
+    },
+    {
+      "binding": "CONTENT",
+      "id": "a8996f1776bc4bd7a5f6734a9928f79a"
+    },
+    {
+      "binding": "LEDGER",
+      "id": "bd59db271f1844159db97ffcf919da8a"
+    }
+  ],
+  "vars": {
+    "ALIPAY_GATEWAY": "https://openapi.alipay.com/gateway.do"
+  }
 }

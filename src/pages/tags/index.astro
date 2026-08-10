@@ -11,7 +11,9 @@ function slugify(text: string) {
 		.replace(/\s+/g, '-');
 }
 
-const allPosts = [...(await getCollection('blog')), ...(await getCollection('notes'))];
+const allPosts = [...(await getCollection('blog')), ...(await getCollection('notes'))].filter(
+	(post) => !post.data.draft,
+);
 
 // Build tag map: tag -> posts[]
 const tagMap = new Map<string, typeof allPosts>();
@@ -36,105 +38,104 @@ const totalPosts = allPosts.length;
 <BaseLayout title={`标签 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} >
 		<style>
 			main {
-				width: 960px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: auto;
-				padding: 2em 1em;
+				padding: 2.5em 1em;
 			}
 			.page-title {
-				font-size: 2em;
-				margin-bottom: 0.2em;
-				text-align: center;
+				font-size: 1.45em;
+				margin-bottom: 0.3em;
 			}
 			.page-desc {
-				text-align: center;
-				color: rgb(var(--gray));
-				margin-bottom: 2em;
+				color: var(--text-secondary);
+				font-size: 0.95em;
+				margin-bottom: 1.8em;
 			}
 			.tag-cloud {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 0.6em;
-				justify-content: center;
-				margin-bottom: 3em;
-				padding: 1.5em;
-				background: var(--bg-card, #fff);
-				border-radius: 16px;
-				border: 1px solid rgb(var(--gray-light));
+				gap: 0.5em;
+				margin-bottom: 2.5em;
 			}
 			.tag-pill {
 				display: inline-flex;
 				align-items: center;
-				gap: 0.3em;
-				padding: 0.4em 1em;
+				gap: 0.35em;
+				padding: 0.35em 0.9em;
 				border-radius: 999px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
+				border: 1px solid var(--border);
+				background: var(--bg-elevated);
+				color: var(--text);
 				text-decoration: none;
-				font-size: 0.9em;
-				transition: background 0.2s, color 0.2s, transform 0.2s;
+				font-size: 0.88em;
+				transition: border-color 0.2s, color 0.15s;
 			}
 			.tag-pill:hover {
-				background: var(--accent);
-				color: white;
-				transform: translateY(-2px);
+				border-color: var(--accent);
+				color: var(--accent);
 			}
 			.tag-pill .count {
 				font-size: 0.75em;
-				opacity: 0.7;
+				color: var(--text-secondary);
 			}
 			.tag-section {
-				margin-bottom: 2em;
+				margin-bottom: 2.2em;
 			}
 			.tag-section h3 {
 				display: flex;
-				align-items: center;
+				align-items: baseline;
 				gap: 0.5em;
-				font-size: 1.2em;
-				margin-bottom: 0.8em;
-				padding-bottom: 0.3em;
-				border-bottom: 2px solid rgb(var(--gray-light));
+				font-size: 1.1em;
+				margin-bottom: 0.2em;
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
 			}
 			.tag-section h3 .badge {
-				font-size: 0.7em;
-				padding: 0.1em 0.5em;
+				font-size: 0.65em;
+				padding: 0.1em 0.55em;
 				border-radius: 999px;
-				background: var(--accent);
-				color: white;
+				background: var(--accent-soft);
+				color: var(--accent);
 			}
 			.post-list {
 				display: flex;
 				flex-direction: column;
-				gap: 0.6em;
 			}
 			.post-list a {
 				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding: 0.7em 1em;
-				border-radius: 8px;
-				background: var(--bg-card, #fff);
-				border: 1px solid rgb(var(--gray-light));
+				align-items: baseline;
+				gap: 1em;
+				padding: 0.65em 0.2em;
+				border-bottom: 1px solid var(--border);
 				text-decoration: none;
 				color: inherit;
-				transition: background 0.2s, border-color 0.2s;
 			}
-			.post-list a:hover {
-				border-color: var(--accent);
-				background: rgba(var(--gray-light), 0.3);
+			.post-list a:last-child {
+				border-bottom: none;
+			}
+			.post-list a:hover .title {
+				color: var(--accent);
 			}
 			.post-list a .title {
-				color: rgb(var(--black));
-				font-weight: 500;
+				font-size: 0.95em;
+				flex: 1;
+				min-width: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				transition: color 0.15s;
 			}
 			.post-list a .date {
-				font-size: 0.8em;
-				color: rgb(var(--gray));
+				font-size: 0.78em;
+				color: var(--text-secondary);
+				white-space: nowrap;
+				font-variant-numeric: tabular-nums;
 				flex-shrink: 0;
 			}
 			.empty {
 				text-align: center;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				padding: 4em 0;
 			}
 		</style>
@@ -168,8 +169,8 @@ const totalPosts = allPosts.length;
 					<div class="post-list">
 						{posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).map((post) => (
 							<a href={`/${post.collection}/${post.id}/`}>
-								<span class="title">{post.data.title}</span>
 								<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+								<span class="title">{post.data.title}</span>
 							</a>
 						))}
 					</div>

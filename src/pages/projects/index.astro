@@ -72,34 +72,32 @@ const projects = [
 				padding: 2em 1em;
 			}
 			.page-title {
-				font-size: 2em;
+				font-size: 1.45em;
 				margin-bottom: 0.2em;
-				text-align: center;
 			}
 			.page-desc {
-				text-align: center;
-				color: rgb(var(--gray));
-				margin-bottom: 2.5em;
+				color: var(--text-secondary);
+				margin-bottom: 2em;
+				font-size: 0.95em;
 			}
 			.project-list {
 				display: flex;
 				flex-direction: column;
-				gap: 1.5em;
+				gap: 1em;
 			}
 			.project-card {
 				display: block;
-				padding: 1.5em;
-				border-radius: 16px;
-				background: var(--bg-card);
-				border: 1px solid rgb(var(--gray-light));
+				padding: 1.4em;
+				border-radius: var(--radius-lg);
+				background: var(--bg-elevated);
+				border: 1px solid var(--border);
 				text-decoration: none;
 				color: inherit;
-				transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+				transition: border-color 0.2s, box-shadow 0.2s;
 			}
 			.project-card:hover {
 				border-color: var(--accent);
-				transform: translateY(-3px);
-				box-shadow: var(--box-shadow);
+				box-shadow: var(--shadow-md);
 			}
 			.project-header {
 				display: flex;
@@ -109,29 +107,29 @@ const projects = [
 				margin-bottom: 0.6em;
 			}
 			.project-title {
-				font-size: 1.3em;
+				font-size: 1.15em;
 				font-weight: 700;
-				color: rgb(var(--black));
 				margin: 0;
 			}
 			.project-tagline {
-				color: rgb(var(--gray));
-				font-size: 0.95em;
+				color: var(--text-secondary);
+				font-size: 0.88em;
 				margin: 0.2em 0 0;
 			}
 			.project-status {
 				flex-shrink: 0;
-				padding: 0.2em 0.7em;
+				padding: 0.15em 0.7em;
 				border-radius: 999px;
-				font-size: 0.75em;
-				background: rgba(99, 102, 241, 0.12);
-				color: var(--accent-dark);
+				font-size: 0.72em;
+				background: var(--accent-soft);
+				color: var(--accent);
 				font-weight: 500;
 			}
 			.project-description {
-				color: rgb(var(--gray-dark));
+				color: var(--text-secondary);
 				line-height: 1.7;
 				margin-bottom: 1em;
+				font-size: 0.92em;
 			}
 			.project-tags {
 				display: flex;
@@ -139,15 +137,15 @@ const projects = [
 				gap: 0.4em;
 			}
 			.project-tags span {
-				padding: 0.2em 0.6em;
-				border-radius: 4px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray));
-				font-size: 0.8em;
+				padding: 0.15em 0.6em;
+				border-radius: var(--radius-sm);
+				border: 1px solid var(--border);
+				color: var(--text-secondary);
+				font-size: 0.78em;
 			}
 			.empty {
 				text-align: center;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				padding: 4em 0;
 			}
 			@media (max-width: 720px) {

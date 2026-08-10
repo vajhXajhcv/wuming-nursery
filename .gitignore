@@ -1,5 +1,7 @@
 # build output
 dist/
+# 付费正文抽取产物（待上传 KV，勿公开）
+dist-paid-content/
 # generated types
 .astro/
 
@@ -28,3 +30,9 @@ pnpm-debug.log*
 
 # local private documents
 商业计划书*.md
+.dev.vars
+
+# local scratch & audit artifacts
+.tmp-*
+.wrangler/
+audit-shots/

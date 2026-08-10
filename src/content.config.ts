@@ -15,6 +15,11 @@ const blog = defineCollection({
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
 			tags: z.array(z.string()).optional(),
+			// draft = 非公开：页面仍生成（可通过直链访问），但从列表/归档/RSS/标签/站点地图中隐藏，并加 noindex
+			draft: z.boolean().optional(),
+			// paid = 付费阅读：正文构建时被抽取到 KV（见 scripts/pack-paid-content.mjs），
+			// 文章页只渲染摘要 + Paywall 组件，付款/令牌验证后由 /api/content 下发正文
+			paid: z.boolean().optional(),
 		}),
 });
 

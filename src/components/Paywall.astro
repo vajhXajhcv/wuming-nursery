@@ -1,0 +1,408 @@
+---
+// 付费阅读锁（强付费墙版：正文不在页面 HTML 中，付款成功后由服务端下发）。
+// 用法：<Paywall slug={...} wordCount={...} />（正文会被构建脚本抽取到 KV，不要在此组件内放 slot 正文）。
+import { afdianUrlFor } from '../afdian-links';
+
+interface Props {
+	slug: string;
+	wordCount: number;
+}
+
+const { slug, wordCount } = Astro.props;
+const price = Math.max(1, Math.round(wordCount / 2000));
+const afdianUrl = afdianUrlFor(slug);
+---
+
+<div class="paywall" id="paywall">
+	<div class="paywall-box">
+		<div class="paywall-icon">🔒</div>
+		<h2 class="paywall-title">本文为付费内容</h2>
+		<p class="paywall-price">
+			¥{price}
+			<span class="paywall-price-note">（全文约 {(wordCount / 1000).toFixed(1)} 千字，按 1 元 / 2000 字计）</span>
+		</p>
+		<p class="paywall-disclaimer">
+			声明：本文内容为学术探讨与个人观点分享，不构成任何专业建议。作者保留所有权利，付费解锁后仅供个人阅读，禁止转载、摘编或用于任何商业用途。虚拟内容一经售出，恕不退款。
+		</p>
+
+		<div class="paywall-section">
+			<button type="button" class="paywall-buy" id="paywall-buy">支付宝购买</button>
+			<a class="paywall-afdian" href={afdianUrl} target="_blank" rel="noopener">爱发电购买（匿名友好）</a>
+			<p class="paywall-channel-note">支付宝付款后自动解锁；爱发电付款后用订单号在下方兑换。</p>
+		</div>
+
+		<div class="paywall-section paywall-redeem-section">
+			<p class="paywall-token-label">爱发电付款了？粘贴订单号兑换</p>
+			<div class="paywall-token-form">
+				<input type="text" id="paywall-order-input" placeholder="爱发电订单号" autocomplete="off" />
+				<button type="button" id="paywall-redeem-btn">兑换</button>
+			</div>
+			<p class="paywall-redeem-hint">订单号在爱发电付款结果页或「我的订单」中，为一长串数字。</p>
+		</div>
+
+		<div class="paywall-section paywall-token-section">
+			<p class="paywall-token-label">已有访问令牌？</p>
+			<div class="paywall-token-form">
+				<input type="text" id="paywall-token-input" placeholder="粘贴访问令牌" autocomplete="off" />
+				<button type="button" id="paywall-unlock-btn">解锁</button>
+			</div>
+		</div>
+
+		<p class="paywall-status" id="paywall-status"></p>
+	</div>
+</div>
+
+<div class="paid-content" id="paid-content" hidden></div>
+
+<script is:inline define:vars={{ slug }}>
+	(function () {
+		var wall = document.getElementById('paywall');
+		var content = document.getElementById('paid-content');
+		var statusEl = document.getElementById('paywall-status');
+		var buyBtn = document.getElementById('paywall-buy');
+		var unlockBtn = document.getElementById('paywall-unlock-btn');
+		var tokenInput = document.getElementById('paywall-token-input');
+		var redeemBtn = document.getElementById('paywall-redeem-btn');
+		var orderInput = document.getElementById('paywall-order-input');
+		if (!wall || !content) return;
+
+		function setStatus(msg, isError) {
+			if (!statusEl) return;
+			statusEl.textContent = msg || '';
+			statusEl.classList.toggle('error', !!isError);
+			statusEl.classList.toggle('visible', !!msg);
+		}
+
+		function showContent(html) {
+			content.innerHTML = html;
+			content.hidden = false;
+			wall.style.display = 'none';
+		}
+
+		function tokenPayloadSlug(token) {
+			try {
+				var payload = token.split('.')[0];
+				var b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+				while (b64.length % 4) b64 += '=';
+				return JSON.parse(decodeURIComponent(escape(atob(b64)))).slug;
+			} catch (e) {
+				return null;
+			}
+		}
+
+		async function unlockWithToken(token) {
+			setStatus('正在解锁…');
+			try {
+				var resp = await fetch(
+					'/api/content?slug=' + encodeURIComponent(slug) + '&token=' + encodeURIComponent(token),
+				);
+				if (!resp.ok) {
+					throw new Error(resp.status === 403 ? '令牌无效或已过期。' : '内容加载失败（HTTP ' + resp.status + '）。');
+				}
+				var data = await resp.json();
+				showContent(data.html);
+				// 解锁成功后记住令牌（订阅令牌存到 subscription 键下，全站通用）
+				try {
+					var keySlug = tokenPayloadSlug(token) === 'subscription' ? 'subscription' : slug;
+					localStorage.setItem('paytoken:' + keySlug, token);
+				} catch (e) {}
+			} catch (err) {
+				setStatus(err.message || '解锁失败，请稍后重试。', true);
+			}
+		}
+
+		async function pollStatus(outTradeNo) {
+			setStatus('正在确认支付结果，请稍候…');
+			var deadline = Date.now() + 60000;
+			while (Date.now() < deadline) {
+				try {
+					var resp = await fetch('/api/status?out_trade_no=' + encodeURIComponent(outTradeNo));
+					var data = await resp.json();
+					if (data.paid && data.token) {
+						try {
+							localStorage.setItem('paytoken:' + data.slug, data.token);
+						} catch (e) {}
+						// 清掉 URL 里的 out_trade_no，避免刷新后重复轮询
+						try {
+							history.replaceState(null, '', location.pathname);
+						} catch (e) {}
+						unlockWithToken(data.token);
+						return;
+					}
+				} catch (e) {}
+				await new Promise(function (r) { setTimeout(r, 2000); });
+			}
+			setStatus('暂未查询到支付结果。若你已完成支付，请稍后刷新页面重试，或联系作者人工处理。', true);
+		}
+
+		// 页面加载：优先处理支付回跳，其次尝试本地已存令牌
+		var outTradeNo = new URLSearchParams(location.search).get('out_trade_no');
+		if (outTradeNo) {
+			pollStatus(outTradeNo);
+		} else {
+			try {
+				var saved =
+					localStorage.getItem('paytoken:' + slug) ||
+					localStorage.getItem('paytoken:subscription');
+				if (saved) unlockWithToken(saved);
+			} catch (e) {}
+		}
+
+		if (buyBtn) {
+			buyBtn.addEventListener('click', async function () {
+				buyBtn.disabled = true;
+				setStatus('正在创建订单…');
+				try {
+					var resp = await fetch('/api/order', {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify({ slug: slug }),
+					});
+					var data = await resp.json();
+					if (!resp.ok || !data.paymentHtml) {
+						throw new Error(data.error || '创建订单失败，请稍后重试。');
+					}
+					setStatus('正在跳转到支付宝收银台…');
+					// paymentHtml 是 HTML 表单字符串（pageExec POST 等价物），
+					// 必须渲染到页面并提交表单，禁止当作 URL 直接跳转
+					var container = document.createElement('div');
+					container.innerHTML = data.paymentHtml;
+					container.style.position = 'fixed';
+					container.style.top = '0';
+					container.style.left = '0';
+					container.style.width = '100%';
+					container.style.height = '100%';
+					container.style.zIndex = '9999';
+					container.style.background = 'white';
+					document.body.appendChild(container);
+					var form = container.querySelector('form');
+					if (form) {
+						form.submit();
+					} else {
+						throw new Error('支付表单异常，请稍后重试。');
+					}
+				} catch (err) {
+					buyBtn.disabled = false;
+					setStatus(err.message || '创建订单失败，请稍后重试。', true);
+				}
+			});
+		}
+
+		if (unlockBtn && tokenInput) {
+			unlockBtn.addEventListener('click', function () {
+				var token = tokenInput.value.trim();
+				if (!token) {
+					setStatus('请先粘贴访问令牌。', true);
+					return;
+				}
+				unlockWithToken(token);
+			});
+		}
+
+		if (redeemBtn && orderInput) {
+			redeemBtn.addEventListener('click', async function () {
+				var orderNo = orderInput.value.trim();
+				if (!orderNo) {
+					setStatus('请先粘贴爱发电订单号。', true);
+					return;
+				}
+				redeemBtn.disabled = true;
+				setStatus('正在核实爱发电订单…');
+				try {
+					var resp = await fetch('/api/afdian/redeem', {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify({ slug: slug, orderNo: orderNo }),
+					});
+					var data = await resp.json();
+					if (!resp.ok || !data.token) {
+						throw new Error(data.error || '兑换失败，请稍后重试。');
+					}
+					try {
+						localStorage.setItem('paytoken:' + data.slug, data.token);
+					} catch (e) {}
+					unlockWithToken(data.token);
+				} catch (err) {
+					redeemBtn.disabled = false;
+					setStatus(err.message || '兑换失败，请稍后重试。', true);
+				}
+			});
+		}
+	})();
+</script>
+
+<style>
+	.paywall-box {
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 2em 1.5em;
+		text-align: center;
+		background: var(--bg-elevated);
+		box-shadow: var(--shadow-sm);
+		margin: 1.5em 0;
+	}
+	.paywall-icon {
+		font-size: 2em;
+	}
+	.paywall-title {
+		margin: 0.3em 0 0.4em;
+		font-size: 1.4em;
+	}
+	.paywall-price {
+		font-size: 1.4em;
+		font-weight: 700;
+		color: var(--accent);
+		margin: 0 0 0.3em;
+	}
+	.paywall-price-note {
+		display: block;
+		font-size: 0.65em;
+		font-weight: 400;
+		color: var(--text-secondary);
+		margin-top: 0.3em;
+	}
+	.paywall-disclaimer {
+		margin: 1.2em auto 0;
+		max-width: 480px;
+		font-size: 0.75em;
+		color: var(--text-secondary);
+		line-height: 1.7;
+		text-align: left;
+		padding: 0.9em 1.1em;
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+	}
+	.paywall-section {
+		margin-top: 1.4em;
+	}
+	.paywall-buy {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.6em 2.2em;
+		min-height: 40px;
+		border: 1px solid transparent;
+		border-radius: var(--radius-md);
+		background: var(--accent);
+		color: #fff;
+		font-size: 1em;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.15s;
+	}
+	.paywall-afdian {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.6em 1.4em;
+		min-height: 40px;
+		margin-left: 0.6em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		background: transparent;
+		color: var(--text);
+		font-size: 0.92em;
+		text-decoration: none;
+		transition: border-color 0.2s, color 0.15s;
+	}
+	.paywall-afdian:hover {
+		border-color: #946ce6;
+		color: #946ce6;
+	}
+	.paywall-channel-note {
+		margin: 0.8em 0 0;
+		font-size: 0.78em;
+		color: var(--text-secondary);
+	}
+	.paywall-buy:hover {
+		background: var(--accent-dark);
+	}
+	.paywall-buy:disabled {
+		opacity: 0.6;
+		cursor: wait;
+	}
+	.paywall-token-section {
+		border-top: 1px dashed var(--border);
+		padding-top: 1.4em;
+	}
+	.paywall-redeem-section {
+		border-top: 1px dashed var(--border);
+		padding-top: 1.4em;
+		margin-top: 1.4em;
+	}
+	.paywall-redeem-hint {
+		margin: 0.5em 0 0;
+		font-size: 0.75em;
+		color: var(--text-secondary);
+	}
+	.paywall-token-label {
+		font-size: 0.85em;
+		color: var(--text-secondary);
+		margin: 0 0 0.5em;
+	}
+	.paywall-token-form {
+		display: flex;
+		justify-content: center;
+		gap: 0.5em;
+	}
+	.paywall-token-form input {
+		padding: 0.55em 1em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		font-size: 0.85em;
+		width: 260px;
+		max-width: 100%;
+		background: var(--bg);
+		color: var(--text);
+		transition: border-color 0.2s;
+	}
+	.paywall-token-form input:focus {
+		outline: none;
+		border-color: var(--accent);
+	}
+	.paywall-token-form button {
+		padding: 0.55em 1.4em;
+		border: none;
+		border-radius: var(--radius-md);
+		background: var(--accent);
+		color: #fff;
+		font-size: 0.9em;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.15s;
+	}
+	.paywall-token-form button:hover {
+		background: var(--accent-dark);
+	}
+	.paywall-status {
+		display: none;
+		font-size: 0.85em;
+		color: var(--text-secondary);
+		margin: 1em 0 0;
+	}
+	.paywall-status.visible {
+		display: block;
+	}
+	.paywall-status.error {
+		color: #dc2626;
+	}
+	.paid-content[hidden] {
+		display: none;
+	}
+	@media (max-width: 720px) {
+		.paywall-box {
+			padding: 1.6em 1.2em;
+		}
+		.paywall-token-form {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.paywall-token-form input {
+			width: 100%;
+		}
+		.paywall-token-form button {
+			min-height: 40px;
+		}
+	}
+</style>

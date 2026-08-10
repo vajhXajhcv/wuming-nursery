@@ -61,75 +61,68 @@ const faqs = [
 <BaseLayout title={`服务 - ${SITE_TITLE}`} description="独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务。" >
 		<style>
 			main {
-				width: 960px;
+				width: var(--wide-width);
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 2em 1em;
 			}
 			.hero {
-				text-align: center;
-				padding: 3em 0 2em;
+				padding: 1em 0 1.5em;
 			}
 			.hero h1 {
-				font-size: 2.4em;
+				font-size: 1.5em;
 				margin: 0 0 0.3em;
-				background: linear-gradient(90deg, var(--accent), #8b5cf6);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
 			}
 			.hero p {
-				color: rgb(var(--gray));
-				font-size: 1.1em;
+				color: var(--text-secondary);
+				font-size: 0.95em;
 				max-width: 600px;
-				margin: 0 auto;
+				margin: 0;
+				line-height: 1.7;
 			}
 
 			/* Service cards */
 			.service-grid {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-				gap: 1.5em;
+				gap: 1.2em;
 				margin: 2em 0;
 			}
 			.service-card {
-				background: var(--bg-card, #fff);
-				border-radius: 16px;
-				padding: 1.8em;
-				border: 1px solid rgb(var(--gray-light));
-				transition: transform 0.25s, box-shadow 0.25s;
+				background: var(--bg-elevated);
+				border-radius: var(--radius-lg);
+				padding: 1.6em;
+				border: 1px solid var(--border);
+				transition: border-color 0.2s, box-shadow 0.2s;
 				display: flex;
 				flex-direction: column;
 			}
 			.service-card:hover {
-				transform: translateY(-4px);
-				box-shadow: var(--box-shadow);
+				border-color: var(--accent);
+				box-shadow: var(--shadow-md);
 			}
 			.service-card .icon {
-				width: 48px;
-				height: 48px;
-				background: linear-gradient(135deg, var(--accent), #8b5cf6);
-				border-radius: 12px;
+				width: 44px;
+				height: 44px;
+				background: var(--accent-soft);
+				border-radius: var(--radius-md);
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 1.5em;
-				color: white;
+				font-size: 1.35em;
 				margin-bottom: 1em;
 			}
 			.service-card h3 {
 				margin: 0 0 0.2em;
-				font-size: 1.2em;
-				color: rgb(var(--black));
+				font-size: 1.15em;
 			}
 			.service-card .subtitle {
 				font-size: 0.85em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				margin-bottom: 0.8em;
 			}
 			.service-card .desc {
-				color: rgb(var(--gray-dark));
-				font-size: 0.95em;
+				font-size: 0.92em;
 				line-height: 1.7;
 				margin-bottom: 1em;
 				flex: 1;
@@ -141,7 +134,7 @@ const faqs = [
 			}
 			.service-card .features li {
 				font-size: 0.85em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				padding: 0.25em 0;
 				padding-left: 1.2em;
 				position: relative;
@@ -154,7 +147,7 @@ const faqs = [
 				font-weight: 700;
 			}
 			.service-card .price {
-				font-size: 1.1em;
+				font-size: 1.05em;
 				font-weight: 700;
 				color: var(--accent);
 				margin-top: auto;
@@ -169,14 +162,14 @@ const faqs = [
 				font-size: 0.85em;
 				color: var(--accent);
 				text-decoration: none;
-				padding: 0.2em 0.6em;
-				border: 1px solid var(--accent);
-				border-radius: 6px;
-				transition: background 0.15s, color 0.15s;
+				padding: 0.35em 0.7em;
+				border: 1px solid var(--border);
+				border-radius: var(--radius-sm);
+				transition: border-color 0.2s, color 0.15s;
 			}
 			.service-links a:hover {
-				background: var(--accent);
-				color: white;
+				border-color: var(--accent);
+				color: var(--accent-dark);
 			}
 
 			/* Process */
@@ -184,9 +177,10 @@ const faqs = [
 				margin: 3em 0;
 			}
 			.section-title {
-				font-size: 1.6em;
+				font-size: 1.4em;
 				margin-bottom: 1em;
-				text-align: center;
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
 			}
 			.process-grid {
 				display: grid;
@@ -194,29 +188,28 @@ const faqs = [
 				gap: 1.2em;
 			}
 			.process-card {
-				background: var(--bg-card, #fff);
-				border-radius: 12px;
-				padding: 1.5em;
-				border: 1px solid rgb(var(--gray-light));
-				text-align: center;
+				background: var(--bg-elevated);
+				border-radius: var(--radius-md);
+				padding: 1.4em 1.2em;
+				border: 1px solid var(--border);
 			}
 			.process-card .step {
-				font-size: 2em;
+				font-size: 1.6em;
 				font-weight: 800;
 				color: var(--accent);
-				opacity: 0.2;
+				opacity: 0.35;
 				line-height: 1;
 				margin-bottom: 0.3em;
 			}
 			.process-card h4 {
 				margin: 0 0 0.4em;
-				font-size: 1.1em;
+				font-size: 1.05em;
 			}
 			.process-card p {
 				margin: 0;
-				font-size: 0.9em;
-				color: rgb(var(--gray));
-				line-height: 1.5;
+				font-size: 0.88em;
+				color: var(--text-secondary);
+				line-height: 1.6;
 			}
 
 			/* FAQ */
@@ -224,9 +217,9 @@ const faqs = [
 				margin: 3em 0;
 			}
 			.faq-item {
-				background: var(--bg-card, #fff);
-				border-radius: 12px;
-				border: 1px solid rgb(var(--gray-light));
+				background: var(--bg-elevated);
+				border-radius: var(--radius-md);
+				border: 1px solid var(--border);
 				margin-bottom: 0.8em;
 				overflow: hidden;
 			}
@@ -237,15 +230,15 @@ const faqs = [
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				color: rgb(var(--black));
+				transition: background 0.15s;
 			}
 			.faq-q:hover {
-				background: rgba(var(--gray-light), 0.3);
+				background: var(--accent-soft);
 			}
 			.faq-arrow {
 				transition: transform 0.2s;
 				font-size: 0.8em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 			}
 			.faq-item.open .faq-arrow {
 				transform: rotate(180deg);
@@ -260,45 +253,46 @@ const faqs = [
 			}
 			.faq-a-inner {
 				padding: 0 1.2em 1em;
-				color: rgb(var(--gray-dark));
+				color: var(--text-secondary);
 				font-size: 0.95em;
 				line-height: 1.7;
 			}
 
 			/* CTA */
 			.cta-box {
-				background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
-				border-radius: 16px;
-				padding: 2.5em 2em;
+				background: var(--accent-soft);
+				border-radius: var(--radius-lg);
+				padding: 2em;
 				text-align: center;
-				border: 1px solid rgb(var(--gray-light));
+				border: 1px solid var(--border);
 				margin: 3em 0;
 			}
 			.cta-box h2 {
 				margin: 0 0 0.3em;
-				font-size: 1.5em;
+				font-size: 1.3em;
 			}
 			.cta-box p {
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
+				font-size: 0.92em;
 				margin: 0 0 1.2em;
 			}
 			.cta-btn {
 				display: inline-block;
-				padding: 0.7em 1.8em;
+				padding: 0.65em 1.6em;
 				background: var(--accent);
 				color: white;
-				border-radius: 999px;
+				border-radius: var(--radius-md);
 				text-decoration: none;
 				font-weight: 600;
-				transition: transform 0.15s, box-shadow 0.15s;
+				font-size: 0.92em;
+				transition: background 0.15s;
 			}
 			.cta-btn:hover {
-				transform: translateY(-2px);
-				box-shadow: 0 8px 25px rgba(99,102,241,0.35);
+				background: var(--accent-dark);
+				color: white;
 			}
 
 			@media (max-width: 720px) {
-				.hero h1 { font-size: 1.8em; }
 				.service-grid { grid-template-columns: 1fr; }
 				.process-grid { grid-template-columns: 1fr 1fr; }
 			}

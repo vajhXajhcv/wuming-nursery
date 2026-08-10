@@ -12,10 +12,10 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	relatedPosts?: CollectionEntry<'blog'>[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nextPost, readingTime, wordCount, relatedPosts } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, draft, prevPost, nextPost, readingTime, wordCount, relatedPosts } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} article={true} pubDate={pubDate} updatedDate={updatedDate} tags={tags}>
+<BaseLayout title={title} description={description} article={true} pubDate={pubDate} updatedDate={updatedDate} tags={tags} draft={draft}>
 		<style>
 			main {
 				width: calc(100% - 2em);
@@ -28,42 +28,58 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				border-radius: var(--radius-lg);
+				box-shadow: var(--shadow-md);
 			}
 			.prose {
-				width: 720px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 1em;
-				color: rgb(var(--gray-dark));
+				color: var(--text);
 			}
-			.prose h1,
-			.prose h2,
-			.prose h3,
-			.prose h4 {
-				color: rgb(var(--black));
+			.draft-banner {
+				background: rgba(245, 158, 11, 0.1);
+				border: 1px solid rgba(245, 158, 11, 0.4);
+				color: #b45309;
+				border-radius: var(--radius-md);
+				padding: 0.6em 1em;
+				font-size: 0.9em;
+				margin-bottom: 1.5em;
+			}
+			[data-theme='dark'] .draft-banner {
+				background: rgba(245, 158, 11, 0.15);
+				color: #fbbf24;
+			}
+			.prose h2 {
+				margin-top: 2em;
+				padding-bottom: 0.3em;
+				border-bottom: 1px solid var(--border);
+			}
+			.prose h3 {
+				margin-top: 1.6em;
 			}
 			.prose hr {
-				border-color: rgb(var(--gray-light));
+				border-color: var(--border);
 			}
 			.prose blockquote {
-				border-left: 4px solid var(--accent);
-				background: rgba(var(--gray-light), 0.3);
-				padding: 0.5em 1em;
-				border-radius: 0 8px 8px 0;
-				margin: 1em 0;
+				border-left: 3px solid var(--accent);
+				background: var(--accent-soft);
+				padding: 0.6em 1em;
+				border-radius: 0 var(--radius-md) var(--radius-md) 0;
+				margin: 1.4em 0;
 			}
 			.prose code {
 				background: var(--bg-code);
-				padding: 0.2em 0.4em;
+				padding: 0.15em 0.4em;
 				border-radius: 4px;
-				font-size: 0.9em;
+				font-size: 0.88em;
 			}
 			.prose pre {
 				background: var(--bg-code);
+				border: 1px solid var(--border);
 				padding: 1em;
-				border-radius: 8px;
+				border-radius: var(--radius-md);
 				overflow-x: auto;
 			}
 			.prose pre code {
@@ -73,33 +89,39 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			.prose table {
 				border-collapse: collapse;
 				width: 100%;
-				margin: 1em 0;
+				margin: 1.4em 0;
+				font-size: 0.92em;
+				display: block;
+				overflow-x: auto;
 			}
 			.prose th,
 			.prose td {
-				border: 1px solid rgb(var(--gray-light));
-				padding: 0.5em;
+				border: 1px solid var(--border);
+				padding: 0.5em 0.8em;
 				text-align: left;
 			}
 			.prose th {
-				background: rgba(var(--gray-light), 0.5);
-				font-weight: 700;
+				background: var(--accent-soft);
+				font-weight: 600;
 			}
 			.prose img {
 				max-width: 100%;
-				border-radius: 8px;
+				border-radius: var(--radius-md);
 			}
-			.prose a {
-				color: var(--accent);
+			/* 正文首个一级标题与页头标题重复，隐藏（markdown 内容无作用域属性，需 :global） */
+			.prose > :global(h1:first-of-type) {
+				display: none;
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
+				margin-bottom: 0.5em;
+				padding: 1.5em 0 1em;
 				text-align: center;
 				line-height: 1;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
+				font-size: 1.75em;
+				line-height: 1.35;
 			}
 			.meta-bar {
 				display: flex;
@@ -107,13 +129,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				justify-content: center;
 				align-items: center;
 				flex-wrap: wrap;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				font-size: 0.85em;
-				margin-bottom: 0.5em;
+				margin-bottom: 0.8em;
 			}
 			.date {
 				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 			}
 			.last-updated-on {
 				font-style: italic;
@@ -126,11 +148,11 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				margin-top: 0.8em;
 			}
 			.tag {
-				font-size: 0.8em;
+				font-size: 0.78em;
 				padding: 0.2em 0.7em;
 				border-radius: 999px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
+				background: var(--accent-soft);
+				color: var(--accent);
 				text-decoration: none;
 				transition: background 0.2s, color 0.2s;
 			}
@@ -140,7 +162,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			}
 			/* Prev/Next navigation */
 			.post-nav {
-				width: 720px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: 2em auto 0;
 				padding: 1em;
@@ -150,41 +172,41 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			}
 			.nav-card {
 				padding: 1em;
-				border-radius: 12px;
-				background: var(--bg-card, #fff);
-				border: 1px solid rgb(var(--gray-light));
+				border-radius: var(--radius-md);
+				background: var(--bg-elevated);
+				border: 1px solid var(--border);
 				text-decoration: none;
 				color: inherit;
-				transition: transform 0.2s, box-shadow 0.2s;
+				transition: border-color 0.2s, box-shadow 0.2s;
 			}
 			.nav-card:hover {
-				transform: translateY(-3px);
-				box-shadow: var(--box-shadow);
+				border-color: var(--accent);
+				box-shadow: var(--shadow-md);
 			}
 			.nav-card.next {
 				text-align: right;
 			}
 			.nav-label {
 				font-size: 0.75em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				margin-bottom: 0.3em;
 			}
 			.nav-title {
-				font-size: 1em;
-				color: rgb(var(--black));
+				font-size: 0.95em;
+				color: var(--text);
 				font-weight: 600;
 			}
 			.comments {
-				width: 720px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: 3em auto 0;
 				padding: 1em;
 			}
 			.comments-title {
-				font-size: 1.3em;
+				font-size: 1.15em;
 				margin-bottom: 0.8em;
-				padding-bottom: 0.3em;
-				border-bottom: 2px solid rgb(var(--gray-light));
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
 			}
 			/* Copy button for code blocks */
 			.code-block-wrapper {
@@ -194,26 +216,26 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				position: absolute;
 				top: 0.5em;
 				right: 0.5em;
-				padding: 0.3em 0.7em;
-				border-radius: 6px;
-				background: rgba(255,255,255,0.1);
-				color: rgb(var(--gray));
-				border: 1px solid rgba(255,255,255,0.15);
+				padding: 0.25em 0.65em;
+				border-radius: var(--radius-sm);
+				background: var(--bg-elevated);
+				color: var(--text-secondary);
+				border: 1px solid var(--border);
 				cursor: pointer;
-				font-size: 0.8em;
+				font-size: 0.75em;
 				opacity: 0;
-				transition: opacity 0.2s, background 0.2s;
+				transition: opacity 0.2s, color 0.15s, border-color 0.2s;
 			}
 			.code-block-wrapper:hover .copy-btn {
 				opacity: 1;
 			}
 			.copy-btn:hover {
-				background: var(--accent);
-				color: white;
+				color: var(--accent);
+				border-color: var(--accent);
 			}
 			.copy-btn.copied {
-				background: #22c55e;
-				color: white;
+				color: #16a34a;
+				border-color: #16a34a;
 				opacity: 1;
 			}
 			/* Heading anchor links */
@@ -224,7 +246,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			.heading-anchor {
 				display: inline-block;
 				margin-left: 0.3em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				text-decoration: none;
 				font-size: 0.8em;
 				opacity: 0;
@@ -250,12 +272,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 					overflow-y: auto;
 				}
 				.toc-title {
-					font-size: 0.85em;
-					font-weight: 700;
-					color: rgb(var(--black));
-					margin-bottom: 0.5em;
-					padding-bottom: 0.3em;
-					border-bottom: 1px solid rgb(var(--gray-light));
+					font-size: 0.8em;
+					font-weight: 600;
+					letter-spacing: 0.05em;
+					color: var(--text-secondary);
+					margin-bottom: 0.6em;
+					padding-bottom: 0.4em;
+					border-bottom: 1px solid var(--border);
 				}
 				.toc-list {
 					list-style: none;
@@ -263,107 +286,106 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 					margin: 0;
 				}
 				.toc-list li {
-					margin: 0.3em 0;
+					margin: 0.25em 0;
 				}
 				.toc-list a {
 					display: block;
-					padding: 0.25em 0.5em;
-					border-radius: 4px;
-					color: rgb(var(--gray));
+					padding: 0.25em 0.6em;
+					border-left: 2px solid transparent;
+					color: var(--text-secondary);
 					text-decoration: none;
 					font-size: 0.8em;
-					line-height: 1.4;
-					transition: background 0.15s, color 0.15s;
+					line-height: 1.5;
+					transition: color 0.15s, border-color 0.2s;
 				}
 				.toc-list a:hover,
 				.toc-list a.active {
-					background: rgb(var(--gray-light));
 					color: var(--accent);
+					border-left-color: var(--accent);
 				}
 				.toc-list li.h3 {
 					padding-left: 1em;
 				}
 			}
-			/* Related posts */
-				/* Mobile TOC */
+			/* Mobile TOC */
+			.toc-mobile {
+				display: none;
+			}
+			@media (max-width: 1199px) {
 				.toc-mobile {
-					display: none;
+					display: block;
+					margin: 1em 0;
 				}
-				@media (max-width: 1199px) {
-					.toc-mobile {
-						display: block;
-						margin: 1em 0;
-					}
-					.toc-mobile-toggle {
-						display: flex;
-						align-items: center;
-						justify-content: space-between;
-						width: 100%;
-						padding: 0.6em 1em;
-						background: var(--bg-card, #fff);
-						border: 1px solid rgb(var(--gray-light));
-						border-radius: 8px;
-						font-size: 0.95em;
-						color: rgb(var(--black));
-						cursor: pointer;
-						transition: background 0.2s;
-					}
-					.toc-mobile-toggle:hover {
-						background: rgb(var(--gray-light));
-					}
-					.toc-mobile-toggle .toc-arrow {
-						font-size: 0.75em;
-						transition: transform 0.2s;
-					}
-					.toc-mobile.open .toc-arrow {
-						transform: rotate(180deg);
-					}
-					.toc-mobile-content {
-						max-height: 0;
-						overflow: hidden;
-						transition: max-height 0.3s ease;
-					}
-					.toc-mobile.open .toc-mobile-content {
-						max-height: 500px;
-					}
-					.toc-mobile-list {
-						list-style: none;
-						padding: 0.5em 0 0;
-						margin: 0;
-					}
-					.toc-mobile-list li {
-						margin: 0.3em 0;
-					}
-					.toc-mobile-list a {
-						display: block;
-						padding: 0.4em 0.8em;
-						border-radius: 4px;
-						color: rgb(var(--gray));
-						text-decoration: none;
-						font-size: 0.9em;
-						line-height: 1.4;
-						transition: background 0.15s, color 0.15s;
-					}
-					.toc-mobile-list a:hover,
-					.toc-mobile-list a.active {
-						background: rgb(var(--gray-light));
-						color: var(--accent);
-					}
-					.toc-mobile-list li.h3 {
-						padding-left: 1em;
-					}
+				.toc-mobile-toggle {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					width: 100%;
+					padding: 0.6em 1em;
+					background: var(--bg-elevated);
+					border: 1px solid var(--border);
+					border-radius: var(--radius-md);
+					font-size: 0.9em;
+					color: var(--text);
+					cursor: pointer;
+					transition: border-color 0.2s;
 				}
+				.toc-mobile-toggle:hover {
+					border-color: var(--accent);
+				}
+				.toc-mobile-toggle .toc-arrow {
+					font-size: 0.75em;
+					transition: transform 0.2s;
+				}
+				.toc-mobile.open .toc-arrow {
+					transform: rotate(180deg);
+				}
+				.toc-mobile-content {
+					max-height: 0;
+					overflow: hidden;
+					transition: max-height 0.3s ease;
+				}
+				.toc-mobile.open .toc-mobile-content {
+					max-height: 500px;
+				}
+				.toc-mobile-list {
+					list-style: none;
+					padding: 0.5em 0 0;
+					margin: 0;
+				}
+				.toc-mobile-list li {
+					margin: 0.25em 0;
+				}
+				.toc-mobile-list a {
+					display: block;
+					padding: 0.4em 0.8em;
+					border-radius: var(--radius-sm);
+					color: var(--text-secondary);
+					text-decoration: none;
+					font-size: 0.88em;
+					line-height: 1.5;
+					transition: color 0.15s, background 0.15s;
+				}
+				.toc-mobile-list a:hover,
+				.toc-mobile-list a.active {
+					background: var(--accent-soft);
+					color: var(--accent);
+				}
+				.toc-mobile-list li.h3 {
+					padding-left: 1em;
+				}
+			}
 			.related-posts {
-				width: 720px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: 2em auto 0;
 				padding: 1em;
 			}
 			.related-posts h3 {
-				font-size: 1.2em;
+				font-size: 1.1em;
 				margin-bottom: 0.8em;
-				padding-bottom: 0.3em;
-				border-bottom: 2px solid rgb(var(--gray-light));
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
 			}
 			.related-grid {
 				display: grid;
@@ -372,25 +394,26 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			}
 			.related-card {
 				padding: 1em;
-				border-radius: 10px;
-				background: var(--bg-card, #fff);
-				border: 1px solid rgb(var(--gray-light));
+				border-radius: var(--radius-md);
+				background: var(--bg-elevated);
+				border: 1px solid var(--border);
 				text-decoration: none;
 				color: inherit;
-				transition: transform 0.2s, box-shadow 0.2s;
+				transition: border-color 0.2s, box-shadow 0.2s;
 			}
 			.related-card:hover {
-				transform: translateY(-3px);
-				box-shadow: var(--box-shadow);
+				border-color: var(--accent);
+				box-shadow: var(--shadow-md);
 			}
 			.related-card .r-title {
 				font-weight: 600;
-				color: rgb(var(--black));
+				font-size: 0.92em;
+				color: var(--text);
 				margin-bottom: 0.3em;
 			}
 			.related-card .r-desc {
-				font-size: 0.85em;
-				color: rgb(var(--gray));
+				font-size: 0.82em;
+				color: var(--text-secondary);
 				display: -webkit-box;
 				-webkit-line-clamp: 2;
 				-webkit-box-orient: vertical;
@@ -401,7 +424,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				position: fixed;
 				top: 0;
 				left: 0;
-				height: 3px;
+				height: 2px;
 				background: var(--accent);
 				z-index: 1000;
 				width: 0%;
@@ -409,7 +432,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			}
 			/* Share buttons */
 			.share-bar {
-				width: 720px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: 2em auto 0;
 				padding: 1em;
@@ -420,25 +443,24 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 			}
 			.share-label {
 				font-size: 0.85em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				margin-right: 0.5em;
 			}
 			.share-btn {
-				padding: 0.4em 0.9em;
-				border-radius: 8px;
-				background: var(--bg-card, #fff);
-				border: 1px solid rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
-				font-size: 0.85em;
+				padding: 0.35em 0.85em;
+				border-radius: var(--radius-sm);
+				background: var(--bg-elevated);
+				border: 1px solid var(--border);
+				color: var(--text-secondary);
+				font-size: 0.82em;
 				cursor: pointer;
-				transition: background 0.2s, border-color 0.2s, transform 0.2s;
+				transition: color 0.15s, border-color 0.2s;
 				text-decoration: none;
 				display: inline-flex;
 				align-items: center;
 				gap: 0.3em;
 			}
 			.share-btn:hover {
-				transform: translateY(-2px);
 				border-color: var(--accent);
 				color: var(--accent);
 			}
@@ -465,7 +487,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				max-width: 90vw;
 				max-height: 90vh;
 				object-fit: contain;
-				border-radius: 8px;
+				border-radius: var(--radius-md);
 				cursor: default;
 			}
 			.lightbox-close {
@@ -494,10 +516,10 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 				width: 100%;
 				padding: 0.5em;
 				background: var(--bg-code);
-				border: 1px solid rgb(var(--gray-light));
+				border: 1px solid var(--border);
 				border-top: none;
-				border-radius: 0 0 8px 8px;
-				color: rgb(var(--gray));
+				border-radius: 0 0 var(--radius-md) var(--radius-md);
+				color: var(--text-secondary);
 				font-size: 0.8em;
 				cursor: pointer;
 				text-align: center;
@@ -521,6 +543,9 @@ const { title, description, pubDate, updatedDate, heroImage, tags, prevPost, nex
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
 				</div>
 				<div class="prose">
+					{draft && (
+						<div class="draft-banner">🔒 非公开文章 —— 本页不在博客列表、归档与订阅中展示，仅可通过直链访问。</div>
+					)}
 					<div class="title">
 						<div class="meta-bar">
 							<span><FormattedDate date={pubDate} /></span>

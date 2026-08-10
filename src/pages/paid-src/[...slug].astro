@@ -1,0 +1,30 @@
+---
+// 付费文章正文抽取专用页（不带布局的裸 HTML）。
+// 构建后由 scripts/pack-paid-content.mjs 提取 <div id="paid-body"> 内部 HTML，
+// 随后整个 dist/paid-src/ 目录会被删除，正文不会进入公开产物。
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const posts = (await getCollection('blog')).filter((p) => p.data.paid);
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: post,
+	}));
+}
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content } = await render(post);
+---
+
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<title>{post.data.title}</title>
+	</head>
+	<body>
+		<div id="paid-body">
+			<Content />
+		</div>
+	</body>
+</html>

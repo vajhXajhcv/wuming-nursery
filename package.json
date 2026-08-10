@@ -9,10 +9,11 @@
     "dev": "astro dev",
     "build:kaoyan": "node scripts/build-kaoyan.js",
     "build:triworld": "node scripts/build-triworld.js",
-    "build": "npm run build:kaoyan && npm run build:triworld && astro build",
+    "build": "npm run build:kaoyan && npm run build:triworld && astro build && node scripts/pack-paid-content.mjs",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "npm run build && wrangler pages deploy",
+    "upload:content": "node scripts/upload-paid-content.mjs",
+    "deploy": "npm run build && npm run upload:content && wrangler pages deploy",
     "pages:dev": "npm run build && wrangler pages dev ./dist"
   },
   "dependencies": {

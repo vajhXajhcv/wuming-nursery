@@ -6,63 +6,52 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 <BaseLayout title={`关于 - ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
 		<style>
 			main {
-				width: 720px;
+				width: var(--content-width);
 				max-width: calc(100% - 2em);
 				margin: auto;
-				padding: 3em 1em;
+				padding: 2.5em 1em;
 			}
 			.about-hero {
-				text-align: center;
-				padding: 2em 0;
+				padding: 1em 0 0.5em;
 			}
 			.about-hero img {
-				width: 120px;
-				height: 120px;
+				width: 88px;
+				height: 88px;
 				border-radius: 50%;
-				box-shadow: var(--box-shadow);
-				border: 3px solid rgba(var(--gray-light), 1);
+				border: 2px solid var(--border);
 				margin-bottom: 1em;
-				transition: transform 0.3s ease;
-			}
-			.about-hero img:hover {
-				transform: scale(1.05);
 			}
 			.about-hero h1 {
-				font-size: 2em;
+				font-size: 1.5em;
 				margin: 0 0 0.3em;
 			}
 			.about-hero p {
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				margin: 0;
+				font-size: 0.95em;
 			}
 			.section {
 				margin: 2.5em 0;
 			}
 			.section h2 {
-				font-size: 1.4em;
+				font-size: 1.25em;
 				margin-bottom: 0.8em;
-				padding-bottom: 0.3em;
-				border-bottom: 2px solid rgb(var(--gray-light));
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
 			}
 			.section p {
-				color: rgb(var(--gray-dark));
 				line-height: 1.8;
 			}
 			.garden-marker {
 				text-align: center;
 				font-size: 0.85em;
-				color: rgb(var(--gray));
-				background: linear-gradient(135deg, #f0fdf4 0%, #f8fff9 100%);
-				border: 1px solid #bbf7d0;
-				border-radius: 999px;
-				padding: 0.5em 1.2em;
+				color: var(--text-secondary);
+				background: var(--accent-soft);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-md);
+				padding: 0.6em 1.2em;
 				max-width: 520px;
 				margin: 0 auto 1.5em;
-			}
-			[data-theme='dark'] .garden-marker {
-				background: linear-gradient(135deg, #14532d 0%, #166534 100%);
-				border-color: #166534;
-				color: #dcfce7;
 			}
 			.timeline {
 				position: relative;
@@ -74,9 +63,9 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 				left: 0;
 				top: 0.5em;
 				bottom: 0.5em;
-				width: 3px;
-				background: rgb(var(--gray-light));
-				border-radius: 3px;
+				width: 2px;
+				background: var(--border);
+				border-radius: 2px;
 			}
 			.timeline-item {
 				position: relative;
@@ -85,24 +74,21 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 			.timeline-item::before {
 				content: '';
 				position: absolute;
-				left: -1.65em;
-				top: 0.4em;
-				width: 10px;
-				height: 10px;
+				left: -1.62em;
+				top: 0.45em;
+				width: 9px;
+				height: 9px;
 				border-radius: 50%;
 				background: var(--accent);
 			}
 			.timeline-item .date {
 				font-size: 0.85em;
-				color: rgb(var(--gray));
+				color: var(--text-secondary);
 				margin-bottom: 0.2em;
-			}
-			.timeline-item .content {
-				color: rgb(var(--gray-dark));
 			}
 			.links {
 				display: flex;
-				gap: 1em;
+				gap: 0.8em;
 				flex-wrap: wrap;
 				margin-top: 1em;
 			}
@@ -110,21 +96,21 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 				display: inline-flex;
 				align-items: center;
 				gap: 0.4em;
-				padding: 0.5em 1em;
-				border-radius: 999px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
+				padding: 0.55em 1em;
+				border-radius: var(--radius-md);
+				border: 1px solid var(--border);
+				background: var(--bg-elevated);
+				color: var(--text);
 				text-decoration: none;
 				font-size: 0.9em;
-				transition: all 0.2s ease;
+				transition: border-color 0.2s, color 0.15s;
 			}
 			.links a:hover {
-				background: var(--accent);
-				color: white;
-				transform: translateY(-2px);
+				border-color: var(--accent);
+				color: var(--accent);
 			}
 			@media (max-width: 720px) {
-				.about-hero h1 { font-size: 1.6em; }
+				.about-hero h1 { font-size: 1.4em; }
 			}
 		</style>
 

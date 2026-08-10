@@ -37,55 +37,62 @@ const faqs = [
 <BaseLayout title={title} description={description}>
 	<style>
 		main {
-			width: 900px;
+			width: var(--wide-width);
 			max-width: calc(100% - 2em);
 			margin: auto;
 			padding: 2em 1em 4em;
 		}
 		.hero {
-			text-align: center;
-			padding: 2.5em 0 1.5em;
+			padding: 1em 0 1.5em;
 		}
 		.hero h1 {
-			font-size: 2.3em;
+			font-size: 1.5em;
 			margin: 0 0 0.3em;
 		}
 		.hero p {
-			color: rgb(var(--gray));
-			font-size: 1.05em;
+			color: var(--text-secondary);
+			font-size: 0.95em;
 			max-width: 620px;
-			margin: 0 auto;
+			margin: 0;
 			line-height: 1.7;
 		}
 
 		.btn {
 			display: inline-block;
-			padding: 0.7em 1.6em;
-			border-radius: 999px;
+			padding: 0.6em 1.3em;
+			border-radius: var(--radius-md);
 			text-decoration: none;
 			font-weight: 600;
-			transition: transform 0.15s, box-shadow 0.15s;
-		}
-		.btn:hover {
-			transform: translateY(-2px);
+			font-size: 0.92em;
+			border: 1px solid transparent;
+			transition: background 0.15s, border-color 0.2s, color 0.15s;
 		}
 		.btn-primary {
 			background: var(--accent);
 			color: white;
-			box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
 		}
 		.btn-secondary {
-			background: rgb(var(--gray-light));
-			color: rgb(var(--gray-dark));
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
 		}
 
 		section {
 			margin: 3em 0;
 		}
 		section h2 {
-			font-size: 1.6em;
+			font-size: 1.4em;
 			margin-bottom: 1em;
-			text-align: center;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
 		}
 
 		.price-grid {
@@ -95,46 +102,46 @@ const faqs = [
 			margin: 1.5em 0;
 		}
 		.price-card {
-			background: var(--bg-card, #fff);
-			border: 2px solid rgb(var(--gray-light));
-			border-radius: 16px;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
 			padding: 1.5em;
-			text-align: center;
-			transition: border-color 0.2s;
+			transition: border-color 0.2s, box-shadow 0.2s;
 		}
 		.price-card:hover {
 			border-color: var(--accent);
+			box-shadow: var(--shadow-md);
 		}
 		.price-card h3 {
 			margin: 0 0 0.4em;
-			font-size: 1.15em;
+			font-size: 1.1em;
 		}
 		.price-card .price {
-			font-size: 2em;
+			font-size: 1.7em;
 			font-weight: 800;
 			color: var(--accent);
 			margin: 0.3em 0;
 		}
 		.price-card .period {
-			font-size: 0.9em;
-			color: rgb(var(--gray));
+			font-size: 0.88em;
+			color: var(--text-secondary);
 		}
 		.price-card p {
 			margin: 0.8em 0 0;
-			font-size: 0.9em;
-			color: rgb(var(--gray));
+			font-size: 0.88em;
+			color: var(--text-secondary);
 			line-height: 1.6;
 		}
 
 		.addons {
-			background: var(--bg-card, #fff);
-			border: 1px solid rgb(var(--gray-light));
-			border-radius: 12px;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
 			padding: 1.2em 1.5em;
 		}
 		.addons h3 {
 			margin: 0 0 0.8em;
-			font-size: 1.1em;
+			font-size: 1.05em;
 		}
 		.addons ul {
 			margin: 0;
@@ -145,8 +152,8 @@ const faqs = [
 			display: flex;
 			justify-content: space-between;
 			padding: 0.45em 0;
-			border-bottom: 1px solid rgb(var(--gray-light));
-			font-size: 0.95em;
+			border-bottom: 1px solid var(--border);
+			font-size: 0.92em;
 		}
 		.addons li:last-child {
 			border-bottom: none;
@@ -162,55 +169,50 @@ const faqs = [
 			gap: 1.2em;
 		}
 		.process-card {
-			background: var(--bg-card, #fff);
-			border: 1px solid rgb(var(--gray-light));
-			border-radius: 12px;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
 			padding: 1.4em 1.2em;
-			text-align: center;
 		}
 		.process-card .step {
-			font-size: 2em;
+			font-size: 1.6em;
 			font-weight: 800;
 			color: var(--accent);
-			opacity: 0.2;
+			opacity: 0.35;
 			line-height: 1;
 			margin-bottom: 0.3em;
 		}
 		.process-card h4 {
 			margin: 0 0 0.4em;
-			font-size: 1.1em;
+			font-size: 1.05em;
 		}
 		.process-card p {
 			margin: 0;
-			font-size: 0.9em;
-			color: rgb(var(--gray));
+			font-size: 0.88em;
+			color: var(--text-secondary);
 			line-height: 1.6;
 		}
 
 		.deliver {
-			background: #f0f4ff;
-			border-radius: 16px;
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
 			padding: 1.8em;
-			border: 1px solid rgb(var(--gray-light));
-		}
-		[data-theme='dark'] .deliver {
-			background: #1e1b4b;
+			border: 1px solid var(--border);
 		}
 		.deliver h3 {
 			margin: 0 0 0.8em;
-			font-size: 1.2em;
+			font-size: 1.15em;
 		}
 		.deliver ul {
 			margin: 0;
 			padding-left: 1.2em;
 			line-height: 1.9;
-			color: rgb(var(--gray-dark));
 		}
 
 		.faq-item {
-			background: var(--bg-card, #fff);
-			border-radius: 12px;
-			border: 1px solid rgb(var(--gray-light));
+			background: var(--bg-elevated);
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
 			margin-bottom: 0.8em;
 			overflow: hidden;
 		}
@@ -221,13 +223,14 @@ const faqs = [
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			transition: background 0.15s;
 		}
 		.faq-q:hover {
-			background: rgba(var(--gray-light), 0.3);
+			background: var(--accent-soft);
 		}
 		.faq-arrow {
 			font-size: 0.8em;
-			color: rgb(var(--gray));
+			color: var(--text-secondary);
 			transition: transform 0.2s;
 		}
 		.faq-item.open .faq-arrow {
@@ -243,33 +246,31 @@ const faqs = [
 		}
 		.faq-a-inner {
 			padding: 0 1.2em 1em;
-			color: rgb(var(--gray-dark));
+			color: var(--text-secondary);
 			line-height: 1.7;
 			font-size: 0.95em;
 		}
 
 		.cta-box {
-			background: linear-gradient(135deg, #f0f4ff 0%, #f8f9ff 100%);
-			border-radius: 16px;
-			padding: 2.5em 2em;
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 2em;
 			text-align: center;
-			border: 1px solid rgb(var(--gray-light));
+			border: 1px solid var(--border);
 			margin-top: 3em;
-		}
-		[data-theme='dark'] .cta-box {
-			background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
 		}
 		.cta-box h2 {
 			margin: 0 0 0.4em;
-			font-size: 1.5em;
+			font-size: 1.3em;
 		}
 		.cta-box p {
-			color: rgb(var(--gray));
+			color: var(--text-secondary);
+			font-size: 0.92em;
 			margin: 0 0 1.2em;
 		}
 
 		@media (max-width: 720px) {
-			.hero h1 { font-size: 1.8em; }
+			.hero h1 { font-size: 1.4em; }
 		}
 	</style>
 

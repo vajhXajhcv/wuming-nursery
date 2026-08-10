@@ -12,50 +12,57 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 			}
 			.doc-nav {
 				display: flex;
-				gap: 1em;
+				gap: 0.6em;
 				margin-bottom: 2em;
 				flex-wrap: wrap;
 			}
 			.doc-nav a {
-				padding: 0.4em 1em;
-				border-radius: 8px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
+				display: inline-flex;
+				align-items: center;
+				padding: 0.4em 0.9em;
+				border-radius: var(--radius-md);
+				border: 1px solid var(--border);
+				color: var(--text-secondary);
 				text-decoration: none;
-				font-size: 0.9em;
-				transition: all 0.2s;
+				font-size: 0.88em;
+				transition: border-color 0.2s, color 0.15s;
+				min-height: 40px;
+				box-sizing: border-box;
 			}
 			.doc-nav a:hover {
-				background: var(--accent);
-				color: white;
+				border-color: var(--accent);
+				color: var(--accent);
 			}
 			.doc-nav a.back {
 				background: transparent;
-				border: 1px solid rgb(var(--gray-light));
+			}
+			main > h1 {
+				font-size: 1.45em;
 			}
 			.doc-section {
 				margin: 2em 0;
 			}
 			.doc-section h2 {
-				font-size: 1.5em;
-				padding-bottom: 0.3em;
-				border-bottom: 2px solid rgb(var(--gray-light));
+				font-size: 1.25em;
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
 				margin-bottom: 0.8em;
 			}
 			.doc-section h3 {
-				font-size: 1.15em;
+				font-size: 1.05em;
 				margin: 1.2em 0 0.5em;
 			}
 			.doc-section pre {
-				background: var(--bg-code, #f6f8fa);
+				background: var(--bg-code);
+				border: 1px solid var(--border);
 				padding: 1em;
-				border-radius: 8px;
+				border-radius: var(--radius-md);
 				overflow-x: auto;
-				font-size: 0.9em;
+				font-size: 0.88em;
 			}
 			.doc-section code {
 				font-family: 'Courier New', Courier, monospace;
-				background: var(--bg-code, #f6f8fa);
+				background: var(--bg-code);
 				padding: 0.15em 0.4em;
 				border-radius: 4px;
 				font-size: 0.9em;
@@ -74,27 +81,30 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 				width: 100%;
 				border-collapse: collapse;
 				margin: 1em 0;
+				font-size: 0.92em;
 			}
 			.doc-section th, .doc-section td {
-				border: 1px solid rgb(var(--gray-light));
-				padding: 0.5em;
+				border: 1px solid var(--border);
+				padding: 0.5em 0.7em;
 				text-align: left;
 			}
 			.doc-section th {
-				background: rgba(var(--gray-light), 0.5);
+				background: var(--bg-elevated);
 			}
 			.tip {
-				background: rgba(99, 102, 241, 0.08);
-				border-left: 4px solid var(--accent);
+				background: var(--accent-soft);
+				border: 1px solid var(--border);
+				border-left: 3px solid var(--accent);
 				padding: 0.8em 1em;
-				border-radius: 0 8px 8px 0;
+				border-radius: var(--radius-md);
 				margin: 1em 0;
+				font-size: 0.92em;
 			}
 			.tip strong {
 				color: var(--accent);
 			}
 			@media (max-width: 720px) {
-				main { padding: 1em; }
+				main { padding: 1.5em 1em; }
 			}
 		</style>
 	<main>

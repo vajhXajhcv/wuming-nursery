@@ -1,0 +1,332 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `公开账本 - ${SITE_TITLE}`;
+const description = '每一笔收入与支出公开记录，哈希链防篡改，任何人可独立验证完整性。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		.page-header {
+			margin-bottom: 1.5em;
+		}
+		.page-header h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.page-header p {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			margin: 0;
+		}
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+			gap: 0.8em;
+			margin: 1.5em 0;
+		}
+		.stat {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.9em 1.1em;
+		}
+		.stat .stat-label {
+			font-size: 0.75em;
+			color: var(--text-secondary);
+		}
+		.stat .stat-value {
+			font-size: 1.3em;
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+		}
+		.stat .stat-value.income {
+			color: #16a34a;
+		}
+		.stat .stat-value.expense {
+			color: #dc2626;
+		}
+		.chain-status {
+			display: flex;
+			align-items: center;
+			gap: 0.8em;
+			flex-wrap: wrap;
+			padding: 0.8em 1.1em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg-elevated);
+			font-size: 0.88em;
+			margin-bottom: 1.5em;
+		}
+		.chain-badge {
+			font-weight: 600;
+		}
+		.chain-badge.ok {
+			color: #16a34a;
+		}
+		.chain-badge.bad {
+			color: #dc2626;
+		}
+		.chain-head {
+			color: var(--text-secondary);
+			font-family: monospace;
+			font-size: 0.85em;
+			word-break: break-all;
+		}
+		#verify-btn {
+			margin-left: auto;
+			padding: 0.35em 1em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-sm);
+			background: transparent;
+			color: var(--text);
+			font-size: 0.85em;
+			cursor: pointer;
+		}
+		#verify-btn:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.ledger-table-wrapper {
+			overflow-x: auto;
+		}
+		.ledger-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.88em;
+		}
+		.ledger-table th,
+		.ledger-table td {
+			border-bottom: 1px solid var(--border);
+			padding: 0.6em 0.7em;
+			text-align: left;
+			white-space: nowrap;
+		}
+		.ledger-table th {
+			color: var(--text-secondary);
+			font-weight: 600;
+			font-size: 0.85em;
+		}
+		.ledger-table td.note {
+			white-space: normal;
+			min-width: 12em;
+		}
+		.amount-in {
+			color: #16a34a;
+			font-variant-numeric: tabular-nums;
+		}
+		.amount-out {
+			color: #dc2626;
+			font-variant-numeric: tabular-nums;
+		}
+		.src {
+			font-size: 0.8em;
+			padding: 0.1em 0.55em;
+			border-radius: 999px;
+			border: 1px solid var(--border);
+			color: var(--text-secondary);
+		}
+		.src.auto {
+			background: var(--accent-soft);
+			color: var(--accent);
+			border-color: transparent;
+		}
+		.hash-cell {
+			font-family: monospace;
+			font-size: 0.78em;
+			color: var(--text-secondary);
+		}
+		.empty {
+			text-align: center;
+			color: var(--text-secondary);
+			padding: 3em 0;
+		}
+		.explain {
+			margin-top: 2.5em;
+			padding: 1.2em 1.4em;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			line-height: 1.7;
+		}
+		.explain strong {
+			color: var(--text);
+		}
+		.explain code {
+			font-size: 0.85em;
+		}
+	</style>
+	<main>
+		<div class="page-header">
+			<h1>公开账本</h1>
+			<p>每一笔收入与支出公开记录。哈希链防篡改，任何人可独立验证。</p>
+		</div>
+
+		<div class="stats">
+			<div class="stat">
+				<div class="stat-label">总收入</div>
+				<div class="stat-value income" id="stat-in">¥0.00</div>
+			</div>
+			<div class="stat">
+				<div class="stat-label">总支出</div>
+				<div class="stat-value expense" id="stat-out">¥0.00</div>
+			</div>
+			<div class="stat">
+				<div class="stat-label">结余</div>
+				<div class="stat-value" id="stat-balance">¥0.00</div>
+			</div>
+			<div class="stat">
+				<div class="stat-label">记录数</div>
+				<div class="stat-value" id="stat-count">0</div>
+			</div>
+		</div>
+
+		<div class="chain-status">
+			<span class="chain-badge" id="chain-badge">⏳ 加载中…</span>
+			<span class="chain-head" id="chain-head"></span>
+			<button id="verify-btn">独立验证哈希链</button>
+		</div>
+
+		<div class="ledger-table-wrapper">
+			<table class="ledger-table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>时间</th>
+						<th>类型</th>
+						<th>分类</th>
+						<th>摘要</th>
+						<th>金额</th>
+						<th>来源</th>
+						<th>哈希</th>
+					</tr>
+				</thead>
+				<tbody id="ledger-body">
+					<tr>
+						<td colspan="8" class="empty">加载中…</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="explain">
+			<strong>这个账本如何防篡改？</strong><br />
+			每条记录包含上一条记录的哈希值，形成哈希链：<code>hash = SHA256(prev|序号|时间|类型|金额|分类|摘要|来源|单号)</code>。
+			修改任何一条历史记录，其后所有哈希都会失配。上方「独立验证哈希链」按钮在你的浏览器里重算整条链，不经过服务器。
+			记录一旦写入即不可更改，更正以反向冲正的新记录呈现。后续计划：每周把链头哈希锚定到比特币区块链（OpenTimestamps），获得公开时间证明。
+		</div>
+	</main>
+
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', async function () {
+			const body = document.getElementById('ledger-body');
+			const badge = document.getElementById('chain-badge');
+			const headEl = document.getElementById('chain-head');
+			const SRC_LABELS = { manual: '手动', alipay: '自动·支付宝', afdian: '自动·爱发电' };
+
+			async function sha256Hex(text) {
+				const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+				return Array.from(new Uint8Array(buf))
+					.map((b) => b.toString(16).padStart(2, '0'))
+					.join('');
+			}
+
+			function contentOf(r) {
+				return [r.prev, r.seq, r.ts, r.type, r.amount, r.category, r.note, r.source, r.ref || ''].join('|');
+			}
+
+			let data;
+			try {
+				const resp = await fetch('/api/ledger/list');
+				data = await resp.json();
+			} catch (e) {
+				body.innerHTML = '<tr><td colspan="8" class="empty">加载失败，请刷新重试。</td></tr>';
+				badge.textContent = '❌ 加载失败';
+				return;
+			}
+
+			const records = data.records || [];
+			// 统计
+			let tin = 0, tout = 0;
+			records.forEach((r) => {
+				if (r.type === 'income') tin += parseFloat(r.amount);
+				else tout += parseFloat(r.amount);
+			});
+			document.getElementById('stat-in').textContent = '¥' + tin.toFixed(2);
+			document.getElementById('stat-out').textContent = '¥' + tout.toFixed(2);
+			document.getElementById('stat-balance').textContent = '¥' + (tin - tout).toFixed(2);
+			document.getElementById('stat-count').textContent = records.length;
+
+			// 服务端结论仅作展示，真正验证由浏览器独立完成
+			if (data.chain && data.chain.valid) {
+				badge.textContent = '✅ 链完整（服务端）';
+				badge.className = 'chain-badge ok';
+			} else if (data.chain) {
+				badge.textContent = '⚠️ 链校验异常 @#' + data.chain.brokenAt;
+				badge.className = 'chain-badge bad';
+			}
+			headEl.textContent = data.head ? '链头 ' + data.head.hash.slice(0, 16) + '…' : '';
+
+			// 表格
+			if (!records.length) {
+				body.innerHTML = '<tr><td colspan="8" class="empty">暂无记录</td></tr>';
+			} else {
+				body.innerHTML = records
+					.slice()
+					.reverse()
+					.map((r) => {
+						const d = new Date(r.ts);
+						const time = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+						const isIn = r.type === 'income';
+						const srcLabel = SRC_LABELS[r.source] || r.source;
+						const srcClass = r.source === 'manual' ? 'src' : 'src auto';
+						return (
+							'<tr><td>' + r.seq + '</td><td>' + time + '</td>' +
+							'<td>' + (isIn ? '收入' : '支出') + '</td>' +
+							'<td>' + escapeHtml(r.category) + '</td>' +
+							'<td class="note">' + escapeHtml(r.note) + '</td>' +
+							'<td class="' + (isIn ? 'amount-in' : 'amount-out') + '">' + (isIn ? '+' : '-') + '¥' + r.amount + '</td>' +
+							'<td><span class="' + srcClass + '">' + srcLabel + '</span></td>' +
+							'<td class="hash-cell" title="' + r.hash + '">' + r.hash.slice(0, 10) + '…</td></tr>'
+						);
+					})
+					.join('');
+			}
+
+			function escapeHtml(s) {
+				return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+			}
+
+			// 浏览器端独立验链
+			document.getElementById('verify-btn').addEventListener('click', async function () {
+				badge.textContent = '⏳ 正在本地重算…';
+				badge.className = 'chain-badge';
+				let prev = 'GENESIS';
+				for (const r of records) {
+					if (r.prev !== prev) {
+						badge.textContent = '❌ 链断裂于 #' + r.seq;
+						badge.className = 'chain-badge bad';
+						return;
+					}
+					const expect = await sha256Hex(contentOf(r));
+					if (expect !== r.hash) {
+						badge.textContent = '❌ 记录 #' + r.seq + ' 哈希失配';
+						badge.className = 'chain-badge bad';
+						return;
+					}
+					prev = r.hash;
+				}
+				if (data.head && records.length && data.head.hash !== prev) {
+					badge.textContent = '❌ 链头与末条记录不符';
+					badge.className = 'chain-badge bad';
+					return;
+				}
+				badge.textContent = '✅ 本地验证通过（' + records.length + ' 条）';
+				badge.className = 'chain-badge ok';
+			});
+		});
+	</script>
+</BaseLayout>

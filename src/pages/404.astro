@@ -9,50 +9,49 @@ import { SITE_DESCRIPTION } from '../consts';
 				flex-direction: column;
 				align-items: center;
 				justify-content: center;
-				min-height: 60vh;
+				min-height: 55vh;
 				text-align: center;
 				padding: 2rem;
 			}
 			.code {
-				font-size: clamp(4rem, 15vw, 10rem);
+				font-size: clamp(3rem, 12vw, 6rem);
 				font-weight: 800;
 				color: var(--accent);
-				opacity: 0.3;
 				line-height: 1;
-				margin-bottom: 1rem;
+				margin-bottom: 0.8rem;
+				letter-spacing: 0.02em;
 			}
 			.text {
-				font-size: 1.5rem;
-				color: var(--text-secondary);
-				margin-bottom: 0.5rem;
+				font-size: 1.25rem;
+				font-weight: 600;
+				margin-bottom: 0.4rem;
 			}
 			.sub {
-				color: var(--text-tertiary);
+				color: var(--text-secondary);
 				margin-bottom: 2rem;
+				font-size: 0.95rem;
 			}
 			.back-btn {
-				display: inline-block;
-				padding: 0.75rem 2rem;
-				border-radius: 9999px;
+				display: inline-flex;
+				align-items: center;
+				padding: 0.6em 1.4em;
+				border-radius: var(--radius-md);
 				background: var(--accent);
 				color: white;
 				font-weight: 600;
+				font-size: 0.95em;
 				text-decoration: none;
-				transition: transform 0.2s, box-shadow 0.2s;
+				transition: background 0.15s;
+				min-height: 40px;
+				box-sizing: border-box;
 			}
 			.back-btn:hover {
-				transform: translateY(-2px);
-				box-shadow: 0 8px 25px rgba(99,102,241,0.35);
+				background: var(--accent-dark);
+				color: white;
 			}
 			.emoji {
-				font-size: 3rem;
-				margin-bottom: 1rem;
-				display: inline-block;
-				animation: float 3s ease-in-out infinite;
-			}
-			@keyframes float {
-				0%, 100% { transform: translateY(0); }
-				50% { transform: translateY(-10px); }
+				font-size: 2.2rem;
+				margin-bottom: 0.8rem;
 			}
 		</style>
 		<main class="container">

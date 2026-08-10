@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `账本录入 - ${SITE_TITLE}`;
+const description = '手动录入收支记录（需要管理令牌）。';
+---
+
+<BaseLayout title={title} description={description} draft={true}>
+	<style>
+		.form-box {
+			max-width: 520px;
+			margin: 0 auto;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 2em;
+		}
+		.form-box h1 {
+			font-size: 1.4em;
+			margin: 0 0 1em;
+		}
+		.field {
+			margin-bottom: 1em;
+		}
+		.field label {
+			display: block;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.3em;
+		}
+		.field input,
+		.field select,
+		.field textarea {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0.55em 0.8em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg);
+			color: var(--text);
+			font-size: 0.95em;
+			font-family: inherit;
+		}
+		.field input:focus,
+		.field select:focus,
+		.field textarea:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 1em;
+		}
+		.submit-btn {
+			width: 100%;
+			padding: 0.7em;
+			border: none;
+			border-radius: var(--radius-md);
+			background: var(--accent);
+			color: white;
+			font-size: 1em;
+			font-weight: 600;
+			cursor: pointer;
+			min-height: 44px;
+		}
+		.submit-btn:hover {
+			background: var(--accent-dark);
+		}
+		.submit-btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		.result {
+			margin-top: 1em;
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			font-size: 0.88em;
+			display: none;
+		}
+		.result.ok {
+			display: block;
+			background: var(--accent-soft);
+			color: var(--accent);
+			word-break: break-all;
+		}
+		.result.err {
+			display: block;
+			background: rgba(220, 38, 38, 0.08);
+			color: #dc2626;
+		}
+	</style>
+	<main>
+		<div class="form-box">
+			<h1>账本录入（手动渠道）</h1>
+			<div class="field">
+				<label for="admin-token">管理令牌</label>
+				<input type="password" id="admin-token" placeholder="ADMIN_TOKEN" />
+			</div>
+			<div class="row">
+				<div class="field">
+					<label for="entry-type">类型</label>
+					<select id="entry-type">
+						<option value="income">收入</option>
+						<option value="expense">支出</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="entry-amount">金额（元）</label>
+					<input type="number" id="entry-amount" min="0.01" step="0.01" placeholder="0.00" />
+				</div>
+			</div>
+			<div class="field">
+				<label for="entry-category">分类</label>
+				<input type="text" id="entry-category" placeholder="如：付费阅读 / 办公支出 / 捐款" />
+			</div>
+			<div class="field">
+				<label for="entry-note">摘要</label>
+				<textarea id="entry-note" rows="2" placeholder="一句话说明这笔收支"></textarea>
+			</div>
+			<div class="field">
+				<label for="entry-ref">关联单号（可选）</label>
+				<input type="text" id="entry-ref" placeholder="如发票号、流水号" />
+			</div>
+			<button class="submit-btn" id="submit-btn">写入账本</button>
+			<div class="result" id="result"></div>
+		</div>
+	</main>
+
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', function () {
+			var tokenInput = document.getElementById('admin-token');
+			var btn = document.getElementById('submit-btn');
+			var result = document.getElementById('result');
+			try {
+				tokenInput.value = localStorage.getItem('ledger:admin-token') || '';
+			} catch (e) {}
+
+			btn.addEventListener('click', async function () {
+				var token = tokenInput.value.trim();
+				if (!token) {
+					show('请先输入管理令牌。', false);
+					return;
+				}
+				var payload = {
+					type: document.getElementById('entry-type').value,
+					amount: document.getElementById('entry-amount').value,
+					category: document.getElementById('entry-category').value.trim(),
+					note: document.getElementById('entry-note').value.trim(),
+					ref: document.getElementById('entry-ref').value.trim(),
+				};
+				if (!payload.amount || !payload.category || !payload.note) {
+					show('金额、分类、摘要为必填项。', false);
+					return;
+				}
+				btn.disabled = true;
+				try {
+					var resp = await fetch('/api/ledger/add', {
+						method: 'POST',
+						headers: {
+							'content-type': 'application/json',
+							Authorization: 'Bearer ' + token,
+						},
+						body: JSON.stringify(payload),
+					});
+					var data = await resp.json();
+					if (!resp.ok) throw new Error(data.error || '写入失败（HTTP ' + resp.status + '）');
+					try {
+						localStorage.setItem('ledger:admin-token', token);
+					} catch (e) {}
+					show('✅ 已写入第 ' + data.seq + ' 条，哈希：' + data.hash, true);
+					document.getElementById('entry-amount').value = '';
+					document.getElementById('entry-note').value = '';
+					document.getElementById('entry-ref').value = '';
+				} catch (err) {
+					show(err.message || '写入失败。', false);
+				} finally {
+					btn.disabled = false;
+				}
+			});
+
+			function show(msg, ok) {
+				result.textContent = msg;
+				result.className = 'result ' + (ok ? 'ok' : 'err');
+			}
+		});
+	</script>
+</BaseLayout>

@@ -20,6 +20,7 @@ const gardenLinks = [
 	{ href: '/notes', text: '笔记' },
 	{ href: '/about', text: '关于我' },
 	{ href: '/archive', text: '归档' },
+	{ href: '/ledger', text: '公开账本' },
 ];
 ---
 
@@ -55,6 +56,9 @@ const gardenLinks = [
 		</div>
 	</div>
 	<div class="copyright">&copy; {today.getFullYear()} 无名苗圃. All rights reserved.</div>
+	<div class="music-credit">
+		背景音乐：<a href="https://incompetech.com" target="_blank" rel="noopener">Kevin MacLeod (incompetech.com)</a>，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> 授权
+	</div>
 </footer>
 
 <!-- Back to Top -->
@@ -85,9 +89,9 @@ const gardenLinks = [
 
 <style>
 	footer {
-		padding: 3em 1em 2em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
+		padding: 2.5em 1em 1.5em;
+		border-top: 1px solid var(--border);
+		color: var(--text-secondary);
 	}
 	.footer-grid {
 		max-width: 960px;
@@ -98,19 +102,21 @@ const gardenLinks = [
 	}
 	.footer-brand {
 		font-weight: 700;
-		color: rgb(var(--black));
-		font-size: 1.1em;
+		color: var(--text);
+		font-size: 1em;
 		margin-bottom: 0.5em;
 	}
 	.footer-desc {
-		font-size: 0.9em;
+		font-size: 0.85em;
 		line-height: 1.6;
 		margin: 0;
 	}
 	.footer-col h4 {
 		margin: 0 0 0.8em;
-		font-size: 0.95em;
-		color: rgb(var(--black));
+		font-size: 0.85em;
+		font-weight: 600;
+		color: var(--text-secondary);
+		letter-spacing: 0.05em;
 	}
 	.footer-col ul {
 		list-style: none;
@@ -121,22 +127,34 @@ const gardenLinks = [
 		margin: 0.4em 0;
 	}
 	.footer-col a {
-		color: rgb(var(--gray));
+		color: var(--text-secondary);
 		text-decoration: none;
-		font-size: 0.9em;
+		font-size: 0.85em;
 		transition: color 0.15s;
 	}
 	.footer-col a:hover {
 		color: var(--accent);
-		text-decoration: underline;
 	}
 	.copyright {
 		text-align: center;
-		font-size: 0.85em;
-		padding-top: 2em;
-		border-top: 1px solid rgb(var(--gray-light));
+		font-size: 0.8em;
+		padding-top: 1.5em;
+		border-top: 1px solid var(--border);
 		max-width: 960px;
 		margin: 0 auto;
+	}
+	.music-credit {
+		text-align: center;
+		font-size: 0.72em;
+		color: var(--text-secondary);
+		max-width: 960px;
+		margin: 0.6em auto 0;
+	}
+	.music-credit a {
+		color: var(--text-secondary);
+	}
+	.music-credit a:hover {
+		color: var(--accent);
 	}
 	#back-to-top {
 		position: fixed;
