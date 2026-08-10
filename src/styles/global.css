@@ -25,6 +25,8 @@
 	--content-width: 720px;
 	--wide-width: 1080px;
 
+	--font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, 'Courier New', monospace;
+
 	/* ---- 兼容旧变量（RGB 三元组，供 rgb(var(--x)) 用法） ---- */
 	--black: 41, 37, 36;
 	--gray: 120, 113, 108;
@@ -118,7 +120,7 @@ pre.astro-code {
 pre.astro-code code {
 	background: none;
 	padding: 0;
-	font-family: 'Courier New', Courier, monospace;
+	font-family: var(--font-mono);
 }
 pre.astro-code .line {
 	display: block;
@@ -174,13 +176,19 @@ b {
 a {
 	color: var(--accent);
 	text-decoration-color: rgba(79, 70, 229, 0.35);
-	text-underline-offset: 2px;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: color 0.15s, text-decoration-color 0.2s;
 }
 a:hover {
 	color: var(--accent-dark);
+	text-decoration-color: currentColor;
 }
 p {
 	margin-bottom: 1em;
+}
+.prose {
+	line-height: 1.85;
 }
 .prose p {
 	margin-bottom: 1.4em;
@@ -205,6 +213,7 @@ code {
 	background-color: var(--bg-code);
 	border-radius: 4px;
 	font-size: 0.9em;
+	font-family: var(--font-mono);
 }
 pre {
 	padding: 1.2em;

@@ -83,10 +83,16 @@ const posts = (await getCollection('blog'))
 				display: flex;
 				align-items: baseline;
 				gap: 1em;
-				padding: 0.75em 0.2em;
+				padding: 0.75em 0.6em;
+				margin: 0 -0.6em;
 				border-bottom: 1px solid var(--border);
+				border-radius: var(--radius-sm);
 				text-decoration: none;
 				color: inherit;
+				transition: background 0.15s;
+			}
+			.post-card:hover {
+				background: var(--accent-soft);
 			}
 			.post-card:hover .post-list-title {
 				color: var(--accent);

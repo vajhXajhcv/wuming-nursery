@@ -61,17 +61,20 @@ const latestNotes = (await getCollection('notes')).sort(
 				text-decoration: none;
 				font-weight: 600;
 				font-size: 0.92em;
-				transition: background 0.15s, border-color 0.2s, color 0.15s;
+				transition: background 0.15s, border-color 0.2s, color 0.15s, transform 0.15s, box-shadow 0.2s;
 				border: 1px solid transparent;
 				cursor: pointer;
 			}
 			.btn-primary {
 				background: var(--accent);
 				color: white;
+				box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
 			}
 			.btn-primary:hover {
 				background: var(--accent-dark);
 				color: white;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
 			}
 			.btn-outline {
 				background: transparent;
@@ -137,11 +140,12 @@ const latestNotes = (await getCollection('notes')).sort(
 				color: inherit;
 				display: flex;
 				flex-direction: column;
-				transition: border-color 0.2s, box-shadow 0.2s;
+				transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 			}
 			.product-card:hover {
 				border-color: var(--accent);
 				box-shadow: var(--shadow-md);
+				transform: translateY(-2px);
 			}
 			.product-card .p-tag {
 				font-size: 0.72em;
