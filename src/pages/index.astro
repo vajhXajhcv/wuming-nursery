@@ -21,6 +21,20 @@ const latestNotes = (await getCollection('notes')).sort(
 			.hero {
 				text-align: center;
 				padding: 4.5em 1em 3.5em;
+				position: relative;
+				isolation: isolate;
+			}
+			/* 科技感点阵背景，向下渐隐 */
+			.hero::before {
+				content: '';
+				position: absolute;
+				inset: 0;
+				z-index: -1;
+				background-image: radial-gradient(circle, var(--border) 1.2px, transparent 1.2px);
+				background-size: 26px 26px;
+				-webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+				mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+				pointer-events: none;
 			}
 			.hero .avatar {
 				width: 88px;
@@ -39,6 +53,48 @@ const latestNotes = (await getCollection('notes')).sort(
 				color: var(--accent);
 				min-height: 1.7em;
 				margin: 0;
+			}
+			/* 打字机光标 */
+			.tw-cursor {
+				display: inline-block;
+				width: 2px;
+				height: 1.05em;
+				margin-left: 2px;
+				vertical-align: text-bottom;
+				background: var(--accent);
+				animation: tw-blink 1s step-end infinite;
+			}
+			@keyframes tw-blink {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0; }
+			}
+			/* 实时时钟 */
+			.hero-clock {
+				margin-top: 1.2em;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.55em;
+				font-family: var(--font-mono);
+				font-size: 0.82em;
+				letter-spacing: 0.06em;
+				color: var(--text-secondary);
+				border: 1px solid var(--border);
+				border-radius: 999px;
+				padding: 0.35em 1.1em;
+				background: var(--bg-elevated);
+				font-variant-numeric: tabular-nums;
+			}
+			.clock-dot {
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+				background: #22c55e;
+				flex-shrink: 0;
+				animation: clock-pulse 2s ease-in-out infinite;
+			}
+			@keyframes clock-pulse {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0.3; }
 			}
 			.hero .desc {
 				color: var(--text-secondary);
@@ -203,6 +259,7 @@ const latestNotes = (await getCollection('notes')).sort(
 			}
 			.post-list .post-list-date {
 				font-size: 0.78em;
+				font-family: var(--font-mono);
 				color: var(--text-secondary);
 				white-space: nowrap;
 				font-variant-numeric: tabular-nums;
@@ -326,8 +383,12 @@ const latestNotes = (await getCollection('notes')).sort(
 			<section class="hero">
 				<img src="/avatar.png" alt="头像" class="avatar" />
 				<h1>无名苗圃</h1>
-				<p class="subtitle" id="typewriter"></p>
+				<p class="subtitle"><span id="typewriter"></span><span class="tw-cursor" aria-hidden="true"></span></p>
 				<p class="desc">独立开发者 · 技术创作者 · 一人公司探索者</p>
+				<div class="hero-clock" title="本地时间">
+					<span class="clock-dot" aria-hidden="true"></span>
+					<span id="clock-text">----年--月--日 --:--:--</span>
+				</div>
 				<div class="hero-cta">
 					<a href="/tools/md2docx" class="btn btn-primary">论文排版工具（免费）</a>
 					<a href="/blog" class="btn btn-outline">读文章</a>
@@ -472,5 +533,18 @@ const latestNotes = (await getCollection('notes')).sort(
 				setTimeout(type, speed);
 			}
 			type();
+
+			// 实时时钟
+			const clockEl = document.getElementById('clock-text');
+			if (clockEl) {
+				const pad = (n) => String(n).padStart(2, '0');
+				const tick = () => {
+					const d = new Date();
+					const week = '日一二三四五六'[d.getDay()];
+					clockEl.textContent = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} 周${week} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+				};
+				tick();
+				setInterval(tick, 1000);
+			}
 		</script>
 </BaseLayout>
