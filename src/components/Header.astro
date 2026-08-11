@@ -1,30 +1,73 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import { DEFAULT_LOCALE, LOCALES, LOCALE_LABELS, TRANSLATED_PATHS, localizedPath, stripLocalePrefix, type Locale } from '../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
+
+const dicts = {
+	zh: {
+		home: '首页', products: '产品', services: '服务', pricing: '定价', garden: '🌱 自留区', contact: '联系',
+		tools: '工具总览', md2docx: '在线 Markdown 转 Word', formatter: 'docx-formatter-cn', docs: '使用文档',
+		blog: '写作', notes: '笔记', about: '关于我',
+	},
+	en: {
+		home: 'Home', products: 'Products', services: 'Services', pricing: 'Pricing', garden: '🌱 Garden', contact: 'Contact',
+		tools: 'All Tools', md2docx: 'Online Markdown → Word', formatter: 'docx-formatter-cn', docs: 'Docs',
+		blog: 'Blog', notes: 'Notes', about: 'About',
+	},
+	ja: {
+		home: 'ホーム', products: '製品', services: 'サービス', pricing: '料金', garden: '🌱 ガーデン', contact: 'お問い合わせ',
+		tools: 'ツール一覧', md2docx: 'オンライン Markdown → Word', formatter: 'docx-formatter-cn', docs: 'ドキュメント',
+		blog: 'ブログ', notes: 'ノート', about: '私について',
+	},
+} as const;
+
+const t = dicts[lang];
+
+// Prefix hrefs with the locale only when the page actually has a translation.
+function L(path: string): string {
+	if (lang === DEFAULT_LOCALE || !TRANSLATED_PATHS.includes(path)) return path;
+	return localizedPath(path, lang);
+}
 
 const productLinks = [
-	{ href: '/tools', text: '工具总览' },
-	{ href: '/tools/md2docx', text: '在线 Markdown 转 Word' },
-	{ href: '/projects/docx-formatter-cn', text: 'docx-formatter-cn' },
-	{ href: '/projects/docx-formatter-docs', text: '使用文档' },
+	{ href: L('/tools'), text: t.tools },
+	{ href: '/tools/md2docx', text: t.md2docx },
+	{ href: '/projects/docx-formatter-cn', text: t.formatter },
+	{ href: '/projects/docx-formatter-docs', text: t.docs },
 ];
 
 const gardenLinks = [
-	{ href: '/blog', text: '写作' },
-	{ href: '/notes', text: '笔记' },
-	{ href: '/about', text: '关于我' },
+	{ href: '/blog', text: t.blog },
+	{ href: '/notes', text: t.notes },
+	{ href: L('/about'), text: t.about },
 ];
+
+// Language switcher targets: same page when translated, locale home otherwise.
+const { base } = stripLocalePrefix(Astro.url.pathname);
+const switchTarget = TRANSLATED_PATHS.includes(base) ? base : '/';
+const langOptions = LOCALES.map((l) => ({
+	locale: l,
+	label: LOCALE_LABELS[l],
+	href: localizedPath(switchTarget, l),
+	active: l === lang,
+}));
 ---
 
 <header>
 	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<h2><a href={L('/')}>{SITE_TITLE}</a></h2>
 		<div class="internal-links" id="nav-links">
-			<HeaderLink href="/">首页</HeaderLink>
+			<HeaderLink href={L('/')}>{t.home}</HeaderLink>
 
 			<div class="dropdown" data-dropdown>
 				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
-					产品
+					{t.products}
 					<span class="dropdown-chevron" aria-hidden="true">▾</span>
 				</button>
 				<div class="dropdown-menu">
@@ -34,12 +77,12 @@ const gardenLinks = [
 				</div>
 			</div>
 
-			<HeaderLink href="/services">服务</HeaderLink>
-			<HeaderLink href="/pricing">定价</HeaderLink>
+			<HeaderLink href={L('/services')}>{t.services}</HeaderLink>
+			<HeaderLink href={L('/pricing')}>{t.pricing}</HeaderLink>
 
 			<div class="dropdown" data-dropdown>
 				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
-					🌱 自留区
+					{t.garden}
 					<span class="dropdown-chevron" aria-hidden="true">▾</span>
 				</button>
 				<div class="dropdown-menu">
@@ -49,9 +92,19 @@ const gardenLinks = [
 				</div>
 			</div>
 
-			<HeaderLink href="/contact">联系</HeaderLink>
+			<HeaderLink href={L('/contact')}>{t.contact}</HeaderLink>
 		</div>
 		<div class="nav-actions">
+			<div class="dropdown lang-switcher" data-dropdown>
+				<button class="dropdown-toggle nav-icon-btn" aria-expanded="false" aria-haspopup="true" aria-label="切换语言 / Language">
+					🌐
+				</button>
+				<div class="dropdown-menu dropdown-menu-right">
+					{langOptions.map((opt) => (
+						<a href={opt.href} data-lang-option={opt.locale} class={opt.active ? 'active' : undefined}>{opt.label}</a>
+					))}
+				</div>
+			</div>
 			<button id="theme-toggle" aria-label="切换主题" title="切换主题">
 				<span class="theme-icon" id="theme-icon">🌙</span>
 			</button>
@@ -74,6 +127,13 @@ const gardenLinks = [
 	})();
 
 	document.addEventListener('DOMContentLoaded', function() {
+		// Language switcher: remember explicit choice
+		document.querySelectorAll('[data-lang-option]').forEach(function(link) {
+			link.addEventListener('click', function() {
+				try { localStorage.setItem('lang', link.getAttribute('data-lang-option')); } catch (e) {}
+			});
+		});
+
 		const toggle = document.getElementById('theme-toggle');
 		const icon = document.getElementById('theme-icon');
 		const root = document.documentElement;
@@ -258,6 +318,31 @@ const gardenLinks = [
 		display: flex;
 		align-items: center;
 		gap: 0.3em;
+	}
+	.nav-icon-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 1.1em;
+		padding: 0.45em;
+		border-radius: var(--radius-sm);
+		color: var(--text-secondary);
+		transition: background 0.2s, color 0.15s;
+	}
+	.nav-icon-btn:hover {
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+	.lang-switcher .dropdown-menu {
+		min-width: 120px;
+	}
+	.dropdown-menu-right {
+		left: auto;
+		right: 0;
+	}
+	.dropdown-menu a.active {
+		color: var(--accent);
+		font-weight: 700;
 	}
 	#theme-toggle,
 	#menu-toggle {

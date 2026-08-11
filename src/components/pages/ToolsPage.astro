@@ -1,0 +1,475 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
+
+const dicts = {
+	zh: {
+		title: `产品工具 - ${SITE_TITLE}`,
+		description: '无名苗圃的产品与工具：docx-formatter-cn 中文论文排版、在线 Markdown 转 Word，以及更多实验性项目。',
+		heroTitle: '产品与工具',
+		heroDesc: '把重复劳动交给代码，把时间留给创造。这里是我正在构建和销售的工具产品。',
+		flagship: {
+			name: 'docx-formatter-cn',
+			tagline: '中文 Word 文档智能排版工具',
+			description: '把 Markdown 一键转成符合中文学术规范的 Word 文档。支持毕业论文、课程论文、数学建模、公文模板，以及 arXiv / Nature / Science / IEEE / APA 等期刊/预印本近似格式；LaTeX 公式原生转换、三线表、自动编号。',
+			links: [
+				{ text: '🚀 在线免费试用', href: '/tools/md2docx', primary: true },
+				{ text: '📖 阅读文档', href: '/projects/docx-formatter-docs', primary: false },
+				{ text: '💰 查看定价', href: '/pricing', primary: false },
+			],
+			features: ['Markdown → Word 一键转换', 'LaTeX 公式转原生 OMML', '三线表与自动编号', '中文学位论文 + 国际期刊模板', 'CLI / GUI / Python API / 在线工具'],
+			tags: ['Python', 'Markdown', 'LaTeX', 'Word', '已发布'],
+		},
+		tools: [
+			{
+				name: '在线 Markdown 转 Word',
+				tagline: '浏览器内直接转换，无需安装',
+				description: '基于 Pyodide 在浏览器本地运行，文档内容不上传服务器。适合快速体验和轻量文档。',
+				href: '/tools/md2docx',
+				tags: ['在线工具', '论文排版'],
+				status: '已发布',
+			},
+			{
+				name: 'kaoyan · 考研志愿填报辅助',
+				tagline: 'AI 驱动的院校推荐与志愿模拟',
+				description: '覆盖院校库查询、智能推荐、志愿模拟与分数线分析，帮助考研学生用数据科学决策。',
+				href: '/kaoyan/',
+				tags: ['React', '数据可视化', '教育工具'],
+				status: '实验版',
+			},
+			{
+				name: 'TriWorld · 知识世界',
+				tagline: '把碎片知识，连成系统认知',
+				description: '面向终身学习者的知识探索平台原型，用“三个世界”的可视化结构组织零散课程与概念。',
+				href: '/triworld/',
+				tags: ['React', '知识图谱', '原型'],
+				status: '原型版',
+			},
+			{
+				name: 'Crypto Lab · 密码学实验室',
+				tagline: '从零开始用 Python 跑通密码学',
+				description: '面向初学者的密码学动手练习，涵盖古典密码、AES-GCM、哈希/HMAC、RSA 加密签名与 TLS 证书检查。',
+				href: '/projects/crypto-lab/',
+				tags: ['Python', '密码学', '学习资源'],
+				status: '维护中',
+			},
+		],
+		sectionTitle: '更多工具与实验',
+		ctaTitle: '需要按学校或企业需求定制？',
+		ctaDesc: '除了直接使用工具，也提供模板定制、批量转换集成与论文排版服务。',
+		ctaBtn: '查看服务 →',
+		jsonLdName: '产品工具 - 无名苗圃',
+		jsonLdDesc: '无名苗圃的产品与工具列表，主打 docx-formatter-cn 中文论文排版工具。',
+	},
+	en: {
+		title: `Products & Tools - ${SITE_TITLE}`,
+		description: 'Products and tools: docx-formatter-cn for Chinese academic Word formatting, an online Markdown-to-Word converter, and more experimental projects.',
+		heroTitle: 'Products & Tools',
+		heroDesc: 'Leave repetitive work to code and keep your time for creating. These are the tool products I’m building and selling.',
+		flagship: {
+			name: 'docx-formatter-cn',
+			tagline: 'Smart formatting for Chinese Word documents',
+			description: 'Turn Markdown into Word documents that meet Chinese academic standards in one click. Supports theses, course papers, mathematical modeling papers, and official document templates, plus near-formats for journals/preprints like arXiv / Nature / Science / IEEE / APA; native LaTeX formula conversion, three-line tables, and automatic numbering.',
+			links: [
+				{ text: '🚀 Try It Free Online', href: '/tools/md2docx', primary: true },
+				{ text: '📖 Read the Docs', href: '/projects/docx-formatter-docs', primary: false },
+				{ text: '💰 See Pricing', href: '/en/pricing/', primary: false },
+			],
+			features: ['One-click Markdown → Word', 'LaTeX formulas to native OMML', 'Three-line tables & auto numbering', 'Chinese thesis + international journal templates', 'CLI / GUI / Python API / online tool'],
+			tags: ['Python', 'Markdown', 'LaTeX', 'Word', 'Released'],
+		},
+		tools: [
+			{
+				name: 'Online Markdown to Word',
+				tagline: 'Convert right in your browser, nothing to install',
+				description: 'Runs locally in the browser via Pyodide — your documents never leave your device. Great for quick trials and lightweight documents.',
+				href: '/tools/md2docx',
+				tags: ['Online tool', 'Thesis formatting'],
+				status: 'Released',
+			},
+			{
+				name: 'kaoyan · Grad School Application Helper',
+				tagline: 'AI-driven school recommendations and application simulation',
+				description: 'School database search, smart recommendations, application simulation, and cutoff-score analysis to help grad school applicants decide with data.',
+				href: '/kaoyan/',
+				tags: ['React', 'Data visualization', 'EdTech'],
+				status: 'Beta',
+			},
+			{
+				name: 'TriWorld · Knowledge World',
+				tagline: 'Connect fragmented knowledge into systematic understanding',
+				description: 'A knowledge exploration platform prototype for lifelong learners, organizing scattered courses and concepts in a “three worlds” visualization.',
+				href: '/triworld/',
+				tags: ['React', 'Knowledge graph', 'Prototype'],
+				status: 'Prototype',
+			},
+			{
+				name: 'Crypto Lab · Cryptography Lab',
+				tagline: 'Hands-on cryptography with Python from scratch',
+				description: 'Beginner-friendly cryptography exercises covering classical ciphers, AES-GCM, hashing/HMAC, RSA encryption & signing, and TLS certificate inspection.',
+				href: '/projects/crypto-lab/',
+				tags: ['Python', 'Cryptography', 'Learning resource'],
+				status: 'Maintained',
+			},
+		],
+		sectionTitle: 'More Tools & Experiments',
+		ctaTitle: 'Need customization for your school or company?',
+		ctaDesc: 'Beyond using the tools directly, I also offer template customization, batch conversion integration, and thesis formatting services.',
+		ctaBtn: 'View Services →',
+		jsonLdName: `Products & Tools - ${SITE_TITLE}`,
+		jsonLdDesc: 'Product and tool list featuring docx-formatter-cn, a Chinese academic formatting tool.',
+	},
+	ja: {
+		title: `プロダクト・ツール - ${SITE_TITLE}`,
+		description: 'プロダクトとツール：docx-formatter-cn による中国語論文の Word 整形、オンライン Markdown → Word 変換、その他の実験的プロジェクト。',
+		heroTitle: 'プロダクト・ツール',
+		heroDesc: '繰り返しの作業はコードに任せ、時間は創造に。開発・販売中のツールプロダクトを紹介します。',
+		flagship: {
+			name: 'docx-formatter-cn',
+			tagline: '中国語 Word ドキュメントのスマート整形ツール',
+			description: 'Markdown をワンクリックで中国の学術規範に準拠した Word ドキュメントに変換。卒業論文、課題レポート、数学モデリング、公文書テンプレート、arXiv / Nature / Science / IEEE / APA などのジャーナル・プレプリント近似フォーマットに対応。LaTeX 数式のネイティブ変換、三線表、自動番号付けも。',
+			links: [
+				{ text: '🚀 オンラインで無料体験', href: '/tools/md2docx', primary: true },
+				{ text: '📖 ドキュメントを読む', href: '/projects/docx-formatter-docs', primary: false },
+				{ text: '💰 料金を見る', href: '/ja/pricing/', primary: false },
+			],
+			features: ['Markdown → Word ワンクリック変換', 'LaTeX 数式をネイティブ OMML に変換', '三線表と自動番号付け', '中国の学位論文 + 国際ジャーナルテンプレート', 'CLI / GUI / Python API / オンラインツール'],
+			tags: ['Python', 'Markdown', 'LaTeX', 'Word', '公開済み'],
+		},
+		tools: [
+			{
+				name: 'オンライン Markdown → Word',
+				tagline: 'ブラウザ内で直接変換、インストール不要',
+				description: 'Pyodide によりブラウザ内でローカル実行され、ドキュメントはサーバーにアップロードされません。手軽な体験や軽量なドキュメントに最適。',
+				href: '/tools/md2docx',
+				tags: ['オンラインツール', '論文整形'],
+				status: '公開済み',
+			},
+			{
+				name: 'kaoyan · 大学院志願補助',
+				tagline: 'AI による院校推薦と志願シミュレーション',
+				description: '院校データベース検索、スマート推薦、志願シミュレーション、合格ライン分析で、大学院受験生のデータに基づく意思決定を支援。',
+				href: '/kaoyan/',
+				tags: ['React', 'データ可視化', '教育ツール'],
+				status: '実験版',
+			},
+			{
+				name: 'TriWorld · 知識の世界',
+				tagline: '断片的な知識を、体系的な認知へ',
+				description: '生涯学習者向けの知識探索プラットフォームのプロトタイプ。「三つの世界」の可視化構造で、散らかったコースや概念を整理。',
+				href: '/triworld/',
+				tags: ['React', 'ナレッジグラフ', 'プロトタイプ'],
+				status: 'プロトタイプ版',
+			},
+			{
+				name: 'Crypto Lab · 暗号学ラボ',
+				tagline: 'Python でゼロから学ぶ暗号学',
+				description: '初心者向けのハンズオン暗号学演習。古典暗号、AES-GCM、ハッシュ/HMAC、RSA 暗号・署名、TLS 証明書チェックをカバー。',
+				href: '/projects/crypto-lab/',
+				tags: ['Python', '暗号学', '学習リソース'],
+				status: 'メンテナンス中',
+			},
+		],
+		sectionTitle: 'その他のツールと実験',
+		ctaTitle: '学校や企業向けのカスタマイズが必要ですか？',
+		ctaDesc: 'ツールの利用に加えて、テンプレートのカスタマイズ、一括変換の統合、論文整形サービスも提供しています。',
+		ctaBtn: 'サービスを見る →',
+		jsonLdName: `プロダクト・ツール - ${SITE_TITLE}`,
+		jsonLdDesc: 'プロダクトとツール一覧。目玉は docx-formatter-cn 中国語論文整形ツール。',
+	},
+} as const;
+
+const t = dicts[lang];
+
+const jsonLd = JSON.stringify({
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: t.jsonLdName,
+	description: t.jsonLdDesc,
+});
+---
+
+<BaseLayout title={t.title} description={t.description} lang={lang}>
+	<style>
+		main {
+			width: 960px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 0.5em;
+		}
+		.hero h1 {
+			font-size: 1.45em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 620px;
+			margin: 0;
+			line-height: 1.7;
+		}
+
+		.flagship {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			margin: 1.8em 0;
+		}
+		.flagship-header {
+			display: flex;
+			align-items: flex-start;
+			gap: 1em;
+			margin-bottom: 1em;
+		}
+		.flagship-icon {
+			width: 52px;
+			height: 52px;
+			background: var(--accent-soft);
+			border-radius: var(--radius-md);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.5em;
+			flex-shrink: 0;
+		}
+		.flagship-title h2 {
+			margin: 0 0 0.2em;
+			font-size: 1.25em;
+		}
+		.flagship-title .tagline {
+			color: var(--text-secondary);
+			font-size: 0.92em;
+			margin: 0;
+		}
+		.flagship-desc {
+			line-height: 1.8;
+			margin-bottom: 1.2em;
+			font-size: 0.95em;
+		}
+		.flagship-features {
+			list-style: none;
+			padding: 0;
+			margin: 0 0 1.5em;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 0.5em;
+		}
+		.flagship-features li {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			padding-left: 1.4em;
+			position: relative;
+		}
+		.flagship-features li::before {
+			content: '✓';
+			position: absolute;
+			left: 0;
+			color: var(--accent);
+			font-weight: 700;
+		}
+		.flagship-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.7em;
+			margin-top: 1em;
+		}
+		.flagship-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.4em;
+			margin-top: 1.2em;
+		}
+		.flagship-tags span {
+			font-size: 0.75em;
+			padding: 0.2em 0.7em;
+			border-radius: 999px;
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.6em 1.3em;
+			border-radius: var(--radius-md);
+			text-decoration: none;
+			font-weight: 600;
+			transition: background 0.15s, border-color 0.2s, color 0.15s;
+			border: 1px solid transparent;
+			cursor: pointer;
+			font-size: 0.92em;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+
+		.section-title {
+			font-size: 1.25em;
+			margin: 2.5em 0 1em;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.tool-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 1em;
+		}
+		.tool-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.4em;
+			text-decoration: none;
+			color: inherit;
+			transition: border-color 0.2s, box-shadow 0.2s;
+			display: flex;
+			flex-direction: column;
+		}
+		.tool-card:hover {
+			border-color: var(--accent);
+			box-shadow: var(--shadow-md);
+		}
+		.tool-card h3 {
+			margin: 0 0 0.2em;
+			font-size: 1.05em;
+		}
+		.tool-card .tagline {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.8em;
+		}
+		.tool-card .desc {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+			flex: 1;
+			margin-bottom: 1em;
+		}
+		.tool-card .status {
+			display: inline-block;
+			font-size: 0.72em;
+			padding: 0.15em 0.7em;
+			border-radius: 999px;
+			background: var(--accent-soft);
+			color: var(--accent);
+			font-weight: 500;
+			margin-bottom: 0.8em;
+			align-self: flex-start;
+		}
+		.tool-card .tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.4em;
+		}
+		.tool-card .tags span {
+			font-size: 0.75em;
+			padding: 0.15em 0.6em;
+			border-radius: var(--radius-sm);
+			border: 1px solid var(--border);
+			color: var(--text-secondary);
+		}
+
+		.cta-box {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 2.5em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.2em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			margin: 0 0 1.2em;
+			font-size: 0.92em;
+		}
+
+		@media (max-width: 720px) {
+			.flagship-header { flex-direction: column; gap: 0.8em; }
+			.flagship-actions { flex-direction: column; }
+			.btn { width: 100%; justify-content: center; min-height: 40px; box-sizing: border-box; }
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>{t.heroTitle}</h1>
+			<p>{t.heroDesc}</p>
+		</section>
+
+		<section class="flagship">
+			<div class="flagship-header">
+				<div class="flagship-icon">📄</div>
+				<div class="flagship-title">
+					<h2>{t.flagship.name}</h2>
+					<p class="tagline">{t.flagship.tagline}</p>
+				</div>
+			</div>
+			<p class="flagship-desc">{t.flagship.description}</p>
+			<ul class="flagship-features">
+				{t.flagship.features.map((f) => <li>{f}</li>)}
+			</ul>
+			<div class="flagship-actions">
+				{t.flagship.links.map((link) => (
+					<a href={link.href} class={`btn ${link.primary ? 'btn-primary' : 'btn-secondary'}`}>{link.text}</a>
+				))}
+			</div>
+			<div class="flagship-tags">
+				{t.flagship.tags.map((tag) => <span>{tag}</span>)}
+			</div>
+		</section>
+
+		<h2 class="section-title">{t.sectionTitle}</h2>
+		<div class="tool-grid">
+			{t.tools.map((tool) => (
+				<a href={tool.href} class="tool-card">
+					<span class="status">{tool.status}</span>
+					<h3>{tool.name}</h3>
+					<p class="tagline">{tool.tagline}</p>
+					<p class="desc">{tool.description}</p>
+					<div class="tags">
+						{tool.tags.map((tag) => <span>{tag}</span>)}
+					</div>
+				</a>
+			))}
+		</div>
+
+		<section class="cta-box">
+			<h2>{t.ctaTitle}</h2>
+			<p>{t.ctaDesc}</p>
+			<a href={lang === 'zh' ? '/services' : `/${lang}/services/`} class="btn btn-primary">{t.ctaBtn}</a>
+		</section>
+	</main>
+
+	<script type="application/ld+json" is:inline set:html={jsonLd} />
+</BaseLayout>

@@ -1,0 +1,521 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
+
+const dicts = {
+	zh: {
+		title: `论文排版服务 - ${SITE_TITLE}`,
+		description: '按学校格式规范代排版本科、硕士、博士毕业论文。封面、目录、页眉页脚、参考文献、公式图表三线表一站式处理，交付后支持修改。',
+		heroTitle: '论文排版服务',
+		heroDesc: '把论文和格式要求发给我，我按学校规范帮你排好。省心、专业、支持修改，适合临近答辩、时间紧张的你。',
+		consultBtn: '立即咨询',
+		pricingBtn: '查看定价',
+		priceSectionTitle: '按篇透明报价',
+		periodLabel: '交付周期：',
+		prices: [
+			{ type: '本科毕业论文', price: '¥199 起', period: '3-5 天', desc: '含封面、目录、正文、图表、参考文献格式调整' },
+			{ type: '硕士毕业论文', price: '¥399 起', period: '4-7 天', desc: '章节较多、图表公式多，含页眉页脚与分节处理' },
+			{ type: '博士毕业论文', price: '¥599 起', period: '5-10 天', desc: '大篇幅、复杂结构，含多级标题与交叉引用' },
+		],
+		addonsTitle: '可选加项',
+		addons: [
+			{ name: '24h 加急', price: '+50%' },
+			{ name: '学校模板深度定制', price: '¥150 起' },
+			{ name: '参考文献 GB/T 7714 整理', price: '¥50 起' },
+			{ name: '超长篇幅（本科 >60 页 / 硕士 >80 页 / 博士 >120 页）', price: '+¥2/页' },
+			{ name: '公式 / 三线表批量规范', price: '已包含' },
+		],
+		processTitle: '服务流程',
+		process: [
+			{ step: '01', title: '提交材料', desc: '发送论文 Word 或 Markdown、学校格式文件、学院模板。' },
+			{ step: '02', title: '确认报价', desc: '根据篇幅、复杂度、加急需求给出明确价格和交付时间。' },
+			{ step: '03', title: '专业排版', desc: '使用 docx-formatter-cn 工具链 + 人工校验，按规范调整。' },
+			{ step: '04', title: '交付修改', desc: '交付 docx 源文件，支持 2 轮免费小修改。' },
+		],
+		deliverTitle: '你将收到',
+		deliverItems: [
+			'符合学校格式规范的 <strong>.docx</strong> 源文件',
+			'自动生成/调整后的目录、页眉、页脚、页码',
+			'规范后的标题层级、图表编号、公式编号',
+			'标准学术三线表与参考文献格式',
+		],
+		faqTitle: '常见问题',
+		faqs: [
+			{ q: '需要提供什么材料？', a: '论文内容（Word/Markdown 均可）、学校或学院的格式规范文件（PDF/Word）、任何特殊要求（如封面样式、页眉文字）。' },
+			{ q: '我的论文会保密吗？', a: '不会对外公开、不会用于训练模型，仅用于本次排版服务。交付完成后本地副本会删除。' },
+			{ q: '如果学校模板很特殊怎么办？', a: '可先发送模板评估。一般可通过自定义 JSON/YAML 模板实现；特别复杂的按工时加收定制费。' },
+			{ q: '交付后还能修改吗？', a: '交付后 7 天内支持 2 轮免费小修改；若你后续大幅增改内容，可重新按篇幅报价。' },
+			{ q: '怎么付款，能开发票吗？', a: '通过爱发电或企业转账付款，完成后可申请开具发票。' },
+		],
+		ctaTitle: '还在纠结格式？先聊聊',
+		ctaDesc: '发我你的论文和格式要求，我会在 24h 内给出报价和交付时间。',
+		ctaBtn: '开始咨询 →',
+		jsonLdName: '论文排版服务',
+		jsonLdDesc: '按学校格式规范代排版本科、硕士、博士毕业论文，含封面、目录、页眉页脚、参考文献、公式图表处理。',
+	},
+	en: {
+		title: `Thesis Formatting Service - ${SITE_TITLE}`,
+		description: 'Undergraduate, master’s, and doctoral theses formatted to your university’s style guide. Cover page, table of contents, headers/footers, references, and equations/figures/three-line tables handled end to end, with post-delivery revisions.',
+		heroTitle: 'Thesis Formatting Service',
+		heroDesc: 'Send me your thesis and formatting requirements, and I’ll typeset it to your university’s specifications. Hassle-free, professional, revisions supported — ideal when your defense is close and time is tight.',
+		consultBtn: 'Consult now',
+		pricingBtn: 'See pricing',
+		priceSectionTitle: 'Transparent per-thesis pricing',
+		periodLabel: 'Turnaround: ',
+		prices: [
+			{ type: 'Undergraduate thesis', price: 'From ¥199', period: '3-5 days', desc: 'Includes cover page, TOC, body text, figures, and reference formatting' },
+			{ type: 'Master’s thesis', price: 'From ¥399', period: '4-7 days', desc: 'More chapters, figures and equations; includes headers/footers and section handling' },
+			{ type: 'Doctoral dissertation', price: 'From ¥599', period: '5-10 days', desc: 'Long documents with complex structure, including multi-level headings and cross-references' },
+		],
+		addonsTitle: 'Optional add-ons',
+		addons: [
+			{ name: '24h rush', price: '+50%' },
+			{ name: 'Deep customization of university template', price: 'From ¥150' },
+			{ name: 'References formatted to GB/T 7714', price: 'From ¥50' },
+			{ name: 'Extra-long theses (undergrad >60 pages / master’s >80 / doctoral >120)', price: '+¥2/page' },
+			{ name: 'Bulk standardization of equations / three-line tables', price: 'Included' },
+		],
+		processTitle: 'How it works',
+		process: [
+			{ step: '01', title: 'Submit materials', desc: 'Send your thesis in Word or Markdown, the university style guide, and your faculty template.' },
+			{ step: '02', title: 'Confirm quote', desc: 'A clear price and delivery time based on length, complexity, and urgency.' },
+			{ step: '03', title: 'Professional typesetting', desc: 'Built with the docx-formatter-cn toolchain plus manual checks against the spec.' },
+			{ step: '04', title: 'Delivery & revisions', desc: 'You receive the docx source file, with 2 free rounds of minor revisions.' },
+		],
+		deliverTitle: 'What you get',
+		deliverItems: [
+			'A <strong>.docx</strong> source file compliant with your university’s style guide',
+			'Auto-generated/adjusted table of contents, headers, footers, and page numbers',
+			'Standardized heading levels, figure numbering, and equation numbering',
+			'Standard academic three-line tables and reference formatting',
+		],
+		faqTitle: 'FAQ',
+		faqs: [
+			{ q: 'What do I need to provide?', a: 'Your thesis (Word or Markdown), the university/faculty style guide (PDF or Word), and any special requirements (e.g. cover style, header text).' },
+			{ q: 'Will my thesis be kept confidential?', a: 'It will never be published or used to train models — only for this formatting job. Local copies are deleted after delivery.' },
+			{ q: 'What if my university template is unusual?', a: 'Send it over for an assessment first. Most templates can be handled via custom JSON/YAML templates; especially complex ones incur a customization fee by work hours.' },
+			{ q: 'Can I request changes after delivery?', a: 'Within 7 days of delivery you get 2 free rounds of minor revisions; major content additions can be re-quoted by length.' },
+			{ q: 'How do I pay, and can I get an invoice?', a: 'Pay via Afdian or corporate transfer; an invoice can be issued after completion.' },
+		],
+		ctaTitle: 'Still wrestling with formatting? Let’s talk',
+		ctaDesc: 'Send me your thesis and requirements — I’ll reply with a quote and delivery time within 24h.',
+		ctaBtn: 'Start a conversation →',
+		jsonLdName: 'Thesis Formatting Service',
+		jsonLdDesc: 'Undergraduate, master’s, and doctoral theses formatted to university style guides, including cover page, TOC, headers/footers, references, and equations/figures.',
+	},
+	ja: {
+		title: `論文フォーマットサービス - ${SITE_TITLE}`,
+		description: '学部・修士・博士論文を大学の書式規定に沿って代行レイアウト。表紙、目次、ヘッダー・フッター、参考文献、数式・図表・三線表まで一括対応。納品後の修正にも対応。',
+		heroTitle: '論文フォーマットサービス',
+		heroDesc: '論文と書式要件を送ってください。大学の規定に沿って整形します。安心・丁寧・修正対応可。答弁が近く時間がない方に最適です。',
+		consultBtn: '今すぐ相談',
+		pricingBtn: '料金を見る',
+		priceSectionTitle: '論文ごとの透明な料金',
+		periodLabel: '納期：',
+		prices: [
+			{ type: '学部卒業論文', price: '¥199〜', period: '3〜5 日', desc: '表紙、目次、本文、図表、参考文献の書式調整を含む' },
+			{ type: '修士論文', price: '¥399〜', period: '4〜7 日', desc: '章・図表・数式が多い場合。ヘッダー・フッターとセクション処理を含む' },
+			{ type: '博士論文', price: '¥599〜', period: '5〜10 日', desc: '大分量・複雑な構成。多階層見出しと相互参照を含む' },
+		],
+		addonsTitle: 'オプション',
+		addons: [
+			{ name: '24 時間特急', price: '+50%' },
+			{ name: '大学テンプレートの深度カスタマイズ', price: '¥150〜' },
+			{ name: '参考文献 GB/T 7714 整理', price: '¥50〜' },
+			{ name: '超大分量（学部 60 ページ超 / 修士 80 ページ超 / 博士 120 ページ超）', price: '+¥2/ページ' },
+			{ name: '数式・三線表の一括規格化', price: '含まれています' },
+		],
+		processTitle: 'サービスの流れ',
+		process: [
+			{ step: '01', title: '資料の提出', desc: '論文（Word または Markdown）、大学の書式規定、学部テンプレートを送信。' },
+			{ step: '02', title: '見積もり確認', desc: '分量・複雑さ・特急の有無に基づき、明確な価格と納期を提示。' },
+			{ step: '03', title: 'プロのレイアウト', desc: 'docx-formatter-cn ツールチェーン＋目視チェックで規定どおりに調整。' },
+			{ step: '04', title: '納品・修正', desc: 'docx ソースファイルを納品。軽微な修正は 2 回まで無料。' },
+		],
+		deliverTitle: '納品内容',
+		deliverItems: [
+			'大学の書式規定に適合した <strong>.docx</strong> ソースファイル',
+			'自動生成・調整済みの目次、ヘッダー、フッター、ページ番号',
+			'規格化された見出し階層、図表番号、数式番号',
+			'標準的な学術三線表と参考文献フォーマット',
+		],
+		faqTitle: 'よくある質問',
+		faqs: [
+			{ q: '何を提出すればいいですか？', a: '論文（Word/Markdown 可）、大学・学部の書式規定ファイル（PDF/Word）、特別な要望（表紙デザイン、ヘッダー文言など）。' },
+			{ q: '論文は秘密保持されますか？', a: '外部に公開せず、モデルの学習にも使用しません。本サービスにのみ使用し、納品後にローカルコピーは削除します。' },
+			{ q: '大学のテンプレートが特殊な場合は？', a: 'まずテンプレートを送って評価できます。通常はカスタム JSON/YAML テンプレートで対応可能。特に複雑な場合は工数に応じてカスタマイズ料金が発生します。' },
+			{ q: '納品後に修正できますか？', a: '納品後 7 日以内なら軽微な修正を 2 回まで無料で対応。内容を大幅に増改する場合は、分量に応じて再見積もり可能です。' },
+			{ q: '支払い方法と請求書は？', a: 'Afdian または法人振込で支払い可能。完了後に請求書（インボイス）を発行できます。' },
+		],
+		ctaTitle: '書式で悩んでいますか？まず相談を',
+		ctaDesc: '論文と書式要件を送れば、24 時間以内に見積もりと納期をお知らせします。',
+		ctaBtn: '相談してみる →',
+		jsonLdName: '論文フォーマットサービス',
+		jsonLdDesc: '学部・修士・博士論文を大学の書式規定に沿って代行レイアウト。表紙、目次、ヘッダー・フッター、参考文献、数式・図表処理を含む。',
+	},
+} as const;
+
+const t = dicts[lang];
+
+const contactHref = lang === 'zh' ? '/contact' : `/${lang}/contact/`;
+const pricingHref = lang === 'zh' ? '/pricing' : `/${lang}/pricing/`;
+
+const jsonLd = JSON.stringify({
+	'@context': 'https://schema.org',
+	'@type': 'Service',
+	name: t.jsonLdName,
+	provider: {
+		'@type': 'Person',
+		name: '无名苗圃',
+	},
+	description: t.jsonLdDesc,
+	offers: {
+		'@type': 'Offer',
+		price: '199',
+		priceCurrency: 'CNY',
+	},
+	areaServed: 'CN',
+});
+---
+
+<BaseLayout title={t.title} description={t.description} lang={lang}>
+	<style>
+		main {
+			width: var(--wide-width);
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 1.5em;
+		}
+		.hero h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 620px;
+			margin: 0;
+			line-height: 1.7;
+		}
+
+		.btn {
+			display: inline-block;
+			padding: 0.6em 1.3em;
+			border-radius: var(--radius-md);
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 0.92em;
+			border: 1px solid transparent;
+			transition: background 0.15s, border-color 0.2s, color 0.15s;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+
+		section {
+			margin: 3em 0;
+		}
+		section h2 {
+			font-size: 1.4em;
+			margin-bottom: 1em;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.price-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 1.2em;
+			margin: 1.5em 0;
+		}
+		.price-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.5em;
+			transition: border-color 0.2s, box-shadow 0.2s;
+		}
+		.price-card:hover {
+			border-color: var(--accent);
+			box-shadow: var(--shadow-md);
+		}
+		.price-card h3 {
+			margin: 0 0 0.4em;
+			font-size: 1.1em;
+		}
+		.price-card .price {
+			font-size: 1.7em;
+			font-weight: 800;
+			color: var(--accent);
+			margin: 0.3em 0;
+		}
+		.price-card .period {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+		}
+		.price-card p {
+			margin: 0.8em 0 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		.addons {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1.2em 1.5em;
+		}
+		.addons h3 {
+			margin: 0 0 0.8em;
+			font-size: 1.05em;
+		}
+		.addons ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		.addons li {
+			display: flex;
+			justify-content: space-between;
+			padding: 0.45em 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 0.92em;
+		}
+		.addons li:last-child {
+			border-bottom: none;
+		}
+		.addons .addon-price {
+			font-weight: 600;
+			color: var(--accent);
+		}
+
+		.process-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 1.2em;
+		}
+		.process-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1.4em 1.2em;
+		}
+		.process-card .step {
+			font-size: 1.6em;
+			font-weight: 800;
+			color: var(--accent);
+			opacity: 0.35;
+			line-height: 1;
+			margin-bottom: 0.3em;
+		}
+		.process-card h4 {
+			margin: 0 0 0.4em;
+			font-size: 1.05em;
+		}
+		.process-card p {
+			margin: 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		.deliver {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			border: 1px solid var(--border);
+		}
+		.deliver h3 {
+			margin: 0 0 0.8em;
+			font-size: 1.15em;
+		}
+		.deliver ul {
+			margin: 0;
+			padding-left: 1.2em;
+			line-height: 1.9;
+		}
+
+		.faq-item {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			margin-bottom: 0.8em;
+			overflow: hidden;
+		}
+		.faq-q {
+			padding: 1em 1.2em;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: background 0.15s;
+		}
+		.faq-q:hover {
+			background: var(--accent-soft);
+		}
+		.faq-arrow {
+			font-size: 0.8em;
+			color: var(--text-secondary);
+			transition: transform 0.2s;
+		}
+		.faq-item.open .faq-arrow {
+			transform: rotate(180deg);
+		}
+		.faq-a {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+		}
+		.faq-item.open .faq-a {
+			max-height: 300px;
+		}
+		.faq-a-inner {
+			padding: 0 1.2em 1em;
+			color: var(--text-secondary);
+			line-height: 1.7;
+			font-size: 0.95em;
+		}
+
+		.cta-box {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 2em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 3em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.3em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			font-size: 0.92em;
+			margin: 0 0 1.2em;
+		}
+
+		@media (max-width: 720px) {
+			.hero h1 { font-size: 1.4em; }
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>{t.heroTitle}</h1>
+			<p>{t.heroDesc}</p>
+			<div style="margin-top:1.5em;">
+				<a href={contactHref} class="btn btn-primary">{t.consultBtn}</a>
+				<a href={pricingHref} class="btn btn-secondary">{t.pricingBtn}</a>
+			</div>
+		</section>
+
+		<section>
+			<h2>{t.priceSectionTitle}</h2>
+			<div class="price-grid">
+				{t.prices.map((p) => (
+					<div class="price-card">
+						<h3>{p.type}</h3>
+						<div class="price">{p.price}</div>
+						<div class="period">{t.periodLabel}{p.period}</div>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+			<div class="addons">
+				<h3>{t.addonsTitle}</h3>
+				<ul>
+					{t.addons.map((a) => (
+						<li>
+							<span>{a.name}</span>
+							<span class="addon-price">{a.price}</span>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>{t.processTitle}</h2>
+			<div class="process-grid">
+				{t.process.map((p) => (
+					<div class="process-card">
+						<div class="step">{p.step}</div>
+						<h4>{p.title}</h4>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section>
+			<div class="deliver">
+				<h3>{t.deliverTitle}</h3>
+				<ul>
+					{t.deliverItems.map((item) => (
+						<li set:html={item} />
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>{t.faqTitle}</h2>
+			{t.faqs.map((f, i) => (
+				<div class="faq-item" data-faq={i}>
+					<div class="faq-q">
+						{f.q}
+						<span class="faq-arrow">▼</span>
+					</div>
+					<div class="faq-a">
+						<div class="faq-a-inner">{f.a}</div>
+					</div>
+				</div>
+			))}
+		</section>
+
+		<section class="cta-box">
+			<h2>{t.ctaTitle}</h2>
+			<p>{t.ctaDesc}</p>
+			<a href={contactHref} class="btn btn-primary">{t.ctaBtn}</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.faq-item').forEach(function(item) {
+				var q = item.querySelector('.faq-q');
+				q.addEventListener('click', function() {
+					item.classList.toggle('open');
+				});
+			});
+		});
+	</script>
+
+	<script type="application/ld+json" set:html={jsonLd} />
+</BaseLayout>

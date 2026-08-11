@@ -1,0 +1,729 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../FormattedDate.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
+
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	).slice(0, 3);
+
+const latestNotes = (await getCollection('notes')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+).slice(0, 3);
+
+const dicts = {
+	zh: {
+		title: SITE_TITLE,
+		description: SITE_DESCRIPTION,
+		avatarAlt: '头像',
+		heroDesc: '独立开发者 · 技术创作者 · 一人公司探索者',
+		clockTitle: '本地时间',
+		clockPlaceholder: '----年--月--日 --:--:--',
+		weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+		weekPre: '周',
+		weekPost: '',
+		phrases: [
+			'慢慢来，不急。',
+			'这里会生长出各种东西。',
+			'独立开发、AI 工具、一人公司的实践记录。',
+			'写代码，也写生意。',
+		],
+		ctaPrimary: '论文排版工具（免费）',
+		ctaSecondary: '读文章',
+		afdianLabel: '爱发电',
+		productsTitle: '产品与服务',
+		productsAllText: '全部产品 →',
+		productsAllHref: '/tools',
+		products: [
+			{
+				href: '/tools/md2docx',
+				tag: '免费工具',
+				title: '在线 Markdown 转 Word',
+				desc: '浏览器内一键转换，LaTeX 公式、三线表、中文学位论文模板，免安装免上传。',
+				link: '立即使用 →',
+			},
+			{
+				href: '/pricing',
+				tag: 'Pro',
+				title: 'docx-formatter-cn 桌面版',
+				desc: '批量转换、更多期刊模板、本地图片解析。一次购买，永久更新。',
+				link: '查看定价 →',
+			},
+			{
+				href: '/services/thesis-formatting',
+				tag: '服务',
+				title: '论文排版代做',
+				desc: '没时间调格式？把论文和要求发来，按学校模板排好，两轮免费修改。',
+				link: '了解详情 →',
+			},
+		],
+		writingTitle: '最新写作',
+		writingArchiveText: '归档 →',
+		writingArchiveHref: '/archive',
+		captionPosts: '写作',
+		captionNotes: '笔记',
+		newsletterTitle: '订阅更新',
+		newsletterDesc: '不定期分享独立开发、AI 工具、一人公司的实践与踩坑记录。',
+		newsletterBtn: '订阅',
+		newsletterNote: '无垃圾邮件，随时退订。',
+		gardenText: '🌱 自留区 —— 花园主的个人写作空间，不成体系，但真实。',
+		gardenLinks: [
+			{ text: '写作', href: '/blog' },
+			{ text: '笔记', href: '/notes' },
+			{ text: '关于我', href: '/about' },
+		],
+	},
+	en: {
+		title: SITE_TITLE,
+		description: 'Independent developer, technical writer, and one-person company explorer. Building a sustainable creator business with code, content, and AI tools.',
+		avatarAlt: 'Avatar',
+		heroDesc: 'Independent developer · Technical writer · One-person company explorer',
+		clockTitle: 'Local time',
+		clockPlaceholder: '--:--:--',
+		weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+		weekPre: '',
+		weekPost: '',
+		phrases: [
+			'Take it slow. No rush.',
+			'All kinds of things grow here.',
+			'Notes on indie development, AI tools, and one-person companies.',
+			'Writing code, and writing about business.',
+		],
+		ctaPrimary: 'Thesis Formatting Tool (Free)',
+		ctaSecondary: 'Read the Blog',
+		afdianLabel: 'Afdian',
+		productsTitle: 'Products & Services',
+		productsAllText: 'All products →',
+		productsAllHref: '/en/tools/',
+		products: [
+			{
+				href: '/tools/md2docx',
+				tag: 'Free Tool',
+				title: 'Online Markdown to Word',
+				desc: 'One-click conversion right in your browser: LaTeX formulas, three-line tables, and Chinese thesis templates — no install, no upload.',
+				link: 'Try it now →',
+			},
+			{
+				href: '/en/pricing/',
+				tag: 'Pro',
+				title: 'docx-formatter-cn Desktop',
+				desc: 'Batch conversion, more journal templates, and local image parsing. One-time purchase, lifetime updates.',
+				link: 'See pricing →',
+			},
+			{
+				href: '/en/services/thesis-formatting/',
+				tag: 'Service',
+				title: 'Thesis Formatting Service',
+				desc: 'No time to wrestle with formatting? Send over your thesis and requirements — formatted to your university’s template, with two free revision rounds.',
+				link: 'Learn more →',
+			},
+		],
+		writingTitle: 'Latest Writing',
+		writingArchiveText: 'Archive →',
+		writingArchiveHref: '/archive',
+		captionPosts: 'Writing',
+		captionNotes: 'Notes',
+		newsletterTitle: 'Subscribe for Updates',
+		newsletterDesc: 'Occasional posts on indie development, AI tools, and the practice and pitfalls of running a one-person company.',
+		newsletterBtn: 'Subscribe',
+		newsletterNote: 'No spam. Unsubscribe anytime.',
+		gardenText: '🌱 The Garden — the gardener’s personal writing space. Unsystematic, but honest.',
+		gardenLinks: [
+			{ text: 'Writing', href: '/blog' },
+			{ text: 'Notes', href: '/notes' },
+			{ text: 'About', href: '/en/about/' },
+		],
+	},
+	ja: {
+		title: SITE_TITLE,
+		description: '個人開発者・テクニカルライター・一人会社の探求者。コード、コンテンツ、AI ツールで持続可能なクリエイタービジネスを構築。',
+		avatarAlt: 'アバター',
+		heroDesc: '個人開発者 · テクニカルライター · 一人会社の探求者',
+		clockTitle: 'ローカル時間',
+		clockPlaceholder: '----年--月--日 --:--:--',
+		weekdays: ['日', '月', '火', '水', '木', '金', '土'],
+		weekPre: '（',
+		weekPost: '）',
+		phrases: [
+			'ゆっくりでいい、急がなくて。',
+			'ここではいろいろなものが育ちます。',
+			'個人開発、AI ツール、一人会社の実践記録。',
+			'コードも書く、ビジネスも書く。',
+		],
+		ctaPrimary: '論文フォーマットツール（無料）',
+		ctaSecondary: '記事を読む',
+		afdianLabel: 'Afdian',
+		productsTitle: '製品とサービス',
+		productsAllText: 'すべての製品 →',
+		productsAllHref: '/ja/tools/',
+		products: [
+			{
+				href: '/tools/md2docx',
+				tag: '無料ツール',
+				title: 'オンライン Markdown → Word',
+				desc: 'ブラウザ内でワンクリック変換。LaTeX 数式、三線表、中国語学位論文テンプレートに対応。インストール・アップロード不要。',
+				link: '今すぐ使う →',
+			},
+			{
+				href: '/ja/pricing/',
+				tag: 'Pro',
+				title: 'docx-formatter-cn デスクトップ版',
+				desc: '一括変換、豊富なジャーナルテンプレート、ローカル画像解析。買い切りで永久アップデート。',
+				link: '料金を見る →',
+			},
+			{
+				href: '/ja/services/thesis-formatting/',
+				tag: 'サービス',
+				title: '論文フォーマット代行',
+				desc: '書式調整の時間がない方へ。論文と要件を送るだけで、大学のテンプレートに合わせて整形。2回まで無料で修正します。',
+				link: '詳細を見る →',
+			},
+		],
+		writingTitle: '最新の記事',
+		writingArchiveText: 'アーカイブ →',
+		writingArchiveHref: '/archive',
+		captionPosts: '執筆',
+		captionNotes: 'ノート',
+		newsletterTitle: '更新を購読',
+		newsletterDesc: '個人開発、AI ツール、一人会社の実践と失敗の記録を不定期でお届けします。',
+		newsletterBtn: '購読する',
+		newsletterNote: 'スパムなし。いつでも解除できます。',
+		gardenText: '🌱 プライベートガーデン —— ガーデンオーナーの個人的な執筆スペース。体系化はされていませんが、本物です。',
+		gardenLinks: [
+			{ text: '執筆', href: '/blog' },
+			{ text: 'ノート', href: '/notes' },
+			{ text: '私について', href: '/ja/about/' },
+		],
+	},
+} as const;
+
+const t = dicts[lang];
+---
+
+<BaseLayout title={t.title} description={t.description} lang={lang}>
+		<style>
+			/* Hero */
+			.hero {
+				text-align: center;
+				padding: 4.5em 1em 3.5em;
+				position: relative;
+				isolation: isolate;
+			}
+			/* 科技感点阵背景，向下渐隐 */
+			.hero::before {
+				content: '';
+				position: absolute;
+				inset: 0;
+				z-index: -1;
+				background-image: radial-gradient(circle, var(--border) 1.2px, transparent 1.2px);
+				background-size: 26px 26px;
+				-webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+				mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+				pointer-events: none;
+			}
+			.hero .avatar {
+				width: 88px;
+				height: 88px;
+				border-radius: 50%;
+				margin-bottom: 1.2em;
+				border: 2px solid var(--border);
+			}
+			.hero h1 {
+				font-size: 2.2em;
+				margin: 0 0 0.25em;
+				letter-spacing: 0.02em;
+			}
+			.hero .subtitle {
+				font-size: 1.05em;
+				color: var(--accent);
+				min-height: 1.7em;
+				margin: 0;
+			}
+			/* 打字机光标 */
+			.tw-cursor {
+				display: inline-block;
+				width: 2px;
+				height: 1.05em;
+				margin-left: 2px;
+				vertical-align: text-bottom;
+				background: var(--accent);
+				animation: tw-blink 1s step-end infinite;
+			}
+			@keyframes tw-blink {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0; }
+			}
+			/* 实时时钟 */
+			.hero-clock {
+				margin-top: 1.2em;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.55em;
+				font-family: var(--font-mono);
+				font-size: 0.82em;
+				letter-spacing: 0.06em;
+				color: var(--text-secondary);
+				border: 1px solid var(--border);
+				border-radius: 999px;
+				padding: 0.35em 1.1em;
+				background: var(--bg-elevated);
+				font-variant-numeric: tabular-nums;
+			}
+			.clock-dot {
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+				background: #22c55e;
+				flex-shrink: 0;
+				animation: clock-pulse 2s ease-in-out infinite;
+			}
+			@keyframes clock-pulse {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0.3; }
+			}
+			.hero .desc {
+				color: var(--text-secondary);
+				margin-top: 0.8em;
+				font-size: 0.95em;
+			}
+			.hero .hero-cta {
+				margin-top: 1.8em;
+				display: flex;
+				gap: 0.8em;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4em;
+				padding: 0.6em 1.3em;
+				border-radius: var(--radius-md);
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.92em;
+				transition: background 0.15s, border-color 0.2s, color 0.15s, transform 0.15s, box-shadow 0.2s;
+				border: 1px solid transparent;
+				cursor: pointer;
+			}
+			.btn-primary {
+				background: var(--accent);
+				color: white;
+				box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
+			}
+			.btn-primary:hover {
+				background: var(--accent-dark);
+				color: white;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+			}
+			.btn-outline {
+				background: transparent;
+				color: var(--text);
+				border-color: var(--border);
+			}
+			.btn-outline:hover {
+				border-color: var(--accent);
+				color: var(--accent);
+			}
+			.hero .social {
+				margin-top: 1.8em;
+				display: flex;
+				gap: 1.2em;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+			.hero .social a {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.35em;
+				color: var(--text-secondary);
+				text-decoration: none;
+				font-size: 0.85em;
+				transition: color 0.15s;
+			}
+			.hero .social a:hover {
+				color: var(--accent);
+			}
+
+			/* Sections */
+			.section-title {
+				font-size: 1.25em;
+				margin: 2.5em 0 1em;
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				padding-bottom: 0.4em;
+				border-bottom: 1px solid var(--border);
+			}
+			.section-title a {
+				font-size: 0.6em;
+				font-weight: 400;
+				color: var(--text-secondary);
+				text-decoration: none;
+			}
+			.section-title a:hover {
+				color: var(--accent);
+			}
+
+			/* Product cards */
+			.product-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+				gap: 1em;
+			}
+			.product-card {
+				padding: 1.4em;
+				border-radius: var(--radius-lg);
+				background: var(--bg-elevated);
+				border: 1px solid var(--border);
+				text-decoration: none;
+				color: inherit;
+				display: flex;
+				flex-direction: column;
+				transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+			}
+			.product-card:hover {
+				border-color: var(--accent);
+				box-shadow: var(--shadow-md);
+				transform: translateY(-2px);
+			}
+			.product-card .p-tag {
+				font-size: 0.72em;
+				color: var(--accent);
+				background: var(--accent-soft);
+				border-radius: 999px;
+				padding: 0.15em 0.7em;
+				align-self: flex-start;
+				margin-bottom: 0.8em;
+			}
+			.product-card h3 {
+				margin: 0 0 0.4em;
+				font-size: 1.05em;
+			}
+			.product-card p {
+				margin: 0;
+				font-size: 0.86em;
+				color: var(--text-secondary);
+				line-height: 1.6;
+				flex: 1;
+			}
+			.product-card .p-link {
+				margin-top: 1em;
+				font-size: 0.85em;
+				color: var(--accent);
+			}
+
+			/* Writing lists */
+			.writing-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 2em;
+			}
+			.post-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.post-list li {
+				border-bottom: 1px dashed var(--border);
+			}
+			.post-list li:last-child {
+				border-bottom: none;
+			}
+			.post-list a {
+				display: flex;
+				align-items: baseline;
+				gap: 1em;
+				padding: 0.7em 0.2em;
+				text-decoration: none;
+				color: var(--text);
+			}
+			.post-list a:hover .post-list-title {
+				color: var(--accent);
+			}
+			.post-list .post-list-date {
+				font-size: 0.78em;
+				font-family: var(--font-mono);
+				color: var(--text-secondary);
+				white-space: nowrap;
+				font-variant-numeric: tabular-nums;
+			}
+			.post-list .post-list-title {
+				font-size: 0.92em;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				transition: color 0.15s;
+			}
+			.list-caption {
+				font-size: 0.8em;
+				font-weight: 600;
+				letter-spacing: 0.05em;
+				color: var(--text-secondary);
+				margin: 0 0 0.4em;
+			}
+
+			/* Newsletter */
+			.newsletter-box {
+				margin-top: 3em;
+				padding: 1.8em;
+				border-radius: var(--radius-lg);
+				border: 1px solid var(--border);
+				background: var(--bg-elevated);
+				text-align: center;
+			}
+			.newsletter-box h3 {
+				margin: 0 0 0.3em;
+				font-size: 1.05em;
+			}
+			.newsletter-box p {
+				font-size: 0.86em;
+				color: var(--text-secondary);
+				margin: 0 0 1em;
+			}
+			.newsletter-form {
+				display: flex;
+				gap: 0.5em;
+				justify-content: center;
+				max-width: 420px;
+				margin: 0 auto;
+			}
+			.newsletter-form input {
+				flex: 1;
+				padding: 0.55em 1em;
+				border: 1px solid var(--border);
+				border-radius: var(--radius-md);
+				font-size: 0.9em;
+				background: var(--bg);
+				color: var(--text);
+			}
+			.newsletter-form input:focus {
+				outline: none;
+				border-color: var(--accent);
+			}
+			.newsletter-form button {
+				padding: 0.55em 1.3em;
+				border: none;
+				border-radius: var(--radius-md);
+				background: var(--accent);
+				color: white;
+				font-size: 0.9em;
+				cursor: pointer;
+			}
+			.newsletter-form button:hover {
+				background: var(--accent-dark);
+			}
+			.newsletter-note {
+				margin-top: 0.8em;
+				font-size: 0.75em;
+				color: var(--text-secondary);
+			}
+
+			/* Garden band */
+			.garden-band {
+				margin-top: 3em;
+				padding: 1.2em 1.4em;
+				border-radius: var(--radius-lg);
+				background: var(--accent-soft);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1em;
+				flex-wrap: wrap;
+			}
+			.garden-band p {
+				margin: 0;
+				font-size: 0.88em;
+				color: var(--text);
+			}
+			.garden-band .garden-links {
+				display: flex;
+				gap: 1em;
+			}
+			.garden-band .garden-links a {
+				font-size: 0.85em;
+				color: var(--accent);
+				text-decoration: none;
+			}
+			.garden-band .garden-links a:hover {
+				text-decoration: underline;
+			}
+
+			@media (max-width: 720px) {
+				.hero {
+					padding: 3em 1em 2.5em;
+				}
+				.writing-grid {
+					grid-template-columns: 1fr;
+					gap: 1.5em;
+				}
+				.newsletter-form {
+					flex-direction: column;
+				}
+			}
+		</style>
+	<main>
+			<!-- Hero -->
+			<section class="hero">
+				<img src="/avatar.png" alt={t.avatarAlt} class="avatar" />
+				<h1>无名苗圃</h1>
+				<p class="subtitle"><span id="typewriter"></span><span class="tw-cursor" aria-hidden="true"></span></p>
+				<p class="desc">{t.heroDesc}</p>
+				<div class="hero-clock" title={t.clockTitle}>
+					<span class="clock-dot" aria-hidden="true"></span>
+					<span id="clock-text">{t.clockPlaceholder}</span>
+				</div>
+				<div class="hero-cta">
+					<a href="/tools/md2docx" class="btn btn-primary">{t.ctaPrimary}</a>
+					<a href="/blog" class="btn btn-outline">{t.ctaSecondary}</a>
+				</div>
+				<div class="social">
+					<a href="https://github.com/vajhxajhcv" target="_blank" rel="noopener">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+						GitHub
+					</a>
+					<a href="https://afdian.com/a/%E8%8A%B1%E5%9B%AD%E4%B8%BB" target="_blank" rel="noopener">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+						{t.afdianLabel}
+					</a>
+					<a href="/rss.xml">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.739-23.98-24-24.026v4.838z"/></svg>
+						RSS
+					</a>
+				</div>
+			</section>
+
+			<!-- Products & Services -->
+			<section>
+				<h2 class="section-title">
+					{t.productsTitle}
+					<a href={t.productsAllHref}>{t.productsAllText}</a>
+				</h2>
+				<div class="product-grid">
+					{t.products.map((p) => (
+						<a href={p.href} class="product-card">
+							<span class="p-tag">{p.tag}</span>
+							<h3>{p.title}</h3>
+							<p>{p.desc}</p>
+							<span class="p-link">{p.link}</span>
+						</a>
+					))}
+				</div>
+			</section>
+
+			<!-- Latest Writing -->
+			{posts.length > 0 && (
+				<section>
+					<h2 class="section-title">
+						{t.writingTitle}
+						<a href={t.writingArchiveHref}>{t.writingArchiveText}</a>
+					</h2>
+					<div class="writing-grid">
+						<div>
+							<p class="list-caption">{t.captionPosts}</p>
+							<ul class="post-list">
+								{posts.map((post) => (
+									<li>
+										<a href={`/blog/${post.id}/`}>
+											<span class="post-list-date"><FormattedDate date={post.data.pubDate} /></span>
+											<span class="post-list-title">{post.data.title}</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</div>
+						<div>
+							<p class="list-caption">{t.captionNotes}</p>
+							<ul class="post-list">
+								{latestNotes.map((note) => (
+									<li>
+										<a href={`/notes/${note.id}/`}>
+											<span class="post-list-date"><FormattedDate date={note.data.pubDate} /></span>
+											<span class="post-list-title">{note.data.title}</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				</section>
+			)}
+
+			<!-- Newsletter -->
+			<section>
+				<div class="newsletter-box">
+					<h3>{t.newsletterTitle}</h3>
+					<p>{t.newsletterDesc}</p>
+					<form class="newsletter-form" action="https://buttondown.email/api/emails/embed-subscribe/wumingmp" method="post" target="_blank">
+						<input type="email" name="email" placeholder="your@email.com" required />
+						<button type="submit">{t.newsletterBtn}</button>
+					</form>
+					<p class="newsletter-note">{t.newsletterNote}</p>
+				</div>
+			</section>
+
+			<!-- Garden band -->
+			<section class="garden-band">
+				<p>{t.gardenText}</p>
+				<div class="garden-links">
+					{t.gardenLinks.map((link) => (
+						<a href={link.href}>{link.text}</a>
+					))}
+				</div>
+			</section>
+		</main>
+<!-- Typewriter effect -->
+		<script is:inline define:vars={{ phrases: t.phrases, weekdays: t.weekdays, weekPre: t.weekPre, weekPost: t.weekPost }}>
+			let phraseIndex = 0;
+			let charIndex = 0;
+			let isDeleting = false;
+			const el = document.getElementById('typewriter');
+
+			function type() {
+				const current = phrases[phraseIndex];
+				if (isDeleting) {
+					el.textContent = current.substring(0, charIndex - 1);
+					charIndex--;
+				} else {
+					el.textContent = current.substring(0, charIndex + 1);
+					charIndex++;
+				}
+
+				let speed = isDeleting ? 50 : 100;
+				if (!isDeleting && charIndex === current.length) {
+					speed = 2000;
+					isDeleting = true;
+				} else if (isDeleting && charIndex === 0) {
+					isDeleting = false;
+					phraseIndex = (phraseIndex + 1) % phrases.length;
+					speed = 500;
+				}
+				setTimeout(type, speed);
+			}
+			type();
+
+			// 实时时钟
+			const clockEl = document.getElementById('clock-text');
+			if (clockEl) {
+				const pad = (n) => String(n).padStart(2, '0');
+				const tick = () => {
+					const d = new Date();
+					const week = weekPre + weekdays[d.getDay()] + weekPost;
+					clockEl.textContent = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${week} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+				};
+				tick();
+				setInterval(tick, 1000);
+			}
+		</script>
+</BaseLayout>

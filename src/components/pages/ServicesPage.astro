@@ -1,0 +1,551 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
+
+const dicts = {
+	zh: {
+		title: `服务 - ${SITE_TITLE}`,
+		description: '独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务。',
+		heroTitle: '我可以帮你做什么',
+		heroDesc1: '一个人就是一家公司的时代，技术和内容是最好的杠杆。',
+		heroDesc2: '把重复劳动交给代码和 AI，把时间留给创造和决策。',
+		services: [
+			{
+				icon: '🛠',
+				title: '网站开发',
+				subtitle: '个人品牌站 · Landing Page · 博客',
+				desc: '从 0 到 1 搭建高性能、SEO 友好的网站。Astro + Cloudflare，快、省、可维护。支持自定义设计、CMS 对接、动画交互。',
+				features: ['Astro / Next.js / 纯静态', 'Cloudflare Pages 部署', 'SEO 与性能优化', '响应式设计'],
+				price: '¥2,800 起',
+				links: [
+					{ text: '查看报价', href: '/services/custom-development' },
+					{ text: '开始咨询', href: '/contact' },
+				],
+			},
+			{
+				icon: '🤖',
+				title: 'AI 自动化',
+				subtitle: '内容管线 · 智能客服 · 工作流',
+				desc: '用 AI 替代重复劳动。搭建自动化的内容生产、客户响应、数据处理流程。让一个人也能跑出团队效率。',
+				features: ['AI 内容生成管线', '智能客服 / 自动回复', '多平台发布自动化', 'API 集成与数据处理'],
+				price: '¥2,000 起',
+				links: [
+					{ text: '查看报价', href: '/services/custom-development' },
+					{ text: '开始咨询', href: '/contact' },
+				],
+			},
+			{
+				icon: '📄',
+				title: '文档工具',
+				subtitle: 'Markdown 转 Word · 批量排版 · 模板',
+				desc: '基于自研 docx-formatter-cn 工具链，解决中文文档排版痛点。支持学术规范、公文格式、自定义模板。',
+				features: ['Markdown → 学术 Word', 'LaTeX 公式转换', '自动编号与目录', '模板定制开发'],
+				price: '¥1,500 起',
+				links: [
+					{ text: '在线试用', href: '/tools/md2docx' },
+					{ text: '产品主页', href: '/tools' },
+					{ text: '查看定价', href: '/pricing' },
+					{ text: '论文排版服务', href: '/services/thesis-formatting' },
+				],
+			},
+			{
+				icon: '✍️',
+				title: '内容策略',
+				subtitle: 'SEO 文章 · Newsletter · 产品文档',
+				desc: '用技术内容换长期流量。撰写对搜索引擎和人都有价值的文章，建立领域权威。',
+				features: ['技术 SEO 文章', 'Newsletter 策划', '产品文档体系', '内容分发策略'],
+				price: '¥500 / 篇起',
+				links: [] as { text: string; href: string }[],
+			},
+		],
+		processTitle: '合作流程',
+		process: [
+			{ step: '01', title: '需求沟通', desc: '15 分钟语音或文字，明确你的目标、预算和时间线。' },
+			{ step: '02', title: '方案报价', desc: '提供详细方案、交付物和报价，确认后签订合同。' },
+			{ step: '03', title: '开发交付', desc: '按里程碑推进，定期同步进度，确保方向不偏。' },
+			{ step: '04', title: '售后支持', desc: '交付后 30 天内免费修复问题，长期维护可续签。' },
+		],
+		faqTitle: '常见问题',
+		faqs: [
+			{ q: '没技术背景，能合作吗？', a: '完全没问题。我会用非技术语言沟通，你只需要告诉我「想要什么」，剩下的我来解决。' },
+			{ q: '可以先看案例或试做吗？', a: '可以。部分服务支持小范围试做（如一篇 SEO 文章、一个 Landing Page 原型），降低你的决策风险。' },
+			{ q: '交付周期一般多长？', a: '网站 1-2 周，AI 自动化 3-7 天，文档工具看复杂度 3-14 天。急单可商量。' },
+			{ q: '支持发票吗？', a: '支持。通过爱发电或企业转账均可开具发票。' },
+		],
+		ctaTitle: '有想法？聊聊看',
+		ctaDesc: '即使还没想清楚，也可以先沟通。我不会推销，只会给建议。',
+		ctaBtn: '开始咨询 →',
+	},
+	en: {
+		title: `Services - ${SITE_TITLE}`,
+		description: 'Independent developer offering web development, AI automation, document tooling, and content strategy services.',
+		heroTitle: 'What I Can Do for You',
+		heroDesc1: 'In the age of one-person companies, technology and content are the best leverage.',
+		heroDesc2: 'Leave repetitive work to code and AI; keep your time for creating and deciding.',
+		services: [
+			{
+				icon: '🛠',
+				title: 'Web Development',
+				subtitle: 'Personal brand sites · Landing pages · Blogs',
+				desc: 'High-performance, SEO-friendly websites built from scratch with Astro + Cloudflare: fast, affordable, maintainable. Custom design, CMS integration, and animations supported.',
+				features: ['Astro / Next.js / static', 'Cloudflare Pages deployment', 'SEO & performance tuning', 'Responsive design'],
+				price: 'From ¥2,800',
+				links: [
+					{ text: 'See pricing', href: '/en/services/custom-development/' },
+					{ text: 'Get in touch', href: '/en/contact/' },
+				],
+			},
+			{
+				icon: '🤖',
+				title: 'AI Automation',
+				subtitle: 'Content pipelines · Smart support · Workflows',
+				desc: 'Replace repetitive work with AI. Automated content production, customer response, and data processing pipelines that let one person move at team speed.',
+				features: ['AI content pipelines', 'Smart support / auto-replies', 'Multi-platform publishing', 'API integration & data processing'],
+				price: 'From ¥2,000',
+				links: [
+					{ text: 'See pricing', href: '/en/services/custom-development/' },
+					{ text: 'Get in touch', href: '/en/contact/' },
+				],
+			},
+			{
+				icon: '📄',
+				title: 'Document Tooling',
+				subtitle: 'Markdown → Word · Batch formatting · Templates',
+				desc: 'Built on the self-developed docx-formatter-cn toolchain to solve Chinese document formatting pain points: academic styles, official formats, custom templates.',
+				features: ['Markdown → academic Word', 'LaTeX formula conversion', 'Auto numbering & TOC', 'Custom template development'],
+				price: 'From ¥1,500',
+				links: [
+					{ text: 'Try online', href: '/tools/md2docx' },
+					{ text: 'Product page', href: '/en/tools/' },
+					{ text: 'Pricing', href: '/en/pricing/' },
+					{ text: 'Thesis formatting', href: '/en/services/thesis-formatting/' },
+				],
+			},
+			{
+				icon: '✍️',
+				title: 'Content Strategy',
+				subtitle: 'SEO articles · Newsletter · Product docs',
+				desc: 'Trade technical content for long-term traffic. Articles written for both search engines and humans, building authority in your niche.',
+				features: ['Technical SEO articles', 'Newsletter planning', 'Product documentation', 'Content distribution strategy'],
+				price: 'From ¥500 / article',
+				links: [] as { text: string; href: string }[],
+			},
+		],
+		processTitle: 'How We Work',
+		process: [
+			{ step: '01', title: 'Discovery', desc: 'A 15-minute call or chat to clarify your goals, budget, and timeline.' },
+			{ step: '02', title: 'Proposal', desc: 'A detailed plan, deliverables, and quote. Contract signed on approval.' },
+			{ step: '03', title: 'Delivery', desc: 'Milestone-driven progress with regular syncs to stay on track.' },
+			{ step: '04', title: 'Support', desc: 'Free fixes within 30 days of delivery; long-term maintenance available.' },
+		],
+		faqTitle: 'FAQ',
+		faqs: [
+			{ q: 'Can we work together if I have no technical background?', a: 'Absolutely. I communicate in plain language — just tell me what you want, and I handle the rest.' },
+			{ q: 'Can I see samples or a trial first?', a: 'Yes. Some services support small-scale trials (e.g. one SEO article or a landing page prototype) to lower your decision risk.' },
+			{ q: 'How long does delivery take?', a: 'Websites 1–2 weeks, AI automation 3–7 days, document tooling 3–14 days depending on complexity. Rush jobs negotiable.' },
+			{ q: 'Can you issue invoices?', a: 'Yes. Invoices are available for payments via Afdian or corporate transfer.' },
+		],
+		ctaTitle: 'Have an idea? Let’s talk',
+		ctaDesc: 'Even if it’s not fully formed yet, reach out. No sales pitch — just honest advice.',
+		ctaBtn: 'Start a conversation →',
+	},
+	ja: {
+		title: `サービス - ${SITE_TITLE}`,
+		description: '独立開発者によるウェブ開発、AI 自動化、ドキュメントツール、コンテンツ戦略サービス。',
+		heroTitle: 'できること',
+		heroDesc1: '一人会社の時代、技術とコンテンツは最高のレバレッジです。',
+		heroDesc2: '繰り返しの作業はコードと AI に任せ、時間は創造と決断に使いましょう。',
+		services: [
+			{
+				icon: '🛠',
+				title: 'ウェブ開発',
+				subtitle: 'ブランドサイト · LP · ブログ',
+				desc: 'Astro + Cloudflare で高性能・SEO に強いサイトをゼロから構築。速く、低コストで保守しやすい。カスタムデザイン、CMS 連携、アニメーションにも対応。',
+				features: ['Astro / Next.js / 静的サイト', 'Cloudflare Pages デプロイ', 'SEO・パフォーマンス最適化', 'レスポンシブデザイン'],
+				price: '¥2,800〜',
+				links: [
+					{ text: '料金を見る', href: '/ja/services/custom-development/' },
+					{ text: '相談する', href: '/ja/contact/' },
+				],
+			},
+			{
+				icon: '🤖',
+				title: 'AI 自動化',
+				subtitle: 'コンテンツパイプライン · スマート応答 · ワークフロー',
+				desc: 'AI で単純作業を置き換える。コンテンツ制作、顧客対応、データ処理を自動化し、一人でもチーム並みの効率を実現。',
+				features: ['AI コンテンツ生成パイプライン', 'スマートカスタマー応答', 'マルチプラットフォーム自動投稿', 'API 連携・データ処理'],
+				price: '¥2,000〜',
+				links: [
+					{ text: '料金を見る', href: '/ja/services/custom-development/' },
+					{ text: '相談する', href: '/ja/contact/' },
+				],
+			},
+			{
+				icon: '📄',
+				title: 'ドキュメントツール',
+				subtitle: 'Markdown → Word · 一括整形 · テンプレート',
+				desc: '自開発の docx-formatter-cn ツールチェーンで、中国語ドキュメントの整形課題を解決。学術フォーマット、公文書式、カスタムテンプレートに対応。',
+				features: ['Markdown → 学術 Word', 'LaTeX 数式変換', '自動番号付け・目次', 'テンプレートカスタム開発'],
+				price: '¥1,500〜',
+				links: [
+					{ text: 'オンラインで試す', href: '/tools/md2docx' },
+					{ text: '製品ページ', href: '/ja/tools/' },
+					{ text: '料金', href: '/ja/pricing/' },
+					{ text: '論文フォーマット', href: '/ja/services/thesis-formatting/' },
+				],
+			},
+			{
+				icon: '✍️',
+				title: 'コンテンツ戦略',
+				subtitle: 'SEO 記事 · ニュースレター · 製品ドキュメント',
+				desc: '技術コンテンツで長期的なトラフィックを獲得。検索エンジンと人の両方に価値のある記事で、分野の権威を確立。',
+				features: ['技術 SEO 記事', 'ニュースレター企画', '製品ドキュメント体系', 'コンテンツ配信戦略'],
+				price: '¥500〜/ 記事',
+				links: [] as { text: string; href: string }[],
+			},
+		],
+		processTitle: '進め方',
+		process: [
+			{ step: '01', title: 'ヒアリング', desc: '15 分の通話またはチャットで、目標・予算・スケジュールを確認。' },
+			{ step: '02', title: '提案・見積もり', desc: '詳細な提案・成果物・見積もりを提示。合意後に契約。' },
+			{ step: '03', title: '開発・納品', desc: 'マイルストーンごとに進捗を共有しながら開発。' },
+			{ step: '04', title: 'サポート', desc: '納品後 30 日間は無料で修正。長期保守も契約可能。' },
+		],
+		faqTitle: 'よくある質問',
+		faqs: [
+			{ q: '技術の知識がなくても依頼できますか？', a: 'もちろんです。専門用語を使わずに説明します。「何が欲しいか」だけ教えてください。' },
+			{ q: '事例やお試しはありますか？', a: 'あります。一部サービスは小規模なお試し（SEO 記事 1 本、LP プロトタイプなど）が可能です。' },
+			{ q: '納期はどのくらいですか？', a: 'ウェブサイト 1〜2 週間、AI 自動化 3〜7 日、ドキュメントツールは複雑さにより 3〜14 日です。急ぎの案件も相談可。' },
+			{ q: '請求書（インボイス）は発行できますか？', a: 'はい。Afdian または法人振込でのお支払いに発行可能です。' },
+		],
+		ctaTitle: 'アイデアがありますか？',
+		ctaDesc: 'まだ固まっていなくても大丈夫。営業はしません、正直な提案だけをします。',
+		ctaBtn: '相談してみる →',
+	},
+} as const;
+
+const t = dicts[lang];
+---
+
+<BaseLayout title={t.title} description={t.description} lang={lang}>
+	<style>
+		main {
+			width: var(--wide-width);
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em;
+		}
+		.hero {
+			padding: 1em 0 1.5em;
+		}
+		.hero h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 600px;
+			margin: 0;
+			line-height: 1.7;
+		}
+
+		/* Service cards */
+		.service-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 1.2em;
+			margin: 2em 0;
+		}
+		.service-card {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-lg);
+			padding: 1.6em;
+			border: 1px solid var(--border);
+			transition: border-color 0.2s, box-shadow 0.2s;
+			display: flex;
+			flex-direction: column;
+		}
+		.service-card:hover {
+			border-color: var(--accent);
+			box-shadow: var(--shadow-md);
+		}
+		.service-card .icon {
+			width: 44px;
+			height: 44px;
+			background: var(--accent-soft);
+			border-radius: var(--radius-md);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.35em;
+			margin-bottom: 1em;
+		}
+		.service-card h3 {
+			margin: 0 0 0.2em;
+			font-size: 1.15em;
+		}
+		.service-card .subtitle {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.8em;
+		}
+		.service-card .desc {
+			font-size: 0.92em;
+			line-height: 1.7;
+			margin-bottom: 1em;
+			flex: 1;
+		}
+		.service-card .features {
+			list-style: none;
+			padding: 0;
+			margin: 0 0 1em;
+		}
+		.service-card .features li {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			padding: 0.25em 0;
+			padding-left: 1.2em;
+			position: relative;
+		}
+		.service-card .features li::before {
+			content: '✓';
+			position: absolute;
+			left: 0;
+			color: var(--accent);
+			font-weight: 700;
+		}
+		.service-card .price {
+			font-size: 1.05em;
+			font-weight: 700;
+			color: var(--accent);
+			margin-top: auto;
+		}
+		.service-links {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.6em;
+			margin-top: 0.8em;
+		}
+		.service-links a {
+			font-size: 0.85em;
+			color: var(--accent);
+			text-decoration: none;
+			padding: 0.35em 0.7em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-sm);
+			transition: border-color 0.2s, color 0.15s;
+		}
+		.service-links a:hover {
+			border-color: var(--accent);
+			color: var(--accent-dark);
+		}
+
+		/* Process */
+		.process-section {
+			margin: 3em 0;
+		}
+		.section-title {
+			font-size: 1.4em;
+			margin-bottom: 1em;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
+		}
+		.process-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 1.2em;
+		}
+		.process-card {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-md);
+			padding: 1.4em 1.2em;
+			border: 1px solid var(--border);
+		}
+		.process-card .step {
+			font-size: 1.6em;
+			font-weight: 800;
+			color: var(--accent);
+			opacity: 0.35;
+			line-height: 1;
+			margin-bottom: 0.3em;
+		}
+		.process-card h4 {
+			margin: 0 0 0.4em;
+			font-size: 1.05em;
+		}
+		.process-card p {
+			margin: 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		/* FAQ */
+		.faq-section {
+			margin: 3em 0;
+		}
+		.faq-item {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			margin-bottom: 0.8em;
+			overflow: hidden;
+		}
+		.faq-q {
+			padding: 1em 1.2em;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: background 0.15s;
+		}
+		.faq-q:hover {
+			background: var(--accent-soft);
+		}
+		.faq-arrow {
+			transition: transform 0.2s;
+			font-size: 0.8em;
+			color: var(--text-secondary);
+		}
+		.faq-item.open .faq-arrow {
+			transform: rotate(180deg);
+		}
+		.faq-a {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+		}
+		.faq-item.open .faq-a {
+			max-height: 200px;
+		}
+		.faq-a-inner {
+			padding: 0 1.2em 1em;
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			line-height: 1.7;
+		}
+
+		/* CTA */
+		.cta-box {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 2em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin: 3em 0;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.3em;
+			font-size: 1.3em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			font-size: 0.92em;
+			margin: 0 0 1.2em;
+		}
+		.cta-btn {
+			display: inline-block;
+			padding: 0.65em 1.6em;
+			background: var(--accent);
+			color: white;
+			border-radius: var(--radius-md);
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 0.92em;
+			transition: background 0.15s;
+		}
+		.cta-btn:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+
+		@media (max-width: 720px) {
+			.service-grid { grid-template-columns: 1fr; }
+			.process-grid { grid-template-columns: 1fr 1fr; }
+		}
+	</style>
+	<main>
+		<section class="hero">
+			<h1>{t.heroTitle}</h1>
+			<p>
+				{t.heroDesc1}<br />
+				{t.heroDesc2}
+			</p>
+		</section>
+
+		<section class="service-grid">
+			{t.services.map((s) => (
+				<div class="service-card">
+					<div class="icon">{s.icon}</div>
+					<h3>{s.title}</h3>
+					<div class="subtitle">{s.subtitle}</div>
+					<p class="desc">{s.desc}</p>
+					<ul class="features">
+						{s.features.map((f) => <li>{f}</li>)}
+					</ul>
+					<div class="price">{s.price}</div>
+					{s.links.length > 0 && (
+						<div class="service-links">
+							{s.links.map((link) => (
+								<a href={link.href}>{link.text}</a>
+							))}
+						</div>
+					)}
+				</div>
+			))}
+		</section>
+
+		<section class="process-section">
+			<h2 class="section-title">{t.processTitle}</h2>
+			<div class="process-grid">
+				{t.process.map((p) => (
+					<div class="process-card">
+						<div class="step">{p.step}</div>
+						<h4>{p.title}</h4>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="faq-section">
+			<h2 class="section-title">{t.faqTitle}</h2>
+			{t.faqs.map((f, i) => (
+				<div class="faq-item" data-faq={i}>
+					<div class="faq-q">
+						{f.q}
+						<span class="faq-arrow">▼</span>
+					</div>
+					<div class="faq-a">
+						<div class="faq-a-inner">{f.a}</div>
+					</div>
+				</div>
+			))}
+		</section>
+
+		<section class="cta-box">
+			<h2>{t.ctaTitle}</h2>
+			<p>{t.ctaDesc}</p>
+			<a href={lang === 'zh' ? '/contact' : `/${lang}/contact/`} class="cta-btn">{t.ctaBtn}</a>
+		</section>
+	</main>
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.faq-item').forEach(function(item) {
+				var q = item.querySelector('.faq-q');
+				q.addEventListener('click', function() {
+					item.classList.toggle('open');
+				});
+			});
+		});
+	</script>
+</BaseLayout>

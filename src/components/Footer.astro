@@ -1,27 +1,77 @@
 ---
+import { DEFAULT_LOCALE, TRANSLATED_PATHS, localizedPath, type Locale } from '../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
 const today = new Date();
 
+const dicts = {
+	zh: {
+		desc: '独立开发者 · 技术创作者 · 一人公司探索者。',
+		products: '产品', services: '服务', garden: '自留区',
+		tools: '工具总览', md2docx: '在线 Markdown 转 Word', formatter: 'docx-formatter-cn', docs: '使用文档', pricing: '定价方案',
+		allServices: '全部服务', thesis: '论文排版服务', customDev: '软件定制开发', contact: '开始咨询',
+		blog: '写作', notes: '笔记', about: '关于我', archive: '归档', ledger: '公开账本',
+		rights: '无名苗圃. All rights reserved.',
+		runtimePrefix: '本站自 2026 年 5 月 7 日上线，已运行 ',
+		musicCredit: '背景音乐：',
+		license: '授权',
+	},
+	en: {
+		desc: 'Indie developer · tech writer · one-person company explorer.',
+		products: 'Products', services: 'Services', garden: 'Garden',
+		tools: 'All Tools', md2docx: 'Online Markdown → Word', formatter: 'docx-formatter-cn', docs: 'Docs', pricing: 'Pricing',
+		allServices: 'All Services', thesis: 'Thesis Formatting', customDev: 'Custom Development', contact: 'Get in Touch',
+		blog: 'Blog', notes: 'Notes', about: 'About', archive: 'Archive', ledger: 'Open Ledger',
+		rights: 'Wuming Nursery. All rights reserved.',
+		runtimePrefix: 'Online since May 7, 2026 — running for ',
+		musicCredit: 'Background music: ',
+		license: 'license',
+	},
+	ja: {
+		desc: '独立開発者 · テックライター · 一人会社の探求者。',
+		products: '製品', services: 'サービス', garden: 'ガーデン',
+		tools: 'ツール一覧', md2docx: 'オンライン Markdown → Word', formatter: 'docx-formatter-cn', docs: 'ドキュメント', pricing: '料金',
+		allServices: 'サービス一覧', thesis: '論文フォーマットサービス', customDev: 'ソフトウェア受託開発', contact: 'お問い合わせ',
+		blog: 'ブログ', notes: 'ノート', about: '私について', archive: 'アーカイブ', ledger: '公開台帳',
+		rights: 'Wuming Nursery. All rights reserved.',
+		runtimePrefix: '2026年5月7日開設 · 運営時間 ',
+		musicCredit: 'BGM：',
+		license: 'ライセンス',
+	},
+} as const;
+
+const t = dicts[lang];
+
+function L(path: string): string {
+	if (lang === DEFAULT_LOCALE || !TRANSLATED_PATHS.includes(path)) return path;
+	return localizedPath(path, lang);
+}
+
 const productLinks = [
-	{ href: '/tools', text: '工具总览' },
-	{ href: '/tools/md2docx', text: '在线 Markdown 转 Word' },
-	{ href: '/projects/docx-formatter-cn', text: 'docx-formatter-cn' },
-	{ href: '/projects/docx-formatter-docs', text: '使用文档' },
-	{ href: '/pricing', text: '定价方案' },
+	{ href: L('/tools'), text: t.tools },
+	{ href: '/tools/md2docx', text: t.md2docx },
+	{ href: '/projects/docx-formatter-cn', text: t.formatter },
+	{ href: '/projects/docx-formatter-docs', text: t.docs },
+	{ href: L('/pricing'), text: t.pricing },
 ];
 
 const serviceLinks = [
-	{ href: '/services', text: '全部服务' },
-	{ href: '/services/thesis-formatting', text: '论文排版服务' },
-	{ href: '/services/custom-development', text: '软件定制开发' },
-	{ href: '/contact', text: '开始咨询' },
+	{ href: L('/services'), text: t.allServices },
+	{ href: L('/services/thesis-formatting'), text: t.thesis },
+	{ href: L('/services/custom-development'), text: t.customDev },
+	{ href: L('/contact'), text: t.contact },
 ];
 
 const gardenLinks = [
-	{ href: '/blog', text: '写作' },
-	{ href: '/notes', text: '笔记' },
-	{ href: '/about', text: '关于我' },
-	{ href: '/archive', text: '归档' },
-	{ href: '/ledger', text: '公开账本' },
+	{ href: '/blog', text: t.blog },
+	{ href: '/notes', text: t.notes },
+	{ href: L('/about'), text: t.about },
+	{ href: '/archive', text: t.archive },
+	{ href: '/ledger', text: t.ledger },
 ];
 ---
 
@@ -29,10 +79,10 @@ const gardenLinks = [
 	<div class="footer-grid">
 		<div class="footer-col">
 			<div class="footer-brand">🌱 无名苗圃</div>
-			<p class="footer-desc">独立开发者 · 技术创作者 · 一人公司探索者。</p>
+			<p class="footer-desc">{t.desc}</p>
 		</div>
 		<div class="footer-col">
-			<h4>产品</h4>
+			<h4>{t.products}</h4>
 			<ul>
 				{productLinks.map((link) => (
 					<li><a href={link.href}>{link.text}</a></li>
@@ -40,7 +90,7 @@ const gardenLinks = [
 			</ul>
 		</div>
 		<div class="footer-col">
-			<h4>服务</h4>
+			<h4>{t.services}</h4>
 			<ul>
 				{serviceLinks.map((link) => (
 					<li><a href={link.href}>{link.text}</a></li>
@@ -48,7 +98,7 @@ const gardenLinks = [
 			</ul>
 		</div>
 		<div class="footer-col">
-			<h4>自留区</h4>
+			<h4>{t.garden}</h4>
 			<ul>
 				{gardenLinks.map((link) => (
 					<li><a href={link.href}>{link.text}</a></li>
@@ -56,10 +106,10 @@ const gardenLinks = [
 			</ul>
 		</div>
 	</div>
-	<div class="copyright">&copy; {today.getFullYear()} 无名苗圃. All rights reserved.</div>
-	<div class="site-runtime">本站自 2026 年 5 月 7 日上线，已运行 <span id="site-runtime">计算中…</span></div>
+	<div class="copyright">&copy; {today.getFullYear()} {t.rights}</div>
+	<div class="site-runtime">{t.runtimePrefix}<span id="site-runtime" data-lang={lang}>…</span></div>
 	<div class="music-credit">
-		背景音乐：<a href="https://incompetech.com" target="_blank" rel="noopener">Kevin MacLeod (incompetech.com)</a>，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> 授权
+		{t.musicCredit}<a href="https://incompetech.com" target="_blank" rel="noopener">Kevin MacLeod (incompetech.com)</a>，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> {t.license}
 	</div>
 </footer>
 
@@ -74,6 +124,7 @@ const gardenLinks = [
 	document.addEventListener('DOMContentLoaded', function() {
 		var el = document.getElementById('site-runtime');
 		if (!el) return;
+		var lang = el.getAttribute('data-lang') || 'zh';
 		var launch = new Date('2026-05-07T00:00:00+08:00').getTime();
 		function pad(n) { return n < 10 ? '0' + n : '' + n; }
 		function tick() {
@@ -82,7 +133,13 @@ const gardenLinks = [
 			var hours = Math.floor(diff % 86400000 / 3600000);
 			var minutes = Math.floor(diff % 3600000 / 60000);
 			var seconds = Math.floor(diff % 60000 / 1000);
-			el.textContent = days + ' 天 ' + pad(hours) + ' 时 ' + pad(minutes) + ' 分 ' + pad(seconds) + ' 秒';
+			if (lang === 'en') {
+				el.textContent = days + 'd ' + pad(hours) + 'h ' + pad(minutes) + 'm ' + pad(seconds) + 's';
+			} else if (lang === 'ja') {
+				el.textContent = days + ' 日 ' + pad(hours) + ' 時間 ' + pad(minutes) + ' 分 ' + pad(seconds) + ' 秒';
+			} else {
+				el.textContent = days + ' 天 ' + pad(hours) + ' 时 ' + pad(minutes) + ' 分 ' + pad(seconds) + ' 秒';
+			}
 		}
 		tick();
 		setInterval(tick, 1000);

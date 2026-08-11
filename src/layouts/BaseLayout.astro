@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
 import { SITE_DESCRIPTION } from '../consts';
+import { DEFAULT_LOCALE, HTML_LANG, TRANSLATED_PATHS, localizedPath, stripLocalePrefix, type Locale } from '../i18n/config';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -15,21 +16,53 @@ interface Props {
 	updatedDate?: Date;
 	tags?: string[];
 	draft?: boolean;
+	lang?: Locale;
 }
 
-const { title, description = SITE_DESCRIPTION, image, article = false, pubDate, updatedDate, tags, draft = false } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image, article = false, pubDate, updatedDate, tags, draft = false, lang = DEFAULT_LOCALE } = Astro.props;
+
+const { base } = stripLocalePrefix(Astro.url.pathname);
+const hasTranslations = TRANSLATED_PATHS.includes(base);
+const alternates = hasTranslations
+	? (['zh', 'en', 'ja'] as const).map((l) => ({
+			locale: l,
+			hreflang: HTML_LANG[l],
+			url: new URL(localizedPath(base, l), Astro.site),
+		}))
+	: [];
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={HTML_LANG[lang]}>
 	<head>
+		{hasTranslations && lang === DEFAULT_LOCALE && (
+			<script is:inline>
+				(function() {
+					try {
+						if (localStorage.getItem('lang')) return;
+						var nav = (navigator.language || '').toLowerCase();
+						var target = nav.indexOf('ja') === 0 ? '/ja' : (nav.indexOf('en') === 0 ? '/en' : null);
+						if (target) location.replace(target + location.pathname + location.search + location.hash);
+					} catch (e) {}
+				})();
+			</script>
+		)}
+		{lang !== DEFAULT_LOCALE && (
+			<script is:inline define:vars={{ lang }}>
+				try { localStorage.setItem('lang', lang); } catch (e) {}
+			</script>
+		)}
 		<BaseHead title={title} description={description} image={image} article={article} pubDate={pubDate} updatedDate={updatedDate} tags={tags} draft={draft} />
+		{alternates.map((a) => (
+			<link rel="alternate" hreflang={a.hreflang} href={a.url} />
+		))}
+		{hasTranslations && <link rel="alternate" hreflang="x-default" href={new URL(localizedPath(base, DEFAULT_LOCALE), Astro.site)} />}
 		<slot name="head" />
 	</head>
 	<body>
-		<Header />
+		<Header lang={lang} />
 		<slot />
-		<Footer />
+		<Footer lang={lang} />
 		<MusicPlayer />
 	</body>
 </html>

@@ -1,0 +1,521 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/config';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = DEFAULT_LOCALE } = Astro.props;
+
+const dicts = {
+	zh: {
+		title: `软件定制开发 - ${SITE_TITLE}`,
+		description: '面向企业与个人的软件定制开发服务：网站与 Web 工具、小程序与自动化脚本、企业定制系统。源码交付，透明起价，按里程碑推进。',
+		heroTitle: '软件定制开发',
+		heroDesc: '从一个小脚本到一套业务系统，按需定制、源码交付、透明报价。一个人全栈开发，没有层层转包，沟通成本降到最低。',
+		consultBtn: '立即咨询',
+		pricingBtn: '查看定价',
+		priceSectionTitle: '按项目透明起价',
+		periodLabel: '交付周期：',
+		prices: [
+			{ type: '网站 / Web 工具开发', price: '¥2,800 起', period: '1-2 周', desc: '品牌站、Landing Page、内部小工具，Astro + Cloudflare 高性能交付' },
+			{ type: '小程序 / 自动化脚本', price: '¥2,000 起', period: '3-7 天', desc: '数据采集、办公自动化、AI 工作流；小程序定制通常 ¥5,000 起，按功能报价' },
+			{ type: '企业定制系统', price: '¥8,000 起', period: '2-6 周', desc: '管理后台、业务系统、API 集成，含需求梳理与架构设计' },
+		],
+		addonsTitle: '可选加项',
+		addons: [
+			{ name: '加急（周期减半）', price: '+30%' },
+			{ name: '长期维护与迭代', price: '¥500/月 起' },
+			{ name: '需求变更 / 功能追加', price: '¥200/小时' },
+			{ name: '源码 + 部署文档', price: '已包含' },
+			{ name: '上线部署 / 域名配置', price: '已包含' },
+		],
+		processTitle: '合作流程',
+		process: [
+			{ step: '01', title: '需求沟通', desc: '15 分钟语音或文字，明确目标、预算和时间线。' },
+			{ step: '02', title: '方案报价', desc: '提供详细方案、交付物和报价，确认后签订合同。' },
+			{ step: '03', title: '开发交付', desc: '按里程碑推进，定期同步进度，确保方向不偏。' },
+			{ step: '04', title: '售后支持', desc: '交付后 30 天内免费修复问题，长期维护可续签。' },
+		],
+		deliverTitle: '你将收到',
+		deliverItems: [
+			'完整 <strong>源码</strong> 与私有 Git 仓库，交付后归你所有',
+			'部署文档与运维说明，可自行接手或转交其他开发者',
+			'上线可用的成品：网站、小程序、脚本或业务系统',
+			'30 天免费问题修复，长期维护可按月续签',
+		],
+		faqTitle: '常见问题',
+		faqs: [
+			{ q: '没有技术背景，能合作吗？', a: '完全没问题。我会用非技术语言沟通，你只需描述「想要什么」，技术选型、架构和实现都交给我。' },
+			{ q: '报价是怎么算的？', a: '按功能点和工作量估算，起价为最简单可用版本的价格。需求明确后给出固定总价，中途不改需求不加价。' },
+			{ q: '源码归谁？', a: '交付后源码全部归你，包含私有仓库与部署文档，不绑定任何后续服务。' },
+			{ q: '交付周期能保证吗？', a: '合同会写明里程碑和交付时间。因我方原因延期的，按合同约定承担违约责任。' },
+			{ q: '怎么付款，能开发票吗？', a: '按里程碑分期付款（通常 3-4-3），通过爱发电或企业转账，可开具发票。' },
+		],
+		ctaTitle: '有想法？先聊聊',
+		ctaDesc: '描述你的需求，我会在 24h 内给出可行性评估和初步报价。',
+		ctaBtn: '开始咨询 →',
+		jsonLdName: '软件定制开发',
+		jsonLdDesc: '网站与 Web 工具、小程序与自动化脚本、企业定制系统的按需开发服务，源码交付，按里程碑推进。',
+	},
+	en: {
+		title: `Custom Software Development - ${SITE_TITLE}`,
+		description: 'Custom software development for businesses and individuals: websites & web tools, mini-programs & automation scripts, enterprise systems. Source code delivered, transparent starting prices, milestone-driven.',
+		heroTitle: 'Custom Software Development',
+		heroDesc: 'From a small script to a full business system: custom-built, source code delivered, transparent pricing. One full-stack developer — no layers of subcontracting, minimal communication overhead.',
+		consultBtn: 'Consult now',
+		pricingBtn: 'See pricing',
+		priceSectionTitle: 'Transparent starting prices per project',
+		periodLabel: 'Turnaround: ',
+		prices: [
+			{ type: 'Websites / web tools', price: 'From ¥2,800', period: '1-2 weeks', desc: 'Brand sites, landing pages, internal tools — high-performance delivery with Astro + Cloudflare' },
+			{ type: 'Mini-programs / automation scripts', price: 'From ¥2,000', period: '3-7 days', desc: 'Data scraping, office automation, AI workflows; custom mini-programs usually from ¥5,000, quoted by feature' },
+			{ type: 'Enterprise custom systems', price: 'From ¥8,000', period: '2-6 weeks', desc: 'Admin dashboards, business systems, API integration, including requirements analysis and architecture design' },
+		],
+		addonsTitle: 'Optional add-ons',
+		addons: [
+			{ name: 'Rush (half the turnaround)', price: '+30%' },
+			{ name: 'Long-term maintenance & iteration', price: 'From ¥500/month' },
+			{ name: 'Requirement changes / feature additions', price: '¥200/hour' },
+			{ name: 'Source code + deployment docs', price: 'Included' },
+			{ name: 'Launch deployment / domain setup', price: 'Included' },
+		],
+		processTitle: 'How we work',
+		process: [
+			{ step: '01', title: 'Discovery', desc: 'A 15-minute call or chat to clarify your goals, budget, and timeline.' },
+			{ step: '02', title: 'Proposal', desc: 'A detailed plan, deliverables, and quote. Contract signed on approval.' },
+			{ step: '03', title: 'Delivery', desc: 'Milestone-driven progress with regular syncs to stay on track.' },
+			{ step: '04', title: 'Support', desc: 'Free fixes within 30 days of delivery; long-term maintenance available.' },
+		],
+		deliverTitle: 'What you get',
+		deliverItems: [
+			'Complete <strong>source code</strong> and a private Git repository — yours after delivery',
+			'Deployment docs and operations notes — hand it off to yourself or another developer',
+			'A production-ready result: website, mini-program, script, or business system',
+			'30 days of free fixes; long-term maintenance renewable monthly',
+		],
+		faqTitle: 'FAQ',
+		faqs: [
+			{ q: 'Can we work together without a technical background?', a: 'Absolutely. I communicate in plain language — just describe what you want; tech stack, architecture, and implementation are on me.' },
+			{ q: 'How is the quote calculated?', a: 'Estimated by feature points and workload. The starting price covers the simplest usable version. Once requirements are fixed, you get a fixed total price — no changes, no surcharge.' },
+			{ q: 'Who owns the source code?', a: 'It’s all yours after delivery, including the private repository and deployment docs, with no lock-in to any follow-up service.' },
+			{ q: 'Is the delivery timeline guaranteed?', a: 'Milestones and delivery dates are written into the contract. Delays caused by my side incur liability per the contract terms.' },
+			{ q: 'How do I pay, and can I get an invoice?', a: 'Milestone-based installments (typically 3-4-3) via Afdian or corporate transfer; invoices available.' },
+		],
+		ctaTitle: 'Have an idea? Let’s talk',
+		ctaDesc: 'Describe your needs — I’ll reply with a feasibility assessment and a preliminary quote within 24h.',
+		ctaBtn: 'Start a conversation →',
+		jsonLdName: 'Custom Software Development',
+		jsonLdDesc: 'On-demand development of websites & web tools, mini-programs & automation scripts, and enterprise systems — source code delivered, milestone-driven.',
+	},
+	ja: {
+		title: `ソフトウェア受託開発 - ${SITE_TITLE}`,
+		description: '企業と個人向けのソフトウェア受託開発：ウェブサイト・Web ツール、ミニプログラム・自動化スクリプト、企業向けカスタムシステム。ソースコード納品、透明な最低価格、マイルストーン制。',
+		heroTitle: 'ソフトウェア受託開発',
+		heroDesc: '小さなスクリプトから業務システムまで、要件に応じたカスタム開発。ソースコード納品・透明な料金。一人のフルスタック開発者が担当するため、多重下請けなしでコミュニケーションコストを最小化。',
+		consultBtn: '今すぐ相談',
+		pricingBtn: '料金を見る',
+		priceSectionTitle: 'プロジェクトごとの透明な最低価格',
+		periodLabel: '納期：',
+		prices: [
+			{ type: 'ウェブサイト / Web ツール開発', price: '¥2,800〜', period: '1〜2 週間', desc: 'ブランドサイト、LP、社内ツール。Astro + Cloudflare で高性能に納品' },
+			{ type: 'ミニプログラム / 自動化スクリプト', price: '¥2,000〜', period: '3〜7 日', desc: 'データ収集、オフィス自動化、AI ワークフロー。ミニプログラムは通常 ¥5,000〜、機能別見積もり' },
+			{ type: '企業向けカスタムシステム', price: '¥8,000〜', period: '2〜6 週間', desc: '管理画面、業務システム、API 連携。要件整理とアーキテクチャ設計を含む' },
+		],
+		addonsTitle: 'オプション',
+		addons: [
+			{ name: '特急（納期半分）', price: '+30%' },
+			{ name: '長期保守・改善', price: '¥500〜/月' },
+			{ name: '要件変更・機能追加', price: '¥200/時間' },
+			{ name: 'ソースコード＋デプロイドキュメント', price: '含まれています' },
+			{ name: '公開デプロイ・ドメイン設定', price: '含まれています' },
+		],
+		processTitle: '進め方',
+		process: [
+			{ step: '01', title: 'ヒアリング', desc: '15 分の通話またはチャットで、目標・予算・スケジュールを確認。' },
+			{ step: '02', title: '提案・見積もり', desc: '詳細な提案・成果物・見積もりを提示。合意後に契約。' },
+			{ step: '03', title: '開発・納品', desc: 'マイルストーンごとに進捗を共有しながら開発。' },
+			{ step: '04', title: 'サポート', desc: '納品後 30 日間は無料で修正。長期保守も契約可能。' },
+		],
+		deliverTitle: '納品内容',
+		deliverItems: [
+			'完全な<strong>ソースコード</strong>とプライベート Git リポジトリ。納品後はあなたのもの',
+			'デプロイドキュメントと運用説明。自分で引き継ぐことも、他の開発者に渡すことも可能',
+			'本番利用可能な成果物：ウェブサイト、ミニプログラム、スクリプト、業務システム',
+			'30 日間の無料修正。長期保守は月額で更新可能',
+		],
+		faqTitle: 'よくある質問',
+		faqs: [
+			{ q: '技術知識がなくても依頼できますか？', a: 'もちろんです。専門用語を使わず説明します。「何が欲しいか」を伝えるだけで、技術選定・設計・実装はこちらで行います。' },
+			{ q: '見積もりはどう計算しますか？', a: '機能と工数で見積もります。最低価格は最もシンプルな動作版の価格です。要件確定後は固定総額を提示し、要件を変えなければ追加料金はありません。' },
+			{ q: 'ソースコードの権利は？', a: '納品後、ソースコードはすべてあなたのもの。プライベートリポジトリとデプロイドキュメントを含み、後続サービスへの縛りはありません。' },
+			{ q: '納期は守られますか？', a: 'マイルストーンと納期は契約に明記。こちらの原因で遅延した場合は、契約に基づき責任を負います。' },
+			{ q: '支払い方法と請求書は？', a: 'マイルストーンごとの分割払い（通常 3-4-3）。Afdian または法人振込。請求書（インボイス）発行可。' },
+		],
+		ctaTitle: 'アイデアがありますか？まず相談を',
+		ctaDesc: '要件を伝えれば、24 時間以内に実現性の評価と概算見積もりを返します。',
+		ctaBtn: '相談してみる →',
+		jsonLdName: 'ソフトウェア受託開発',
+		jsonLdDesc: 'ウェブサイト・Web ツール、ミニプログラム・自動化スクリプト、企業向けカスタムシステムの受託開発。ソースコード納品、マイルストーン制。',
+	},
+} as const;
+
+const t = dicts[lang];
+
+const contactHref = lang === 'zh' ? '/contact' : `/${lang}/contact/`;
+const pricingHref = lang === 'zh' ? '/pricing' : `/${lang}/pricing/`;
+
+const jsonLd = JSON.stringify({
+	'@context': 'https://schema.org',
+	'@type': 'Service',
+	name: t.jsonLdName,
+	provider: {
+		'@type': 'Person',
+		name: '无名苗圃',
+	},
+	description: t.jsonLdDesc,
+	offers: {
+		'@type': 'Offer',
+		price: '2000',
+		priceCurrency: 'CNY',
+	},
+	areaServed: 'CN',
+});
+---
+
+<BaseLayout title={t.title} description={t.description} lang={lang}>
+	<style>
+		main {
+			width: var(--wide-width);
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 1.5em;
+		}
+		.hero h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 620px;
+			margin: 0;
+			line-height: 1.7;
+		}
+
+		.btn {
+			display: inline-block;
+			padding: 0.6em 1.3em;
+			border-radius: var(--radius-md);
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 0.92em;
+			border: 1px solid transparent;
+			transition: background 0.15s, border-color 0.2s, color 0.15s;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+
+		section {
+			margin: 3em 0;
+		}
+		section h2 {
+			font-size: 1.4em;
+			margin-bottom: 1em;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.price-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 1.2em;
+			margin: 1.5em 0;
+		}
+		.price-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.5em;
+			transition: border-color 0.2s, box-shadow 0.2s;
+		}
+		.price-card:hover {
+			border-color: var(--accent);
+			box-shadow: var(--shadow-md);
+		}
+		.price-card h3 {
+			margin: 0 0 0.4em;
+			font-size: 1.1em;
+		}
+		.price-card .price {
+			font-size: 1.7em;
+			font-weight: 800;
+			color: var(--accent);
+			margin: 0.3em 0;
+		}
+		.price-card .period {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+		}
+		.price-card p {
+			margin: 0.8em 0 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		.addons {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1.2em 1.5em;
+		}
+		.addons h3 {
+			margin: 0 0 0.8em;
+			font-size: 1.05em;
+		}
+		.addons ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		.addons li {
+			display: flex;
+			justify-content: space-between;
+			padding: 0.45em 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 0.92em;
+		}
+		.addons li:last-child {
+			border-bottom: none;
+		}
+		.addons .addon-price {
+			font-weight: 600;
+			color: var(--accent);
+		}
+
+		.process-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 1.2em;
+		}
+		.process-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1.4em 1.2em;
+		}
+		.process-card .step {
+			font-size: 1.6em;
+			font-weight: 800;
+			color: var(--accent);
+			opacity: 0.35;
+			line-height: 1;
+			margin-bottom: 0.3em;
+		}
+		.process-card h4 {
+			margin: 0 0 0.4em;
+			font-size: 1.05em;
+		}
+		.process-card p {
+			margin: 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		.deliver {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			border: 1px solid var(--border);
+		}
+		.deliver h3 {
+			margin: 0 0 0.8em;
+			font-size: 1.15em;
+		}
+		.deliver ul {
+			margin: 0;
+			padding-left: 1.2em;
+			line-height: 1.9;
+		}
+
+		.faq-item {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			margin-bottom: 0.8em;
+			overflow: hidden;
+		}
+		.faq-q {
+			padding: 1em 1.2em;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: background 0.15s;
+		}
+		.faq-q:hover {
+			background: var(--accent-soft);
+		}
+		.faq-arrow {
+			font-size: 0.8em;
+			color: var(--text-secondary);
+			transition: transform 0.2s;
+		}
+		.faq-item.open .faq-arrow {
+			transform: rotate(180deg);
+		}
+		.faq-a {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+		}
+		.faq-item.open .faq-a {
+			max-height: 300px;
+		}
+		.faq-a-inner {
+			padding: 0 1.2em 1em;
+			color: var(--text-secondary);
+			line-height: 1.7;
+			font-size: 0.95em;
+		}
+
+		.cta-box {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 2em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 3em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.3em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			font-size: 0.92em;
+			margin: 0 0 1.2em;
+		}
+
+		@media (max-width: 720px) {
+			.hero h1 { font-size: 1.4em; }
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>{t.heroTitle}</h1>
+			<p>{t.heroDesc}</p>
+			<div style="margin-top:1.5em;">
+				<a href={contactHref} class="btn btn-primary">{t.consultBtn}</a>
+				<a href={pricingHref} class="btn btn-secondary">{t.pricingBtn}</a>
+			</div>
+		</section>
+
+		<section>
+			<h2>{t.priceSectionTitle}</h2>
+			<div class="price-grid">
+				{t.prices.map((p) => (
+					<div class="price-card">
+						<h3>{p.type}</h3>
+						<div class="price">{p.price}</div>
+						<div class="period">{t.periodLabel}{p.period}</div>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+			<div class="addons">
+				<h3>{t.addonsTitle}</h3>
+				<ul>
+					{t.addons.map((a) => (
+						<li>
+							<span>{a.name}</span>
+							<span class="addon-price">{a.price}</span>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>{t.processTitle}</h2>
+			<div class="process-grid">
+				{t.process.map((p) => (
+					<div class="process-card">
+						<div class="step">{p.step}</div>
+						<h4>{p.title}</h4>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section>
+			<div class="deliver">
+				<h3>{t.deliverTitle}</h3>
+				<ul>
+					{t.deliverItems.map((item) => (
+						<li set:html={item} />
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>{t.faqTitle}</h2>
+			{t.faqs.map((f, i) => (
+				<div class="faq-item" data-faq={i}>
+					<div class="faq-q">
+						{f.q}
+						<span class="faq-arrow">▼</span>
+					</div>
+					<div class="faq-a">
+						<div class="faq-a-inner">{f.a}</div>
+					</div>
+				</div>
+			))}
+		</section>
+
+		<section class="cta-box">
+			<h2>{t.ctaTitle}</h2>
+			<p>{t.ctaDesc}</p>
+			<a href={contactHref} class="btn btn-primary">{t.ctaBtn}</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.faq-item').forEach(function(item) {
+				var q = item.querySelector('.faq-q');
+				q.addEventListener('click', function() {
+					item.classList.toggle('open');
+				});
+			});
+		});
+	</script>
+
+	<script type="application/ld+json" set:html={jsonLd} />
+</BaseLayout>
