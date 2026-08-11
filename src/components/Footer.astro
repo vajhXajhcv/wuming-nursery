@@ -56,6 +56,7 @@ const gardenLinks = [
 		</div>
 	</div>
 	<div class="copyright">&copy; {today.getFullYear()} 无名苗圃. All rights reserved.</div>
+	<div class="site-runtime">本站已运行 <span id="site-runtime">计算中…</span></div>
 	<div class="music-credit">
 		背景音乐：<a href="https://incompetech.com" target="_blank" rel="noopener">Kevin MacLeod (incompetech.com)</a>，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> 授权
 	</div>
@@ -67,6 +68,25 @@ const gardenLinks = [
 		<polyline points="18 15 12 9 6 15"></polyline>
 	</svg>
 </button>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function() {
+		var el = document.getElementById('site-runtime');
+		if (!el) return;
+		var launch = new Date('2026-05-07T00:00:00+08:00').getTime();
+		function pad(n) { return n < 10 ? '0' + n : '' + n; }
+		function tick() {
+			var diff = Math.max(0, Date.now() - launch);
+			var days = Math.floor(diff / 86400000);
+			var hours = Math.floor(diff % 86400000 / 3600000);
+			var minutes = Math.floor(diff % 3600000 / 60000);
+			var seconds = Math.floor(diff % 60000 / 1000);
+			el.textContent = days + ' 天 ' + pad(hours) + ' 时 ' + pad(minutes) + ' 分 ' + pad(seconds) + ' 秒';
+		}
+		tick();
+		setInterval(tick, 1000);
+	});
+</script>
 
 <script is:inline>
 	document.addEventListener('DOMContentLoaded', function() {
@@ -142,6 +162,13 @@ const gardenLinks = [
 		border-top: 1px solid var(--border);
 		max-width: 960px;
 		margin: 0 auto;
+	}
+	.site-runtime {
+		text-align: center;
+		font-size: 0.8em;
+		max-width: 960px;
+		margin: 0.4em auto 0;
+		font-variant-numeric: tabular-nums;
 	}
 	.music-credit {
 		text-align: center;
