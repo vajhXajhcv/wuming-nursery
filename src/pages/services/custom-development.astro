@@ -1,0 +1,389 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `软件定制开发 - ${SITE_TITLE}`;
+const description = '面向企业与个人的软件定制开发服务：网站与 Web 工具、小程序与自动化脚本、企业定制系统。源码交付，透明起价，按里程碑推进。';
+
+const prices = [
+	{ type: '网站 / Web 工具开发', price: '¥2,800 起', period: '1-2 周', desc: '品牌站、Landing Page、内部小工具，Astro + Cloudflare 高性能交付' },
+	{ type: '小程序 / 自动化脚本', price: '¥2,000 起', period: '3-7 天', desc: '数据采集、办公自动化、AI 工作流；小程序定制通常 ¥5,000 起，按功能报价' },
+	{ type: '企业定制系统', price: '¥8,000 起', period: '2-6 周', desc: '管理后台、业务系统、API 集成，含需求梳理与架构设计' },
+];
+
+const addons = [
+	{ name: '加急（周期减半）', price: '+30%' },
+	{ name: '长期维护与迭代', price: '¥500/月 起' },
+	{ name: '需求变更 / 功能追加', price: '¥200/小时' },
+	{ name: '源码 + 部署文档', price: '已包含' },
+	{ name: '上线部署 / 域名配置', price: '已包含' },
+];
+
+const process = [
+	{ step: '01', title: '需求沟通', desc: '15 分钟语音或文字，明确目标、预算和时间线。' },
+	{ step: '02', title: '方案报价', desc: '提供详细方案、交付物和报价，确认后签订合同。' },
+	{ step: '03', title: '开发交付', desc: '按里程碑推进，定期同步进度，确保方向不偏。' },
+	{ step: '04', title: '售后支持', desc: '交付后 30 天内免费修复问题，长期维护可续签。' },
+];
+
+const faqs = [
+	{ q: '没有技术背景，能合作吗？', a: '完全没问题。我会用非技术语言沟通，你只需描述「想要什么」，技术选型、架构和实现都交给我。' },
+	{ q: '报价是怎么算的？', a: '按功能点和工作量估算，起价为最简单可用版本的价格。需求明确后给出固定总价，中途不改需求不加价。' },
+	{ q: '源码归谁？', a: '交付后源码全部归你，包含私有仓库与部署文档，不绑定任何后续服务。' },
+	{ q: '交付周期能保证吗？', a: '合同会写明里程碑和交付时间。因我方原因延期的，按合同约定承担违约责任。' },
+	{ q: '怎么付款，能开发票吗？', a: '按里程碑分期付款（通常 3-4-3），通过爱发电或企业转账，可开具发票。' },
+];
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: var(--wide-width);
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 1.5em;
+		}
+		.hero h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 620px;
+			margin: 0;
+			line-height: 1.7;
+		}
+
+		.btn {
+			display: inline-block;
+			padding: 0.6em 1.3em;
+			border-radius: var(--radius-md);
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 0.92em;
+			border: 1px solid transparent;
+			transition: background 0.15s, border-color 0.2s, color 0.15s;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+
+		section {
+			margin: 3em 0;
+		}
+		section h2 {
+			font-size: 1.4em;
+			margin-bottom: 1em;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.price-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 1.2em;
+			margin: 1.5em 0;
+		}
+		.price-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.5em;
+			transition: border-color 0.2s, box-shadow 0.2s;
+		}
+		.price-card:hover {
+			border-color: var(--accent);
+			box-shadow: var(--shadow-md);
+		}
+		.price-card h3 {
+			margin: 0 0 0.4em;
+			font-size: 1.1em;
+		}
+		.price-card .price {
+			font-size: 1.7em;
+			font-weight: 800;
+			color: var(--accent);
+			margin: 0.3em 0;
+		}
+		.price-card .period {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+		}
+		.price-card p {
+			margin: 0.8em 0 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		.addons {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1.2em 1.5em;
+		}
+		.addons h3 {
+			margin: 0 0 0.8em;
+			font-size: 1.05em;
+		}
+		.addons ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		.addons li {
+			display: flex;
+			justify-content: space-between;
+			padding: 0.45em 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 0.92em;
+		}
+		.addons li:last-child {
+			border-bottom: none;
+		}
+		.addons .addon-price {
+			font-weight: 600;
+			color: var(--accent);
+		}
+
+		.process-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 1.2em;
+		}
+		.process-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1.4em 1.2em;
+		}
+		.process-card .step {
+			font-size: 1.6em;
+			font-weight: 800;
+			color: var(--accent);
+			opacity: 0.35;
+			line-height: 1;
+			margin-bottom: 0.3em;
+		}
+		.process-card h4 {
+			margin: 0 0 0.4em;
+			font-size: 1.05em;
+		}
+		.process-card p {
+			margin: 0;
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		.deliver {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			border: 1px solid var(--border);
+		}
+		.deliver h3 {
+			margin: 0 0 0.8em;
+			font-size: 1.15em;
+		}
+		.deliver ul {
+			margin: 0;
+			padding-left: 1.2em;
+			line-height: 1.9;
+		}
+
+		.faq-item {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			margin-bottom: 0.8em;
+			overflow: hidden;
+		}
+		.faq-q {
+			padding: 1em 1.2em;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: background 0.15s;
+		}
+		.faq-q:hover {
+			background: var(--accent-soft);
+		}
+		.faq-arrow {
+			font-size: 0.8em;
+			color: var(--text-secondary);
+			transition: transform 0.2s;
+		}
+		.faq-item.open .faq-arrow {
+			transform: rotate(180deg);
+		}
+		.faq-a {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+		}
+		.faq-item.open .faq-a {
+			max-height: 300px;
+		}
+		.faq-a-inner {
+			padding: 0 1.2em 1em;
+			color: var(--text-secondary);
+			line-height: 1.7;
+			font-size: 0.95em;
+		}
+
+		.cta-box {
+			background: var(--accent-soft);
+			border-radius: var(--radius-lg);
+			padding: 2em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 3em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.3em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			font-size: 0.92em;
+			margin: 0 0 1.2em;
+		}
+
+		@media (max-width: 720px) {
+			.hero h1 { font-size: 1.4em; }
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>软件定制开发</h1>
+			<p>从一个小脚本到一套业务系统，按需定制、源码交付、透明报价。一个人全栈开发，没有层层转包，沟通成本降到最低。</p>
+			<div style="margin-top:1.5em;">
+				<a href="/contact" class="btn btn-primary">立即咨询</a>
+				<a href="/pricing" class="btn btn-secondary">查看定价</a>
+			</div>
+		</section>
+
+		<section>
+			<h2>按项目透明起价</h2>
+			<div class="price-grid">
+				{prices.map((p) => (
+					<div class="price-card">
+						<h3>{p.type}</h3>
+						<div class="price">{p.price}</div>
+						<div class="period">交付周期：{p.period}</div>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+			<div class="addons">
+				<h3>可选加项</h3>
+				<ul>
+					{addons.map((a) => (
+						<li>
+							<span>{a.name}</span>
+							<span class="addon-price">{a.price}</span>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>合作流程</h2>
+			<div class="process-grid">
+				{process.map((p) => (
+					<div class="process-card">
+						<div class="step">{p.step}</div>
+						<h4>{p.title}</h4>
+						<p>{p.desc}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section>
+			<div class="deliver">
+				<h3>你将收到</h3>
+				<ul>
+					<li>完整 <strong>源码</strong> 与私有 Git 仓库，交付后归你所有</li>
+					<li>部署文档与运维说明，可自行接手或转交其他开发者</li>
+					<li>上线可用的成品：网站、小程序、脚本或业务系统</li>
+					<li>30 天免费问题修复，长期维护可按月续签</li>
+				</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>常见问题</h2>
+			{faqs.map((f, i) => (
+				<div class="faq-item" data-faq={i}>
+					<div class="faq-q">
+						{f.q}
+						<span class="faq-arrow">▼</span>
+					</div>
+					<div class="faq-a">
+						<div class="faq-a-inner">{f.a}</div>
+					</div>
+				</div>
+			))}
+		</section>
+
+		<section class="cta-box">
+			<h2>有想法？先聊聊</h2>
+			<p>描述你的需求，我会在 24h 内给出可行性评估和初步报价。</p>
+			<a href="/contact" class="btn btn-primary">开始咨询 →</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.faq-item').forEach(function(item) {
+				var q = item.querySelector('.faq-q');
+				q.addEventListener('click', function() {
+					item.classList.toggle('open');
+				});
+			});
+		});
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "Service",
+		"name": "软件定制开发",
+		"provider": {
+			"@type": "Person",
+			"name": "无名苗圃"
+		},
+		"description": "网站与 Web 工具、小程序与自动化脚本、企业定制系统的按需开发服务，源码交付，按里程碑推进。",
+		"offers": {
+			"@type": "Offer",
+			"price": "2000",
+			"priceCurrency": "CNY"
+		},
+		"areaServed": "CN"
+	}
+	</script>
+</BaseLayout>
