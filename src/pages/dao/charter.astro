@@ -1,0 +1,324 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+import { DEFAULT_PARAMS } from '../../lib/dao-core';
+
+const title = `共同体章程 - ${SITE_TITLE}`;
+const description = '无名苗圃共同体章程：金库、成员、贡献点、治理规则与信任模型。';
+
+const dayMs = 24 * 3600 * 1000;
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			--c-ok: #16a34a;
+			--c-err: #dc2626;
+		}
+		[data-theme='dark'] main {
+			--c-ok: #4ade80;
+			--c-err: #f87171;
+		}
+		.page-header {
+			margin-bottom: 1.5em;
+		}
+		.page-header h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.page-header p {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			margin: 0;
+		}
+		.chapter {
+			margin-bottom: 2em;
+		}
+		.chapter h2 {
+			font-size: 1.15em;
+			padding-bottom: 0.4em;
+			border-bottom: 1px solid var(--border);
+			margin-bottom: 0.7em;
+		}
+		.chapter p,
+		.chapter li {
+			font-size: 0.92em;
+			line-height: 1.85;
+		}
+		.chapter ul {
+			padding-left: 1.4em;
+			margin: 0.4em 0;
+		}
+		.param-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.88em;
+			margin: 0.8em 0;
+		}
+		.param-table th,
+		.param-table td {
+			border-bottom: 1px solid var(--border);
+			padding: 0.55em 0.7em;
+			text-align: left;
+		}
+		.param-table th {
+			color: var(--text-secondary);
+			font-weight: 600;
+			font-size: 0.85em;
+		}
+		.param-table td.val {
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+			color: var(--accent);
+		}
+		.note {
+			font-size: 0.82em;
+			color: var(--text-secondary);
+		}
+		.verify-box {
+			padding: 1.2em 1.4em;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			font-size: 0.88em;
+		}
+		.verify-box p {
+			margin: 0.4em 0;
+		}
+		.verify-actions {
+			display: flex;
+			gap: 0.8em;
+			flex-wrap: wrap;
+			margin: 0.8em 0;
+		}
+		.verify-actions button {
+			padding: 0.5em 1.2em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: transparent;
+			color: var(--text);
+			font-size: 0.9em;
+			cursor: pointer;
+		}
+		.verify-actions button:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		#chain-badge {
+			font-weight: 600;
+		}
+		#chain-badge.ok {
+			color: var(--c-ok);
+		}
+		#chain-badge.bad {
+			color: var(--c-err);
+		}
+		.verify-box pre {
+			background: var(--bg);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.8em 1em;
+			overflow-x: auto;
+			font-size: 0.85em;
+		}
+	</style>
+	<main>
+		<div class="page-header">
+			<h1>无名苗圃共同体章程</h1>
+			<p>本章程与链上记录共同构成共同体的治理文本；规则的实际执行以链上事件为准。</p>
+		</div>
+
+		<section class="chapter">
+			<h2>第一章 · 宗旨与性质</h2>
+			<p>
+				无名苗圃共同体（下称「共同体」）是围绕「无名苗圃」站点形成的创作共同体。共同体维护一座公开金库，
+				用于支持站点的内容创作、工具开发与基础设施运营，让优质创作获得可持续的回报循环。
+			</p>
+			<ul>
+				<li>共同体<strong>不是法人实体</strong>，不发行任何代币或证券。</li>
+				<li>成员持有的贡献点<strong>不代表股权、债权或任何投资回报承诺</strong>，金库不向成员承诺收益分配。</li>
+				<li>共同体的运行原则：公开账本、贡献上链、按贡献点治理、任何人可验证。</li>
+			</ul>
+		</section>
+
+		<section class="chapter">
+			<h2>第二章 · 金库</h2>
+			<ul>
+				<li>资金来源：站点付费阅读收入、读者捐赠，及其他经公示的合法收入。</li>
+				<li>
+					全部收入与支出逐条记录于<a href="/ledger">公开账本</a>，构成哈希链，任何人可独立验证完整性。
+				</li>
+				<li>金库支出只能经提案治理：达到门槛的成员发起支出提案，投票通过后由创始人按链上决议执行并登记回执。</li>
+			</ul>
+		</section>
+
+		<section class="chapter">
+			<h2>第三章 · 成员</h2>
+			<ul>
+				<li>成员采用<strong>假名制</strong>：一个 handle（化名）加一对 ECDSA P-256 密钥对即身份，公钥上链公示。</li>
+				<li>加入需创始人批准：在<a href="/dao/join">加入页</a>提交申请，经审核上链后成为在册成员。</li>
+				<li>私钥由成员自行保管，丢失即失去对该身份的控制，共同体无法找回；泄露私钥等同于让渡身份。</li>
+			</ul>
+		</section>
+
+		<section class="chapter">
+			<h2>第四章 · 贡献点</h2>
+			<ul>
+				<li>
+					贡献点分两类：<strong>资金贡献</strong>（按金库收入记录核定，参考 ¥1 = 1 点）与<strong>劳动贡献</strong>（文章、代码、翻译、设计、运营等，由创始人核定上链）。
+				</li>
+				<li>贡献点是治理投票的权重：<strong>一「点」一票</strong>。</li>
+				<li>贡献点不可转让，不代表股权、债权或分红权。</li>
+				<li>每笔贡献核定都是链上事件，任何人可重放核验。</li>
+			</ul>
+		</section>
+
+		<section class="chapter">
+			<h2>第五章 · 治理规则</h2>
+			<ul>
+				<li>提案类型：<code>spend</code>（金库支出）、<code>text</code>（文本决议）、<code>param</code>（治理参数变更）。</li>
+				<li>提案门槛：发起提案需持有不低于门槛值的贡献点（见下表）。</li>
+				<li>投票期 7 天；法定人数 20%：参与投票的权重之和不低于快照总权重的 20% 方有效。</li>
+				<li>通过条件：达到法定人数，且赞成权重严格大于反对权重（简单多数）。</li>
+				<li>权重快照：每个成员的投票权重按<strong>提案上链高度</strong>（seq）快照计算，提案之后新增的贡献点不计入该提案。</li>
+			</ul>
+			<table class="param-table">
+				<thead>
+					<tr>
+						<th>参数</th>
+						<th>含义</th>
+						<th>当前值</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>proposeThreshold</code></td>
+						<td>提案门槛（贡献点）</td>
+						<td class="val" data-param="proposeThreshold">{DEFAULT_PARAMS.proposeThreshold}</td>
+					</tr>
+					<tr>
+						<td><code>votingPeriodMs</code></td>
+						<td>投票期</td>
+						<td class="val" data-param="votingPeriodMs">{DEFAULT_PARAMS.votingPeriodMs / dayMs} 天</td>
+					</tr>
+					<tr>
+						<td><code>quorumBps</code></td>
+						<td>法定人数</td>
+						<td class="val" data-param="quorumBps">{DEFAULT_PARAMS.quorumBps / 100}%</td>
+					</tr>
+					<tr>
+						<td><code>pointsPerYuan</code></td>
+						<td>资金折算率（¥1 = N 点）</td>
+						<td class="val" data-param="pointsPerYuan">{DEFAULT_PARAMS.pointsPerYuan}</td>
+					</tr>
+				</tbody>
+			</table>
+			<p class="note">以上当前值由你的浏览器重放链上事件实时算出，以链上最新 params 事件为准。</p>
+		</section>
+
+		<section class="chapter">
+			<h2>第六章 · 信任模型（诚实披露）</h2>
+			<ul>
+				<li>
+					创始人掌握 ADMIN_TOKEN 与支付账户，可写入 member / contribution / resolution / execution / params / anchor
+					事件。这是必要的中心化权力，在此明确披露。
+				</li>
+				<li>
+					创始人<strong>不能伪造成员投票签名</strong>：成员公钥在链上，每张选票都可用公钥独立验签，伪票过不了任何人的本地校验。
+				</li>
+				<li>
+					创始人<strong>不能篡改历史</strong>：哈希链保证任何改动都会使后续哈希失配；任何人可下载全链 JSON 离线重放。
+				</li>
+				<li>链头哈希定期通过 OpenTimestamps 锚定到比特币区块链，获得公开时间证明。</li>
+				<li>
+					社区的终极制衡是<strong>分叉</strong>：任何人可导出全链。若创始人失信，社区可带着完整历史另起炉灶，记录一条都不丢。
+				</li>
+			</ul>
+		</section>
+
+		<section class="chapter">
+			<h2>第七章 · 验证方法</h2>
+			<div class="verify-box">
+				<p><span id="chain-badge">⏳ 链数据加载中…</span></p>
+				<div class="verify-actions">
+					<button id="verify-btn">浏览器独立验链</button>
+					<button id="download-btn">下载全链 JSON</button>
+				</div>
+				<p>
+					「独立验链」在你的浏览器里重算整条哈希链，不经过服务器；「下载全链 JSON」把
+					<code>/api/ledger/list</code> 的完整响应存为本地文件存档。
+				</p>
+				<p>下载后可用仓库自带的命令行脚本离线校验（重算哈希链 + 校验链头一致性，自包含实现、不依赖本站代码）：</p>
+				<pre><code>node scripts/verify-chain.mjs --file &lt;下载的链JSON文件路径&gt;</code></pre>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		import { verifyChain, replay } from '../../lib/dao-core';
+		import type { ChainRecord, ChainHead, DaoParams } from '../../lib/dao-core';
+
+		let chainData: { records: ChainRecord[]; head: ChainHead | null } | null = null;
+
+		function fmtParam(key: keyof DaoParams, v: number): string {
+			if (key === 'votingPeriodMs') return v / (24 * 3600 * 1000) + ' 天';
+			if (key === 'quorumBps') return v / 100 + '%';
+			return String(v);
+		}
+
+		async function init() {
+			const badge = document.getElementById('chain-badge') as HTMLElement;
+			try {
+				const resp = await fetch('/api/ledger/list');
+				chainData = await resp.json();
+			} catch {
+				badge.textContent = '❌ 链数据加载失败';
+				badge.className = 'bad';
+				return;
+			}
+			const records = chainData!.records || [];
+			badge.textContent = `已加载 ${records.length} 条链上记录`;
+			// 用链上最新 params 事件替换参数表当前值
+			const state = replay(records);
+			(Object.keys(state.params) as (keyof DaoParams)[]).forEach((k) => {
+				const cell = document.querySelector(`[data-param="${k}"]`);
+				if (cell) cell.textContent = fmtParam(k, state.params[k]);
+			});
+		}
+
+		document.getElementById('verify-btn')?.addEventListener('click', async () => {
+			const badge = document.getElementById('chain-badge') as HTMLElement;
+			if (!chainData) return;
+			badge.textContent = '⏳ 正在本地重算…';
+			badge.className = '';
+			const res = await verifyChain(chainData.records || [], chainData.head ?? undefined);
+			if (res.valid) {
+				badge.textContent = `✅ 本地验证通过（${(chainData.records || []).length} 条）`;
+				badge.className = 'ok';
+			} else if (res.brokenAt === -1) {
+				badge.textContent = '❌ 链头与末条记录不符';
+				badge.className = 'bad';
+			} else {
+				badge.textContent = '❌ 链断裂于 #' + res.brokenAt;
+				badge.className = 'bad';
+			}
+		});
+
+		document.getElementById('download-btn')?.addEventListener('click', async () => {
+			try {
+				const resp = await fetch('/api/ledger/list');
+				const data = await resp.json();
+				const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+				const a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = 'wuming-nursery-chain-' + new Date().toISOString().slice(0, 10) + '.json';
+				a.click();
+				URL.revokeObjectURL(a.href);
+			} catch {
+				alert('下载失败，请稍后重试。');
+			}
+		});
+
+		init();
+	</script>
+</BaseLayout>

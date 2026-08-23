@@ -1,0 +1,361 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `发起提案 - ${SITE_TITLE}`;
+const description = '发起无名苗圃共同体治理提案：支出、文本决议或参数变更。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			--c-ok: #16a34a;
+			--c-err: #dc2626;
+		}
+		[data-theme='dark'] main {
+			--c-ok: #4ade80;
+			--c-err: #f87171;
+		}
+		.page-header {
+			margin-bottom: 1.5em;
+		}
+		.page-header h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.page-header p {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			margin: 0;
+		}
+		.form-box {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.6em 1.8em;
+		}
+		.field {
+			margin-bottom: 1em;
+		}
+		.field label {
+			display: block;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.3em;
+		}
+		.field input,
+		.field select,
+		.field textarea {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0.55em 0.8em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg);
+			color: var(--text);
+			font-size: 0.95em;
+			font-family: inherit;
+		}
+		.field input:focus,
+		.field select:focus,
+		.field textarea:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.hint {
+			font-size: 0.8em;
+			color: var(--text-secondary);
+			margin-top: 0.3em;
+		}
+		.gate {
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			background: var(--accent-soft);
+			font-size: 0.88em;
+			margin-bottom: 1em;
+		}
+		.gate.bad {
+			background: rgba(220, 38, 38, 0.08);
+			color: var(--c-err);
+		}
+		.submit-btn {
+			width: 100%;
+			padding: 0.7em;
+			border: none;
+			border-radius: var(--radius-md);
+			background: var(--accent);
+			color: white;
+			font-size: 1em;
+			font-weight: 600;
+			cursor: pointer;
+			min-height: 44px;
+		}
+		.submit-btn:hover {
+			background: var(--accent-dark);
+		}
+		.submit-btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		.result {
+			margin-top: 1em;
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			font-size: 0.88em;
+			display: none;
+			word-break: break-all;
+		}
+		.result.ok {
+			display: block;
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+		.result.err {
+			display: block;
+			background: rgba(220, 38, 38, 0.08);
+			color: var(--c-err);
+		}
+	</style>
+	<main>
+		<div class="page-header">
+			<h1>发起提案</h1>
+			<p>提案用你的私钥签名（含当前链头哈希），达到贡献点门槛的在册成员方可发起。</p>
+		</div>
+
+		<div class="form-box">
+			<div class="gate" id="gate">⏳ 正在加载链上参数…</div>
+
+			<div class="field">
+				<label for="identity">我的身份（本机已导入的密钥）</label>
+				<select id="identity"></select>
+			</div>
+			<div class="field">
+				<label for="ptype">提案类型</label>
+				<select id="ptype">
+					<option value="spend">支出（spend）</option>
+					<option value="text">文本决议（text）</option>
+					<option value="param">参数变更（param）</option>
+				</select>
+			</div>
+			<div class="field" id="field-amount">
+				<label for="amount">支出金额（元）</label>
+				<input type="number" id="amount" min="0.01" step="0.01" placeholder="0.00" />
+			</div>
+			<div class="field" id="field-recipient">
+				<label for="recipient">收款方</label>
+				<input type="text" id="recipient" maxlength="100" placeholder="收款方说明，如成员 handle / 供应商" />
+			</div>
+			<div class="field" id="field-param" style="display:none">
+				<label for="param-key">参数</label>
+				<select id="param-key">
+					<option value="proposeThreshold">proposeThreshold（提案门槛，点）</option>
+					<option value="votingPeriodMs">votingPeriodMs（投票期，毫秒）</option>
+					<option value="quorumBps">quorumBps（法定人数，基点 2000=20%）</option>
+					<option value="pointsPerYuan">pointsPerYuan（资金折算率，¥1=N 点）</option>
+				</select>
+				<input type="number" id="param-value" min="0" step="any" placeholder="新值" style="margin-top:0.5em" />
+			</div>
+			<div class="field">
+				<label for="title">标题（≤80 字）</label>
+				<input type="text" id="title" maxlength="80" />
+			</div>
+			<div class="field">
+				<label for="body">正文（≤5000 字）</label>
+				<textarea id="body" rows="8" maxlength="5000" placeholder="说明提案的背景、理由与预期效果"></textarea>
+			</div>
+			<button class="submit-btn" id="submit-btn" disabled>签名并提交提案</button>
+			<div class="result" id="result"></div>
+		</div>
+	</main>
+
+	<script>
+		import { replay, proposeMessage, b64urlFromBytes } from '../../lib/dao-core';
+		import type { ChainRecord } from '../../lib/dao-core';
+
+		const $ = (id: string) => document.getElementById(id) as HTMLElement;
+		const input = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+		let threshold = 0;
+		let state: ReturnType<typeof replay> | null = null;
+
+		function escapeHtml(s: unknown): string {
+			return String(s ?? '')
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+		}
+		function fmtPts(n: number): string {
+			return Number.isInteger(n) ? String(n) : n.toFixed(2);
+		}
+		function listIdentities(): string[] {
+			const out: string[] = [];
+			try {
+				for (let i = 0; i < localStorage.length; i++) {
+					const k = localStorage.key(i);
+					if (k && k.startsWith('dao:key:')) out.push(k.slice('dao:key:'.length));
+				}
+			} catch {}
+			return out;
+		}
+		async function signMessage(privJwk: JsonWebKey, msg: string): Promise<string> {
+			const key = await crypto.subtle.importKey(
+				'jwk',
+				privJwk,
+				{ name: 'ECDSA', namedCurve: 'P-256' },
+				false,
+				['sign'],
+			);
+			const buf = await crypto.subtle.sign(
+				{ name: 'ECDSA', hash: 'SHA-256' },
+				key,
+				new TextEncoder().encode(msg),
+			);
+			return b64urlFromBytes(new Uint8Array(buf));
+		}
+		function show(msg: string, ok: boolean) {
+			const el = $('result');
+			el.textContent = msg;
+			el.className = 'result ' + (ok ? 'ok' : 'err');
+		}
+
+		function updateGate() {
+			const gate = $('gate');
+			const btn = $('submit-btn') as HTMLButtonElement;
+			const handle = input('identity').value;
+			if (!state) return;
+			if (!handle) {
+				gate.textContent = '⚠️ 本机没有可用身份，请先到 /dao/join 生成密钥并申请成为成员。';
+				gate.className = 'gate bad';
+				btn.disabled = true;
+				return;
+			}
+			const m = state.members[handle];
+			if (!m || m.removed) {
+				gate.textContent = '⚠️ ' + handle + ' 不是在册成员，无法发起提案。';
+				gate.className = 'gate bad';
+				btn.disabled = true;
+				return;
+			}
+			const pts = state.points[handle] || { total: 0, money: 0, labor: 0 };
+			if (pts.total < threshold) {
+				gate.textContent = `⚠️ 当前提案门槛为 ${fmtPts(threshold)} 点，你的贡献点为 ${fmtPts(pts.total)}，暂不能发起提案。`;
+				gate.className = 'gate bad';
+				btn.disabled = true;
+				return;
+			}
+			gate.textContent = `当前提案门槛 ${fmtPts(threshold)} 点 · 我的贡献点 ${fmtPts(pts.total)}，可以发起。`;
+			gate.className = 'gate';
+			btn.disabled = false;
+		}
+
+		function updateTypeFields() {
+			const t = input('ptype').value;
+			$('field-amount').style.display = t === 'spend' ? 'block' : 'none';
+			$('field-recipient').style.display = t === 'spend' ? 'block' : 'none';
+			$('field-param').style.display = t === 'param' ? 'block' : 'none';
+		}
+
+		async function init() {
+			const ids = listIdentities();
+			$('identity').innerHTML = ids.length
+				? ids.map((h) => `<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`).join('')
+				: '<option value="">（本机无身份）</option>';
+			input('ptype').addEventListener('change', updateTypeFields);
+			input('identity').addEventListener('change', updateGate);
+			updateTypeFields();
+
+			try {
+				const resp = await fetch('/api/ledger/list');
+				const data = await resp.json();
+				const records: ChainRecord[] = data.records || [];
+				state = replay(records);
+				threshold = state.params.proposeThreshold;
+			} catch {
+				$('gate').textContent = '❌ 链数据加载失败，请刷新重试。';
+				return;
+			}
+			updateGate();
+		}
+
+		$('submit-btn').addEventListener('click', async () => {
+			if (!state) return;
+			const btn = $('submit-btn') as HTMLButtonElement;
+			const proposer = input('identity').value;
+			const ptype = input('ptype').value;
+			const title = input('title').value.trim();
+			const body = ($('body') as HTMLTextAreaElement).value.trim();
+
+			if (!title || title.length > 80) {
+				show('标题必填且不超过 80 字。', false);
+				return;
+			}
+			if (!body || body.length > 5000) {
+				show('正文必填且不超过 5000 字。', false);
+				return;
+			}
+
+			// 构造签名负载：可选字段为空时整个省略，两端 stableStringify 才能一致
+			const payload: Record<string, unknown> = { ptype, title, body };
+			if (ptype === 'spend') {
+				const amount = Number(input('amount').value);
+				const recipient = input('recipient').value.trim();
+				if (!Number.isFinite(amount) || amount <= 0) {
+					show('支出金额必须是正数。', false);
+					return;
+				}
+				if (!recipient) {
+					show('请填写收款方。', false);
+					return;
+				}
+				payload.amount = amount.toFixed(2);
+				payload.recipient = recipient;
+			} else if (ptype === 'param') {
+				const key = input('param-key').value;
+				const val = Number(input('param-value').value);
+				if (!Number.isFinite(val) || val < 0) {
+					show('参数新值必须是非负数字。', false);
+					return;
+				}
+				payload.paramPatch = { [key]: val };
+			}
+
+			let privJwk: JsonWebKey;
+			try {
+				privJwk = JSON.parse(localStorage.getItem('dao:key:' + proposer) || '');
+			} catch {
+				show('本机找不到该身份的私钥，请先到加入页导入。', false);
+				return;
+			}
+
+			btn.disabled = true;
+			try {
+				// 取最新链头后立刻签名提交
+				const resp = await fetch('/api/ledger/list');
+				const fresh = await resp.json();
+				const headHash: string = fresh.head && fresh.head.hash;
+				if (!headHash) throw new Error('取不到链头哈希');
+				const sig = await signMessage(privJwk, proposeMessage(headHash, payload));
+				const pr = await fetch('/api/dao/propose', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ payload, proposer, headHash, sig }),
+				});
+				const pdata = await pr.json().catch(() => ({}));
+				if (pr.status === 409) {
+					show('⚠️ 链已有新记录，请重新点击提交（会重新取链头签名）。', false);
+					return;
+				}
+				if (!pr.ok) throw new Error((pdata as any).error || '提交失败（HTTP ' + pr.status + '）');
+				show('✅ 提案已上链，正在跳转…', true);
+				location.href = '/dao/proposal?pid=' + encodeURIComponent(String((pdata as any).pid));
+			} catch (err) {
+				show((err as Error).message || '提交失败。', false);
+			} finally {
+				btn.disabled = false;
+			}
+		});
+
+		init();
+	</script>
+</BaseLayout>

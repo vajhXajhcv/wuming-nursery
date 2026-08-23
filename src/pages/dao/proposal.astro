@@ -1,0 +1,537 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `提案详情 - ${SITE_TITLE}`;
+const description = '无名苗圃共同体治理提案详情与投票。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			--c-ok: #16a34a;
+			--c-err: #dc2626;
+		}
+		[data-theme='dark'] main {
+			--c-ok: #4ade80;
+			--c-err: #f87171;
+		}
+		.back {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			text-decoration: none;
+		}
+		.back:hover {
+			color: var(--accent);
+		}
+		.panel {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.3em 1.5em;
+			margin: 1em 0;
+		}
+		.prop-head {
+			display: flex;
+			align-items: baseline;
+			gap: 0.6em;
+			flex-wrap: wrap;
+		}
+		.prop-head h1 {
+			font-size: 1.3em;
+			margin: 0;
+		}
+		.pid {
+			color: var(--text-secondary);
+			font-variant-numeric: tabular-nums;
+		}
+		.badge {
+			font-size: 0.72em;
+			padding: 0.1em 0.6em;
+			border-radius: 999px;
+			background: var(--accent-soft);
+			color: var(--accent);
+			white-space: nowrap;
+		}
+		.badge.st-active {
+			background: var(--accent);
+			color: white;
+		}
+		.meta-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 0.7em;
+			margin: 1em 0;
+			font-size: 0.88em;
+		}
+		.meta-item .k {
+			font-size: 0.78em;
+			color: var(--text-secondary);
+		}
+		.meta-item .v {
+			font-weight: 600;
+			word-break: break-all;
+		}
+		.body-text {
+			white-space: pre-wrap;
+			word-break: break-word;
+			font-size: 0.92em;
+			line-height: 1.8;
+			border-top: 1px solid var(--border);
+			padding-top: 1em;
+		}
+		.vote-bar {
+			height: 10px;
+			border-radius: 5px;
+			background: var(--border);
+			overflow: hidden;
+			display: flex;
+			margin: 0.6em 0;
+		}
+		.vote-bar .for {
+			background: var(--c-ok);
+		}
+		.vote-bar .against {
+			background: var(--c-err);
+		}
+		.vote-bar .abstain {
+			background: var(--text-secondary);
+		}
+		.tally-nums {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+			gap: 0.7em;
+			font-size: 0.88em;
+		}
+		.tally-nums .k {
+			font-size: 0.78em;
+			color: var(--text-secondary);
+		}
+		.tally-nums .v {
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+		}
+		.verdict {
+			margin-top: 0.8em;
+			font-weight: 600;
+			font-size: 0.92em;
+		}
+		.verdict.ok {
+			color: var(--c-ok);
+		}
+		.verdict.bad {
+			color: var(--c-err);
+		}
+		.receipt {
+			margin-top: 0.8em;
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			background: var(--accent-soft);
+			font-size: 0.88em;
+		}
+		.vote-area .btn-row {
+			display: flex;
+			gap: 0.7em;
+			flex-wrap: wrap;
+			margin-top: 0.8em;
+		}
+		.vote-btn {
+			padding: 0.55em 1.6em;
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			background: transparent;
+			color: var(--text);
+			font-size: 0.95em;
+			font-weight: 600;
+			cursor: pointer;
+		}
+		.vote-btn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+		.vote-btn.for {
+			border-color: var(--c-ok);
+			color: var(--c-ok);
+		}
+		.vote-btn.against {
+			border-color: var(--c-err);
+			color: var(--c-err);
+		}
+		.field label {
+			display: block;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.3em;
+		}
+		.field select {
+			width: 100%;
+			max-width: 320px;
+			padding: 0.55em 0.8em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg);
+			color: var(--text);
+			font-size: 0.95em;
+			font-family: inherit;
+		}
+		.result {
+			margin-top: 0.8em;
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			font-size: 0.88em;
+			display: none;
+			word-break: break-all;
+		}
+		.result.ok {
+			display: block;
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+		.result.err {
+			display: block;
+			background: rgba(220, 38, 38, 0.08);
+			color: var(--c-err);
+		}
+		.table-wrapper {
+			overflow-x: auto;
+		}
+		.vote-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.86em;
+		}
+		.vote-table th,
+		.vote-table td {
+			border-bottom: 1px solid var(--border);
+			padding: 0.55em 0.7em;
+			text-align: left;
+			white-space: nowrap;
+		}
+		.vote-table th {
+			color: var(--text-secondary);
+			font-weight: 600;
+			font-size: 0.85em;
+		}
+		.invalid-vote td {
+			color: var(--text-secondary);
+		}
+		.muted {
+			color: var(--text-secondary);
+			font-size: 0.88em;
+		}
+	</style>
+	<main>
+		<p><a class="back" href="/dao/proposals">← 返回提案列表</a></p>
+		<div id="app" class="muted">加载中…</div>
+	</main>
+
+	<script>
+		import {
+			replay,
+			tally,
+			proposalStatus,
+			pointsAt,
+			voteMessage,
+			verifyMemberSignature,
+			b64urlFromBytes,
+		} from '../../lib/dao-core';
+		import type { ChainRecord, ChainHead, DaoState, ProposalState, VoteChoice } from '../../lib/dao-core';
+
+		const PTYPE_LABEL: Record<string, string> = { spend: '支出', text: '文本', param: '参数' };
+		const STATUS_LABEL: Record<string, string> = {
+			active: '投票中',
+			expired: '待关闭',
+			passed: '已通过',
+			rejected: '已拒绝',
+			executed: '已执行',
+		};
+		const CHOICE_LABEL: Record<string, string> = { for: '赞成', against: '反对', abstain: '弃权' };
+		const PARAM_LABEL: Record<string, string> = {
+			proposeThreshold: '提案门槛',
+			votingPeriodMs: '投票期',
+			quorumBps: '法定人数',
+			pointsPerYuan: '资金折算率（¥1 = N 点）',
+		};
+
+		function escapeHtml(s: unknown): string {
+			return String(s ?? '')
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+		}
+		function fmtTime(ts: number): string {
+			const d = new Date(ts);
+			const p = (n: number) => String(n).padStart(2, '0');
+			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+		}
+		function fmtPts(n: number): string {
+			return Number.isInteger(n) ? String(n) : n.toFixed(2);
+		}
+		function fmtParam(key: string, v: unknown): string {
+			if (key === 'votingPeriodMs') return Number(v) / (24 * 3600 * 1000) + ' 天';
+			if (key === 'quorumBps') return Number(v) / 100 + '%';
+			return String(v);
+		}
+		function listIdentities(): string[] {
+			const out: string[] = [];
+			try {
+				for (let i = 0; i < localStorage.length; i++) {
+					const k = localStorage.key(i);
+					if (k && k.startsWith('dao:key:')) out.push(k.slice('dao:key:'.length));
+				}
+			} catch {}
+			return out;
+		}
+		async function signMessage(privJwk: JsonWebKey, msg: string): Promise<string> {
+			const key = await crypto.subtle.importKey(
+				'jwk',
+				privJwk,
+				{ name: 'ECDSA', namedCurve: 'P-256' },
+				false,
+				['sign'],
+			);
+			const buf = await crypto.subtle.sign(
+				{ name: 'ECDSA', hash: 'SHA-256' },
+				key,
+				new TextEncoder().encode(msg),
+			);
+			return b64urlFromBytes(new Uint8Array(buf));
+		}
+
+		const pid = Number(new URLSearchParams(location.search).get('pid'));
+		const app = document.getElementById('app') as HTMLElement;
+
+		let records: ChainRecord[] = [];
+		let head: ChainHead | null = null;
+		let state: DaoState | null = null;
+		let prop: ProposalState | null = null;
+
+		async function load() {
+			let data: any;
+			try {
+				const resp = await fetch('/api/ledger/list');
+				data = await resp.json();
+			} catch {
+				app.textContent = '加载失败，请刷新重试。';
+				return false;
+			}
+			records = data.records || [];
+			head = data.head || null;
+			state = replay(records);
+			prop = state.proposals[pid] || null;
+			if (!prop) {
+				app.innerHTML = '<p class="muted">未找到提案 #' + escapeHtml(pid) + '。</p>';
+				return false;
+			}
+			return true;
+		}
+
+		async function render() {
+			if (!state || !prop) return;
+			const now = Date.now();
+			const status = proposalStatus(prop, now);
+			const t = tally(records, prop);
+			const d = prop.data;
+
+			const denom = t.turnout || 1;
+			const forW = (t.for / denom) * 100;
+			const againstW = (t.against / denom) * 100;
+			const abstainW = (t.abstain / denom) * 100;
+			const turnoutPct = t.totalWeight > 0 ? ((t.turnout / t.totalWeight) * 100).toFixed(1) : '0.0';
+
+			let metaHtml =
+				`<div class="meta-item"><div class="k">发起人</div><div class="v">${escapeHtml(d.proposer)}</div></div>` +
+				`<div class="meta-item"><div class="k">发起时间</div><div class="v">${fmtTime(prop.ts)}</div></div>` +
+				`<div class="meta-item"><div class="k">截止时间</div><div class="v">${fmtTime(d.deadline)}</div></div>` +
+				`<div class="meta-item"><div class="k">法定人数快照</div><div class="v">${d.quorumBps / 100}%</div></div>`;
+			if (d.ptype === 'spend') {
+				metaHtml +=
+					`<div class="meta-item"><div class="k">支出金额</div><div class="v">¥${escapeHtml(d.amount)}</div></div>` +
+					`<div class="meta-item"><div class="k">收款方</div><div class="v">${escapeHtml(d.recipient)}</div></div>`;
+			}
+			if (d.ptype === 'param' && d.paramPatch) {
+				metaHtml += `<div class="meta-item"><div class="k">参数变更</div><div class="v">` +
+					Object.entries(d.paramPatch)
+						.map(([k, v]) => `${escapeHtml(PARAM_LABEL[k] || k)} → ${escapeHtml(fmtParam(k, v))}`)
+						.join('<br>') +
+					`</div></div>`;
+			}
+
+			let receiptHtml = '';
+			if (prop.resolution) {
+				const r = prop.resolution;
+				receiptHtml +=
+					`<div class="receipt">📜 已关闭计票（链上 #${r.seq}）：${r.outcome === 'passed' ? '通过' : '拒绝'}。` +
+					`赞成 ${fmtPts(r.for)} / 反对 ${fmtPts(r.against)} / 弃权 ${fmtPts(r.abstain)}，` +
+					`参与 ${fmtPts(r.turnout)} / 总权重 ${fmtPts(r.totalWeight)}，法定人数${r.quorumReached ? '达成' : '未达成'}。</div>`;
+			}
+			if (prop.execution) {
+				receiptHtml +=
+					`<div class="receipt">💸 已执行（链上 #${prop.execution.seq}）：对应` +
+					`<a href="/ledger">公开账本</a>支出记录 #${prop.execution.ledgerSeq}。</div>`;
+			}
+
+			let voteAreaHtml = '';
+			if (status === 'active') {
+				const ids = listIdentities();
+				voteAreaHtml =
+					`<div class="panel vote-area"><h2>投票</h2>` +
+					(ids.length
+						? `<div class="field"><label for="identity">选择本机身份</label>` +
+							`<select id="identity">${ids.map((h) => `<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`).join('')}</select>` +
+							`<div class="muted" id="id-hint" style="margin-top:0.4em"></div></div>` +
+							`<div class="btn-row">` +
+							`<button class="vote-btn for" data-choice="for">赞成</button>` +
+							`<button class="vote-btn against" data-choice="against">反对</button>` +
+							`<button class="vote-btn" data-choice="abstain">弃权</button>` +
+							`</div><div class="result" id="vote-result"></div>`
+						: `<p class="muted">本机没有可用身份。请先到 <a href="/dao/join">加入页</a> 生成密钥并申请成为成员，或导入已有私钥。</p>`) +
+					`</div>`;
+			}
+
+			// 投票记录（逐条浏览器验签）
+			const voteRows = await Promise.all(
+				prop.votes.map(async (v) => {
+					const rec = records.find((r) => r.seq === v.seq);
+					const member = state!.members[v.handle];
+					let sigOk = false;
+					if (rec && member) {
+						sigOk = await verifyMemberSignature(
+							member.pubkey,
+							voteMessage(rec.prev, v.pid, v.choice),
+							v.sig,
+						);
+					}
+					return { v, sigOk };
+				}),
+			);
+			const votesHtml = voteRows.length
+				? `<div class="table-wrapper"><table class="vote-table"><thead><tr><th>成员</th><th>选择</th><th>权重</th><th>签名</th><th>状态</th></tr></thead><tbody>` +
+					voteRows
+						.map(
+							({ v, sigOk }) =>
+								`<tr class="${v.valid ? '' : 'invalid-vote'}"><td>${escapeHtml(v.handle)}</td>` +
+								`<td>${CHOICE_LABEL[v.choice] || escapeHtml(v.choice)}</td>` +
+								`<td>${fmtPts(v.weight)}</td>` +
+								`<td>${sigOk ? '✅ 有效' : '❌ 无效'}</td>` +
+								`<td>${v.valid ? '计入' : '无效（不计入）'}</td></tr>`,
+						)
+						.join('') +
+					`</tbody></table></div>`
+				: '<p class="muted">暂无投票记录。</p>';
+
+			app.classList.remove('muted');
+			app.innerHTML =
+				`<div class="panel">` +
+				`<div class="prop-head"><span class="pid">#${prop.pid}</span>` +
+				`<span class="badge">${PTYPE_LABEL[d.ptype] || escapeHtml(d.ptype)}</span>` +
+				`<span class="badge ${status === 'active' ? 'st-active' : ''}">${STATUS_LABEL[status]}</span>` +
+				`<h1>${escapeHtml(d.title)}</h1></div>` +
+				`<div class="meta-grid">${metaHtml}</div>` +
+				`<div class="body-text">${escapeHtml(d.body)}</div>` +
+				`</div>` +
+				`<div class="panel"><h2>计票</h2>` +
+				`<div class="vote-bar"><div class="for" style="width:${forW}%"></div><div class="against" style="width:${againstW}%"></div><div class="abstain" style="width:${abstainW}%"></div></div>` +
+				`<div class="tally-nums">` +
+				`<div><div class="k">赞成</div><div class="v">${fmtPts(t.for)}</div></div>` +
+				`<div><div class="k">反对</div><div class="v">${fmtPts(t.against)}</div></div>` +
+				`<div><div class="k">弃权</div><div class="v">${fmtPts(t.abstain)}</div></div>` +
+				`<div><div class="k">参与率</div><div class="v">${turnoutPct}%</div></div>` +
+				`<div><div class="k">法定人数</div><div class="v">${t.quorumReached ? '已达成' : '未达成'}</div></div>` +
+				`</div>` +
+				`<div class="verdict ${t.passed ? 'ok' : 'bad'}">当前计票：${t.passed ? '通过' : '不通过'}（权重按提案高度 #${prop.pid} 快照）</div>` +
+				receiptHtml +
+				`</div>` +
+				voteAreaHtml +
+				`<div class="panel"><h2>投票记录（${prop.votes.length}）</h2>${votesHtml}</div>`;
+
+			if (status === 'active') bindVoteArea();
+		}
+
+		function bindVoteArea() {
+			const sel = document.getElementById('identity') as HTMLSelectElement | null;
+			const hint = document.getElementById('id-hint');
+			if (!sel || !state || !prop) return;
+
+			const updateHint = () => {
+				if (!hint || !state || !prop) return;
+				const handle = sel.value;
+				const m = state.members[handle];
+				if (!m || m.removed) {
+					hint.textContent = '⚠️ 该身份不在在册成员名单里，服务端会拒绝其投票。';
+					return;
+				}
+				const w = pointsAt(records, prop.pid, handle).total;
+				const voted = prop.votes.some((v) => v.handle === handle && v.valid);
+				hint.textContent = `快照权重 ${fmtPts(w)} 点` + (voted ? ' · 已投过票' : '');
+			};
+			sel.addEventListener('change', updateHint);
+			updateHint();
+
+			document.querySelectorAll('.vote-btn').forEach((btn) => {
+				btn.addEventListener('click', async () => {
+					if (!prop || !state) return;
+					const choice = (btn as HTMLElement).dataset.choice as VoteChoice;
+					const handle = sel.value;
+					const result = document.getElementById('vote-result') as HTMLElement;
+					const show = (msg: string, ok: boolean) => {
+						result.textContent = msg;
+						result.className = 'result ' + (ok ? 'ok' : 'err');
+					};
+					let privJwk: JsonWebKey;
+					try {
+						privJwk = JSON.parse(localStorage.getItem('dao:key:' + handle) || '');
+					} catch {
+						show('本机找不到该身份的私钥，请先到加入页导入。', false);
+						return;
+					}
+					document.querySelectorAll('.vote-btn').forEach((b) => ((b as HTMLButtonElement).disabled = true));
+					try {
+						// 投票前取最新链头，最大化签名通过率
+						const resp = await fetch('/api/ledger/list');
+						const fresh = await resp.json();
+						const headHash: string = (fresh.head && fresh.head.hash) || (head && head.hash) || '';
+						if (!headHash) throw new Error('取不到链头哈希');
+						const sig = await signMessage(privJwk, voteMessage(headHash, prop.pid, choice));
+						const vr = await fetch('/api/dao/vote', {
+							method: 'POST',
+							headers: { 'content-type': 'application/json' },
+							body: JSON.stringify({ pid: prop.pid, handle, choice, headHash, sig }),
+						});
+						const vdata = await vr.json().catch(() => ({}));
+						if (vr.status === 409) {
+							await load();
+							await render();
+							const r2 = document.getElementById('vote-result') as HTMLElement | null;
+							if (r2) {
+								r2.textContent = '⚠️ 链已有新记录，数据已刷新，请再点一次投票。';
+								r2.className = 'result err';
+							}
+							return;
+						}
+						if (!vr.ok) throw new Error((vdata as any).error || '投票失败（HTTP ' + vr.status + '）');
+						show('✅ 投票已上链，正在刷新…', true);
+						await load();
+						await render();
+					} catch (err) {
+						show((err as Error).message || '投票失败。', false);
+						document
+							.querySelectorAll('.vote-btn')
+							.forEach((b) => ((b as HTMLButtonElement).disabled = false));
+					}
+				});
+			});
+		}
+
+		async function init() {
+			if (!Number.isFinite(pid) || pid <= 0) {
+				app.textContent = '链接缺少有效的 pid 参数。';
+				return;
+			}
+			if (await load()) await render();
+		}
+
+		init();
+	</script>
+</BaseLayout>

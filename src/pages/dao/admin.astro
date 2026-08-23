@@ -1,0 +1,586 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `DAO 控制台 - ${SITE_TITLE}`;
+const description = '创始人控制台（需要管理令牌）。';
+---
+
+<BaseLayout title={title} description={description} draft={true}>
+	<style>
+		main {
+			--c-ok: #16a34a;
+			--c-err: #dc2626;
+		}
+		[data-theme='dark'] main {
+			--c-ok: #4ade80;
+			--c-err: #f87171;
+		}
+		.page-header {
+			margin-bottom: 1.5em;
+		}
+		.page-header h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.page-header p {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			margin: 0;
+		}
+		.panel {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.3em 1.5em;
+			margin-bottom: 1.2em;
+		}
+		.panel h2 {
+			font-size: 1.05em;
+			margin: 0 0 0.8em;
+		}
+		.field {
+			margin-bottom: 1em;
+		}
+		.field label {
+			display: block;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.3em;
+		}
+		.field input,
+		.field select,
+		.field textarea {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0.55em 0.8em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg);
+			color: var(--text);
+			font-size: 0.95em;
+			font-family: inherit;
+		}
+		.field input:focus,
+		.field select:focus,
+		.field textarea:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 1em;
+		}
+		@media (max-width: 720px) {
+			.row {
+				grid-template-columns: 1fr;
+			}
+		}
+		.btn {
+			padding: 0.55em 1.3em;
+			border: none;
+			border-radius: var(--radius-md);
+			background: var(--accent);
+			color: white;
+			font-size: 0.9em;
+			font-weight: 600;
+			cursor: pointer;
+			min-height: 40px;
+		}
+		.btn:hover {
+			background: var(--accent-dark);
+		}
+		.btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		.btn.sm {
+			padding: 0.35em 1em;
+			font-size: 0.82em;
+			min-height: 0;
+		}
+		.btn.danger {
+			background: transparent;
+			color: var(--c-err);
+			border: 1px solid var(--c-err);
+		}
+		.btn.secondary {
+			background: transparent;
+			color: var(--text);
+			border: 1px solid var(--border);
+		}
+		.btn.secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.result {
+			margin-top: 0.8em;
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			font-size: 0.85em;
+			display: none;
+			word-break: break-all;
+		}
+		.result.ok {
+			display: block;
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+		.result.err {
+			display: block;
+			background: rgba(220, 38, 38, 0.08);
+			color: var(--c-err);
+		}
+		.pending-row,
+		.action-row {
+			display: flex;
+			align-items: center;
+			gap: 0.8em;
+			flex-wrap: wrap;
+			padding: 0.55em 0;
+			border-bottom: 1px dashed var(--border);
+			font-size: 0.88em;
+		}
+		.pending-row:last-child,
+		.action-row:last-child {
+			border-bottom: none;
+		}
+		.pending-row .grow,
+		.action-row .grow {
+			flex: 1;
+			min-width: 12em;
+		}
+		.mono {
+			font-family: monospace;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+		}
+		.muted {
+			color: var(--text-secondary);
+			font-size: 0.85em;
+		}
+	</style>
+	<main>
+		<div class="page-header">
+			<h1>DAO 控制台</h1>
+			<p>创始人专用。所有写操作都走带 ADMIN_TOKEN 的 API，结果即时上链。</p>
+		</div>
+
+		<section class="panel">
+			<h2>管理令牌</h2>
+			<div class="field">
+				<label for="admin-token">ADMIN_TOKEN（与账本录入页共用）</label>
+				<input type="password" id="admin-token" placeholder="ADMIN_TOKEN" />
+			</div>
+			<button class="btn secondary" id="refresh-btn">刷新链数据</button>
+			<span class="muted" id="chain-info" style="margin-left:0.8em"></span>
+		</section>
+
+		<section class="panel">
+			<h2>1 · 待审成员</h2>
+			<div id="pending-list" class="muted">输入令牌后点击「刷新链数据」。</div>
+			<div class="result" id="member-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>2 · 移除成员</h2>
+			<div class="field">
+				<label for="remove-handle">handle</label>
+				<input type="text" id="remove-handle" placeholder="要移除的成员 handle" />
+			</div>
+			<button class="btn danger" id="remove-btn">移除成员</button>
+		</section>
+
+		<section class="panel">
+			<h2>3 · 录入贡献</h2>
+			<div class="row">
+				<div class="field">
+					<label for="c-handle">handle</label>
+					<input type="text" id="c-handle" />
+				</div>
+				<div class="field">
+					<label for="c-kind">类型</label>
+					<select id="c-kind">
+						<option value="money">money（资金）</option>
+						<option value="article">article（文章）</option>
+						<option value="code">code（代码）</option>
+						<option value="translation">translation（翻译）</option>
+						<option value="design">design（设计）</option>
+						<option value="ops">ops（运营）</option>
+						<option value="other">other（其他）</option>
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="field">
+					<label for="c-points">贡献点</label>
+					<input type="number" id="c-points" min="0.01" step="any" />
+				</div>
+				<div class="field">
+					<label for="c-ref">交叉引用 ref</label>
+					<input type="text" id="c-ref" placeholder="kind=money 时填 ledger#<seq>" />
+				</div>
+			</div>
+			<div class="field">
+				<label for="c-evidence">依据 evidence（链接或说明，可选）</label>
+				<input type="text" id="c-evidence" />
+			</div>
+			<button class="btn" id="c-btn">上链核定</button>
+			<div class="result" id="c-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>4 · 关闭提案（已过投票期）</h2>
+			<div id="close-list" class="muted">加载链数据后显示。</div>
+			<div class="result" id="close-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>5 · 执行支出（已通过且未执行）</h2>
+			<div id="execute-list" class="muted">加载链数据后显示。</div>
+			<div class="result" id="execute-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>6 · 参数变更（留空 = 不改）</h2>
+			<div class="row">
+				<div class="field">
+					<label for="p-threshold">proposeThreshold（提案门槛）</label>
+					<input type="number" id="p-threshold" min="0" step="any" />
+				</div>
+				<div class="field">
+					<label for="p-period">votingPeriodMs（投票期，毫秒）</label>
+					<input type="number" id="p-period" min="0" step="any" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="field">
+					<label for="p-quorum">quorumBps（法定人数，基点）</label>
+					<input type="number" id="p-quorum" min="0" step="any" />
+				</div>
+				<div class="field">
+					<label for="p-ppy">pointsPerYuan（资金折算率）</label>
+					<input type="number" id="p-ppy" min="0" step="any" />
+				</div>
+			</div>
+			<button class="btn" id="p-btn">提交参数变更</button>
+			<div class="result" id="p-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>7 · 锚定登记</h2>
+			<p class="muted">一般由 scripts/anchor-ots.mjs 自动调用；此处供手工补登记。</p>
+			<div class="row">
+				<div class="field">
+					<label for="a-seq">anchoredSeq（被锚定的链高）</label>
+					<input type="number" id="a-seq" min="0" step="1" />
+				</div>
+				<div class="field">
+					<label for="a-file">otsFile（证明文件名）</label>
+					<input type="text" id="a-file" placeholder="如 head-123.ots" />
+				</div>
+			</div>
+			<div class="field">
+				<label for="a-hash">anchoredHash（该高度的记录哈希）</label>
+				<input type="text" id="a-hash" />
+			</div>
+			<button class="btn" id="a-btn">登记锚定</button>
+			<div class="result" id="a-result"></div>
+		</section>
+	</main>
+
+	<script>
+		import { replay, proposalStatus } from '../../lib/dao-core';
+		import type { ChainRecord, DaoState } from '../../lib/dao-core';
+
+		const $ = (id: string) => document.getElementById(id) as HTMLElement;
+		const input = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+		function escapeHtml(s: unknown): string {
+			return String(s ?? '')
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+		}
+		function fmtTime(ts: number): string {
+			const d = new Date(ts);
+			const p = (n: number) => String(n).padStart(2, '0');
+			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+		}
+		function fmtPts(n: number): string {
+			return Number.isInteger(n) ? String(n) : n.toFixed(2);
+		}
+		function show(id: string, msg: string, ok: boolean) {
+			const el = $(id);
+			el.textContent = msg;
+			el.className = 'result ' + (ok ? 'ok' : 'err');
+		}
+
+		const tokenInput = input('admin-token');
+		try {
+			tokenInput.value = localStorage.getItem('ledger:admin-token') || '';
+		} catch {}
+
+		let records: ChainRecord[] = [];
+		let state: DaoState | null = null;
+
+		function token(): string {
+			return tokenInput.value.trim();
+		}
+
+		async function adminPost(path: string, body: unknown): Promise<any> {
+			const resp = await fetch(path, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + token() },
+				body: JSON.stringify(body),
+			});
+			const data = await resp.json().catch(() => ({}));
+			if (!resp.ok) throw new Error((data as any).error || 'HTTP ' + resp.status);
+			try {
+				localStorage.setItem('ledger:admin-token', token());
+			} catch {}
+			return data;
+		}
+
+		async function refresh() {
+			if (!token()) {
+				alert('请先输入管理令牌。');
+				return;
+			}
+			$('chain-info').textContent = '⏳ 加载中…';
+			try {
+				const resp = await fetch('/api/ledger/list');
+				const data = await resp.json();
+				records = data.records || [];
+				state = replay(records);
+				$('chain-info').textContent = `已加载 ${records.length} 条记录`;
+			} catch {
+				$('chain-info').textContent = '❌ 链数据加载失败';
+				return;
+			}
+			await Promise.all([renderPending(), renderClose(), renderExecute(), fillParams()]);
+		}
+
+		async function renderPending() {
+			const box = $('pending-list');
+			let list: any[] = [];
+			try {
+				const data = await adminPost('/api/dao/pending', {});
+				list = Array.isArray(data) ? data : data.pending || data.members || [];
+			} catch (err) {
+				box.innerHTML = '<span class="muted">待审列表获取失败：' + escapeHtml((err as Error).message) + '</span>';
+				return;
+			}
+			if (!list.length) {
+				box.innerHTML = '<span class="muted">暂无待审申请。</span>';
+				return;
+			}
+			box.classList.remove('muted');
+			box.innerHTML = list
+				.map((p) => {
+					const fp = String((p.pubkey && p.pubkey.x) || JSON.stringify(p.pubkey || '')).slice(0, 16);
+					return (
+						`<div class="pending-row"><span class="grow"><strong>${escapeHtml(p.handle)}</strong> ` +
+						`<span class="mono">${escapeHtml(fp)}…</span></span>` +
+						`<span class="muted">${p.ts ? fmtTime(p.ts) : ''}</span>` +
+						`<button class="btn sm" data-approve="${escapeHtml(p.handle)}">批准</button>` +
+						`<button class="btn sm danger" data-reject="${escapeHtml(p.handle)}">拒绝</button></div>`
+					);
+				})
+				.join('');
+			box.querySelectorAll('[data-approve]').forEach((b) =>
+				b.addEventListener('click', () => memberAction((b as HTMLElement).dataset.approve!, 'approve')),
+			);
+			box.querySelectorAll('[data-reject]').forEach((b) =>
+				b.addEventListener('click', () => memberAction((b as HTMLElement).dataset.reject!, 'reject')),
+			);
+		}
+
+		async function memberAction(handle: string, action: 'approve' | 'reject' | 'remove') {
+			try {
+				await adminPost('/api/dao/approve-member', { handle, action });
+				show('member-result', `✅ ${handle} ${action} 成功`, true);
+				await refresh();
+			} catch (err) {
+				show('member-result', (err as Error).message, false);
+			}
+		}
+
+		async function renderClose() {
+			const box = $('close-list');
+			if (!state) return;
+			const now = Date.now();
+			const list = Object.values(state.proposals)
+				.filter((p) => proposalStatus(p, now) === 'expired')
+				.sort((a, b) => a.pid - b.pid);
+			if (!list.length) {
+				box.innerHTML = '<span class="muted">没有待关闭的提案。</span>';
+				return;
+			}
+			box.classList.remove('muted');
+			box.innerHTML = list
+				.map(
+					(p) =>
+						`<div class="action-row"><span class="grow">#${p.pid} ${escapeHtml(p.data.title)}</span>` +
+						`<span class="muted">截止 ${fmtTime(p.data.deadline)}</span>` +
+						`<button class="btn sm" data-close="${p.pid}">关闭计票</button></div>`,
+				)
+				.join('');
+			box.querySelectorAll('[data-close]').forEach((b) =>
+				b.addEventListener('click', async () => {
+					const pid = Number((b as HTMLElement).dataset.close);
+					try {
+						await adminPost('/api/dao/close', { pid });
+						show('close-result', `✅ 提案 #${pid} 已关闭计票`, true);
+						await refresh();
+					} catch (err) {
+						show('close-result', (err as Error).message, false);
+					}
+				}),
+			);
+		}
+
+		async function renderExecute() {
+			const box = $('execute-list');
+			if (!state) return;
+			const list = Object.values(state.proposals)
+				.filter(
+					(p) =>
+						p.data.ptype === 'spend' &&
+						p.resolution &&
+						p.resolution.outcome === 'passed' &&
+						!p.execution,
+				)
+				.sort((a, b) => a.pid - b.pid);
+			if (!list.length) {
+				box.innerHTML = '<span class="muted">没有待执行的支出提案。</span>';
+				return;
+			}
+			box.classList.remove('muted');
+			box.innerHTML = list
+				.map(
+					(p) =>
+						`<div class="action-row"><span class="grow">#${p.pid} ${escapeHtml(p.data.title)}</span>` +
+						`<span class="muted">¥${escapeHtml(p.data.amount)} → ${escapeHtml(p.data.recipient)}</span>` +
+						`<button class="btn sm" data-execute="${p.pid}">执行支出</button></div>`,
+				)
+				.join('');
+			box.querySelectorAll('[data-execute]').forEach((b) =>
+				b.addEventListener('click', async () => {
+					const pid = Number((b as HTMLElement).dataset.execute);
+					const p = state!.proposals[pid];
+					if (
+						!confirm(`确认为提案 #${pid} 执行支出？\n金额：¥${p.data.amount}\n收款方：${p.data.recipient}`)
+					)
+						return;
+					try {
+						await adminPost('/api/dao/execute', { pid });
+						show('execute-result', `✅ 提案 #${pid} 已执行`, true);
+						await refresh();
+					} catch (err) {
+						show('execute-result', (err as Error).message, false);
+					}
+				}),
+			);
+		}
+
+		async function fillParams() {
+			if (!state) return;
+			input('p-threshold').placeholder = '当前 ' + fmtPts(state.params.proposeThreshold);
+			input('p-period').placeholder = '当前 ' + state.params.votingPeriodMs;
+			input('p-quorum').placeholder = '当前 ' + state.params.quorumBps;
+			input('p-ppy').placeholder = '当前 ' + state.params.pointsPerYuan;
+		}
+
+		$('refresh-btn').addEventListener('click', refresh);
+
+		$('remove-btn').addEventListener('click', async () => {
+			const handle = input('remove-handle').value.trim();
+			if (!handle) return;
+			if (!confirm(`确认移除成员 ${handle}？该操作会写入链上，不可撤销。`)) return;
+			await memberAction(handle, 'remove');
+		});
+
+		$('c-kind').addEventListener('change', () => {
+			if (input('c-kind').value === 'money' && !input('c-ref').value) {
+				input('c-ref').placeholder = 'kind=money 时填 ledger#<seq>';
+			}
+		});
+
+		$('c-btn').addEventListener('click', async () => {
+			const handle = input('c-handle').value.trim();
+			const kind = input('c-kind').value;
+			const points = Number(input('c-points').value);
+			const ref = input('c-ref').value.trim();
+			const evidence = input('c-evidence').value.trim();
+			if (!handle || !Number.isFinite(points) || points <= 0) {
+				show('c-result', 'handle 与正数贡献点必填。', false);
+				return;
+			}
+			if (kind === 'money' && !/^ledger#\d+$/.test(ref)) {
+				show('c-result', 'kind=money 时 ref 需为 ledger#<seq> 格式。', false);
+				return;
+			}
+			const body: Record<string, unknown> = { handle, kind, points };
+			if (ref) body.ref = ref;
+			if (evidence) body.evidence = evidence;
+			try {
+				await adminPost('/api/dao/contribution', body);
+				show('c-result', `✅ 已为 ${handle} 核定 ${fmtPts(points)} 点`, true);
+				await refresh();
+			} catch (err) {
+				show('c-result', (err as Error).message, false);
+			}
+		});
+
+		$('p-btn').addEventListener('click', async () => {
+			const patch: Record<string, number> = {};
+			const fields: [string, string][] = [
+				['p-threshold', 'proposeThreshold'],
+				['p-period', 'votingPeriodMs'],
+				['p-quorum', 'quorumBps'],
+				['p-ppy', 'pointsPerYuan'],
+			];
+			for (const [id, key] of fields) {
+				const raw = input(id).value.trim();
+				if (raw === '') continue;
+				const v = Number(raw);
+				if (!Number.isFinite(v) || v < 0) {
+					show('p-result', key + ' 必须是非负数字。', false);
+					return;
+				}
+				patch[key] = v;
+			}
+			if (!Object.keys(patch).length) {
+				show('p-result', '所有参数都留空，没有要改的内容。', false);
+				return;
+			}
+			try {
+				await adminPost('/api/dao/params', { patch });
+				show('p-result', '✅ 参数变更已上链：' + Object.keys(patch).join('、'), true);
+				await refresh();
+			} catch (err) {
+				show('p-result', (err as Error).message, false);
+			}
+		});
+
+		$('a-btn').addEventListener('click', async () => {
+			const anchoredSeq = Number(input('a-seq').value);
+			const anchoredHash = input('a-hash').value.trim();
+			const otsFile = input('a-file').value.trim();
+			if (!Number.isInteger(anchoredSeq) || anchoredSeq < 0 || !anchoredHash || !otsFile) {
+				show('a-result', 'anchoredSeq（非负整数）、anchoredHash、otsFile 均必填。', false);
+				return;
+			}
+			try {
+				await adminPost('/api/dao/anchor', { anchoredSeq, anchoredHash, otsFile });
+				show('a-result', `✅ 锚定已登记（链高 #${anchoredSeq}）`, true);
+				await refresh();
+			} catch (err) {
+				show('a-result', (err as Error).message, false);
+			}
+		});
+	</script>
+</BaseLayout>

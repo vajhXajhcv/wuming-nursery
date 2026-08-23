@@ -1,0 +1,367 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `加入共同体 - ${SITE_TITLE}`;
+const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃共同体成员。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			--c-ok: #16a34a;
+			--c-err: #dc2626;
+		}
+		[data-theme='dark'] main {
+			--c-ok: #4ade80;
+			--c-err: #f87171;
+		}
+		.page-header {
+			margin-bottom: 1.5em;
+		}
+		.page-header h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.page-header p {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			margin: 0;
+		}
+		.steps {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 0.8em;
+			margin-bottom: 1.5em;
+		}
+		.step {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1em 1.1em;
+		}
+		.step .n {
+			font-size: 1.4em;
+			font-weight: 700;
+			color: var(--accent);
+		}
+		.step .t {
+			font-weight: 600;
+			margin: 0.2em 0;
+		}
+		.step .d {
+			font-size: 0.82em;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+		.panel {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.4em 1.6em;
+			margin-bottom: 1.2em;
+		}
+		.panel h2 {
+			font-size: 1.05em;
+			margin: 0 0 0.8em;
+		}
+		.field {
+			margin-bottom: 1em;
+		}
+		.field label {
+			display: block;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.3em;
+		}
+		.field input,
+		.field textarea {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0.55em 0.8em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg);
+			color: var(--text);
+			font-size: 0.95em;
+			font-family: inherit;
+		}
+		.field textarea {
+			font-family: monospace;
+			font-size: 0.8em;
+		}
+		.field input:focus,
+		.field textarea:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.btn {
+			padding: 0.6em 1.4em;
+			border: none;
+			border-radius: var(--radius-md);
+			background: var(--accent);
+			color: white;
+			font-size: 0.95em;
+			font-weight: 600;
+			cursor: pointer;
+			min-height: 40px;
+		}
+		.btn:hover {
+			background: var(--accent-dark);
+		}
+		.btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		.btn.secondary {
+			background: transparent;
+			color: var(--text);
+			border: 1px solid var(--border);
+		}
+		.btn.secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.warn {
+			background: var(--accent-soft);
+			border-radius: var(--radius-md);
+			padding: 0.7em 1em;
+			font-size: 0.85em;
+			margin: 0.8em 0;
+			line-height: 1.7;
+		}
+		.key-out {
+			font-family: monospace;
+			font-size: 0.78em;
+			word-break: break-all;
+			background: var(--bg);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.7em 0.9em;
+			margin: 0.6em 0;
+		}
+		.result {
+			margin-top: 0.8em;
+			padding: 0.7em 1em;
+			border-radius: var(--radius-md);
+			font-size: 0.88em;
+			display: none;
+			word-break: break-all;
+		}
+		.result.ok {
+			display: block;
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+		.result.err {
+			display: block;
+			background: rgba(220, 38, 38, 0.08);
+			color: var(--c-err);
+		}
+		.muted {
+			color: var(--text-secondary);
+			font-size: 0.85em;
+		}
+	</style>
+	<main>
+		<div class="page-header">
+			<h1>加入共同体</h1>
+			<p>假名制成员：一个化名 + 一对 ECDSA P-256 密钥即身份。公钥上链，私钥只留在你自己手里。</p>
+		</div>
+
+		<div class="steps">
+			<div class="step">
+				<div class="n">1</div>
+				<div class="t">生成密钥</div>
+				<div class="d">在浏览器本地生成密钥对，私钥不会发送到任何服务器。</div>
+			</div>
+			<div class="step">
+				<div class="n">2</div>
+				<div class="t">备份私钥</div>
+				<div class="d">下载私钥文件妥善保存，丢失即失去身份，无法找回。</div>
+			</div>
+			<div class="step">
+				<div class="n">3</div>
+				<div class="t">提交申请</div>
+				<div class="d">填一个化名提交，创始人批准上链后即成为在册成员。</div>
+			</div>
+		</div>
+
+		<section class="panel">
+			<h2>第一步 · 生成我的密钥对</h2>
+			<button class="btn" id="gen-btn">生成我的密钥对</button>
+			<div id="key-area" style="display:none">
+				<p class="muted">公钥（将随申请提交并上链公示）：</p>
+				<div class="key-out" id="pubkey-out"></div>
+				<div class="warn">
+					⚠️ 请立即下载并妥善备份私钥。私钥只存在于你的浏览器里，<strong>丢失即失去这个身份</strong>，任何人（包括创始人）都无法帮你找回。
+				</div>
+				<button class="btn secondary" id="dl-btn">下载私钥（JSON）</button>
+			</div>
+		</section>
+
+		<section class="panel">
+			<h2>第二步 · 提交加入申请</h2>
+			<div class="field">
+				<label for="handle">化名 handle（2-24 字符，允许中英文、数字、_、-）</label>
+				<input type="text" id="handle" maxlength="24" placeholder="给自己起个化名" />
+			</div>
+			<button class="btn" id="apply-btn" disabled>提交申请</button>
+			<div class="result" id="apply-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>查询我的状态</h2>
+			<div class="field">
+				<label for="query-handle">化名 handle</label>
+				<input type="text" id="query-handle" maxlength="24" placeholder="输入申请时用的 handle" />
+			</div>
+			<button class="btn secondary" id="query-btn">查询状态</button>
+			<div class="result" id="query-result"></div>
+		</section>
+
+		<section class="panel">
+			<h2>导入私钥（换设备用）</h2>
+			<p class="muted">在新设备上投票前，把备份的私钥导入本机浏览器。私钥只存进 localStorage，不会上传。</p>
+			<div class="field">
+				<label for="import-handle">化名 handle</label>
+				<input type="text" id="import-handle" maxlength="24" />
+			</div>
+			<div class="field">
+				<label for="import-jwk">私钥 JWK（粘贴 JSON 全文）</label>
+				<textarea id="import-jwk" rows="4" placeholder='{"kty":"EC","crv":"P-256","x":"...","y":"...","d":"..."}'></textarea>
+			</div>
+			<button class="btn secondary" id="import-btn">导入本机</button>
+			<div class="result" id="import-result"></div>
+		</section>
+	</main>
+
+	<script>
+		import { replay } from '../../lib/dao-core';
+		import type { ChainRecord, EcPubJwk } from '../../lib/dao-core';
+
+		const $ = (id: string) => document.getElementById(id) as HTMLElement;
+		const input = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+		const HANDLE_RE = /^[一-龥A-Za-z0-9_-]{2,24}$/;
+
+		let generatedPub: EcPubJwk | null = null;
+		let generatedPriv: JsonWebKey | null = null;
+
+		function show(el: HTMLElement, msg: string, ok: boolean) {
+			el.textContent = msg;
+			el.className = 'result ' + (ok ? 'ok' : 'err');
+		}
+
+		$('gen-btn').addEventListener('click', async () => {
+			try {
+				const kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
+					'sign',
+					'verify',
+				]);
+				const pubJwk = await crypto.subtle.exportKey('jwk', kp.publicKey);
+				generatedPriv = await crypto.subtle.exportKey('jwk', kp.privateKey);
+				generatedPub = { kty: 'EC', crv: 'P-256', x: pubJwk.x!, y: pubJwk.y! };
+				$('pubkey-out').textContent = JSON.stringify(generatedPub, null, 2);
+				$('key-area').style.display = 'block';
+				($('apply-btn') as HTMLButtonElement).disabled = false;
+			} catch {
+				alert('当前浏览器不支持 WebCrypto 密钥生成，请换用现代浏览器。');
+			}
+		});
+
+		$('dl-btn').addEventListener('click', () => {
+			if (!generatedPriv) return;
+			const blob = new Blob([JSON.stringify(generatedPriv, null, 2)], { type: 'application/json' });
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(blob);
+			a.download = 'wuming-dao-private-key.json';
+			a.click();
+			URL.revokeObjectURL(a.href);
+		});
+
+		$('apply-btn').addEventListener('click', async () => {
+			const btn = $('apply-btn') as HTMLButtonElement;
+			const result = $('apply-result');
+			const handle = input('handle').value.trim();
+			if (!HANDLE_RE.test(handle)) {
+				show(result, 'handle 格式不对：2-24 字符，允许中英文、数字、_、-。', false);
+				return;
+			}
+			if (!generatedPub || !generatedPriv) {
+				show(result, '请先在第一步生成密钥对。', false);
+				return;
+			}
+			btn.disabled = true;
+			try {
+				const resp = await fetch('/api/dao/join', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ handle, pubkey: generatedPub }),
+				});
+				const data = await resp.json().catch(() => ({}));
+				if (!resp.ok) throw new Error((data as any).error || '提交失败（HTTP ' + resp.status + '）');
+				try {
+					localStorage.setItem('dao:key:' + handle, JSON.stringify(generatedPriv));
+				} catch {}
+				show(result, '✅ 申请已提交，请等待创始人批准。私钥已存入本机浏览器（dao:key:' + handle + '），并请务必下载备份。', true);
+			} catch (err) {
+				show(result, (err as Error).message || '提交失败。', false);
+			} finally {
+				btn.disabled = false;
+			}
+		});
+
+		$('query-btn').addEventListener('click', async () => {
+			const result = $('query-result');
+			const handle = input('query-handle').value.trim();
+			if (!handle) {
+				show(result, '请输入 handle。', false);
+				return;
+			}
+			show(result, '⏳ 正在本地重放链数据…', true);
+			try {
+				const resp = await fetch('/api/ledger/list');
+				const data = await resp.json();
+				const records: ChainRecord[] = data.records || [];
+				const state = replay(records);
+				const m = state.members[handle];
+				if (m && !m.removed) {
+					show(result, '✅ ' + handle + ' 已是在册成员（加入于链上 #' + m.joinedSeq + '）。', true);
+				} else if (m && m.removed) {
+					show(result, '该成员已被移除（链上 #' + m.removedSeq + '）。', false);
+				} else {
+					show(result, '链上还没有该成员记录：申请仍在等待创始人审核，或尚未提交。', false);
+				}
+			} catch {
+				show(result, '查询失败，请刷新重试。', false);
+			}
+		});
+
+		$('import-btn').addEventListener('click', () => {
+			const result = $('import-result');
+			const handle = input('import-handle').value.trim();
+			if (!HANDLE_RE.test(handle)) {
+				show(result, 'handle 格式不对。', false);
+				return;
+			}
+			let jwk: JsonWebKey;
+			try {
+				jwk = JSON.parse(input('import-jwk').value);
+			} catch {
+				show(result, '私钥 JSON 解析失败，请粘贴完整 JWK。', false);
+				return;
+			}
+			if (!jwk || jwk.kty !== 'EC' || jwk.crv !== 'P-256' || !jwk.d || !jwk.x || !jwk.y) {
+				show(result, '这不是有效的 ECDSA P-256 私钥 JWK（需要 kty/crv/x/y/d）。', false);
+				return;
+			}
+			try {
+				localStorage.setItem('dao:key:' + handle, JSON.stringify(jwk));
+				show(result, '✅ 已导入本机（dao:key:' + handle + '），现在可以在提案页用该身份投票了。', true);
+			} catch {
+				show(result, '写入 localStorage 失败。', false);
+			}
+		});
+	</script>
+</BaseLayout>

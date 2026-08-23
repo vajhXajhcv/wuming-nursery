@@ -11,17 +11,17 @@ const { lang = DEFAULT_LOCALE } = Astro.props;
 
 const dicts = {
 	zh: {
-		home: '首页', products: '产品', services: '服务', pricing: '定价', garden: '🌱 自留区', contact: '联系',
+		home: '首页', products: '产品', services: '服务', pricing: '定价', dao: 'DAO', garden: '🌱 自留区', contact: '联系',
 		tools: '工具总览', md2docx: '在线 Markdown 转 Word', formatter: 'docx-formatter-cn', docs: '使用文档',
 		blog: '写作', notes: '笔记', about: '关于我',
 	},
 	en: {
-		home: 'Home', products: 'Products', services: 'Services', pricing: 'Pricing', garden: '🌱 Garden', contact: 'Contact',
+		home: 'Home', products: 'Products', services: 'Services', pricing: 'Pricing', dao: 'DAO', garden: '🌱 Garden', contact: 'Contact',
 		tools: 'All Tools', md2docx: 'Online Markdown → Word', formatter: 'docx-formatter-cn', docs: 'Docs',
 		blog: 'Blog', notes: 'Notes', about: 'About',
 	},
 	ja: {
-		home: 'ホーム', products: '製品', services: 'サービス', pricing: '料金', garden: '🌱 ガーデン', contact: 'お問い合わせ',
+		home: 'ホーム', products: '製品', services: 'サービス', pricing: '料金', dao: 'DAO', garden: '🌱 ガーデン', contact: 'お問い合わせ',
 		tools: 'ツール一覧', md2docx: 'オンライン Markdown → Word', formatter: 'docx-formatter-cn', docs: 'ドキュメント',
 		blog: 'ブログ', notes: 'ノート', about: '私について',
 	},
@@ -46,6 +46,15 @@ const gardenLinks = [
 	{ href: '/blog', text: t.blog },
 	{ href: '/notes', text: t.notes },
 	{ href: L('/about'), text: t.about },
+];
+
+// DAO 页面只有中文版，下拉项固定中文文案
+const daoLinks = [
+	{ href: '/dao', text: '总览' },
+	{ href: '/dao/proposals', text: '提案' },
+	{ href: '/dao/members', text: '成员' },
+	{ href: '/dao/charter', text: '章程' },
+	{ href: '/ledger', text: '公开账本' },
 ];
 
 // Language switcher targets: same page when translated, locale home otherwise.
@@ -79,6 +88,18 @@ const langOptions = LOCALES.map((l) => ({
 
 			<HeaderLink href={L('/services')}>{t.services}</HeaderLink>
 			<HeaderLink href={L('/pricing')}>{t.pricing}</HeaderLink>
+
+			<div class="dropdown" data-dropdown>
+				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+					{t.dao}
+					<span class="dropdown-chevron" aria-hidden="true">▾</span>
+				</button>
+				<div class="dropdown-menu">
+					{daoLinks.map((link) => (
+						<a href={link.href}>{link.text}</a>
+					))}
+				</div>
+			</div>
 
 			<div class="dropdown" data-dropdown>
 				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">

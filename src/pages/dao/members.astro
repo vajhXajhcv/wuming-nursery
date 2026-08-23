@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../../consts';
+
+const title = `成员 - ${SITE_TITLE}`;
+const description = '无名苗圃共同体在册成员与贡献点。贡献点构成治理投票权重。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		.page-header {
+			margin-bottom: 1.5em;
+		}
+		.page-header h1 {
+			font-size: 1.5em;
+			margin: 0 0 0.3em;
+		}
+		.page-header p {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			margin: 0;
+		}
+		.table-wrapper {
+			overflow-x: auto;
+		}
+		.member-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.88em;
+		}
+		.member-table th,
+		.member-table td {
+			border-bottom: 1px solid var(--border);
+			padding: 0.6em 0.7em;
+			text-align: left;
+			white-space: nowrap;
+		}
+		.member-table th {
+			color: var(--text-secondary);
+			font-weight: 600;
+			font-size: 0.85em;
+		}
+		.pts {
+			font-variant-numeric: tabular-nums;
+		}
+		.pts strong {
+			color: var(--accent);
+		}
+		.st-active {
+			color: var(--text);
+		}
+		.st-removed {
+			color: var(--text-secondary);
+		}
+		tr.removed td {
+			color: var(--text-secondary);
+		}
+		tr.removed .handle {
+			text-decoration: line-through;
+		}
+		.empty {
+			text-align: center;
+			color: var(--text-secondary);
+			padding: 3em 0;
+		}
+	</style>
+	<main>
+		<div class="page-header">
+			<h1>共同体成员</h1>
+			<p>贡献点构成治理投票权重（一「点」一票）。想成为成员？前往 <a href="/dao/join">加入页</a> 生成密钥并提交申请。</p>
+		</div>
+
+		<div class="table-wrapper">
+			<table class="member-table">
+				<thead>
+					<tr>
+						<th>成员</th>
+						<th>总贡献点</th>
+						<th>资金点</th>
+						<th>劳动点</th>
+						<th>加入时间</th>
+						<th>状态</th>
+					</tr>
+				</thead>
+				<tbody id="member-body">
+					<tr>
+						<td colspan="6" class="empty">加载中…</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+
+	<script>
+		import { replay } from '../../lib/dao-core';
+		import type { ChainRecord } from '../../lib/dao-core';
+
+		function escapeHtml(s: unknown): string {
+			return String(s ?? '')
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+		}
+		function fmtDate(ts: number): string {
+			const d = new Date(ts);
+			const p = (n: number) => String(n).padStart(2, '0');
+			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+		}
+		function fmtPts(n: number): string {
+			return Number.isInteger(n) ? String(n) : n.toFixed(2);
+		}
+
+		async function init() {
+			const body = document.getElementById('member-body') as HTMLElement;
+			let records: ChainRecord[];
+			try {
+				const resp = await fetch('/api/ledger/list');
+				const data = await resp.json();
+				records = data.records || [];
+			} catch {
+				body.innerHTML = '<tr><td colspan="6" class="empty">加载失败，请刷新重试。</td></tr>';
+				return;
+			}
+			const state = replay(records);
+			const rows = Object.values(state.members)
+				.map((m) => {
+					const p = state.points[m.handle] || { total: 0, money: 0, labor: 0 };
+					return { ...m, pts: p };
+				})
+				.sort((a, b) => b.pts.total - a.pts.total || a.joinedSeq - b.joinedSeq);
+			if (!rows.length) {
+				body.innerHTML = '<tr><td colspan="6" class="empty">暂无成员</td></tr>';
+				return;
+			}
+			body.innerHTML = rows
+				.map(
+					(m) =>
+						`<tr class="${m.removed ? 'removed' : ''}">` +
+						`<td class="handle">${escapeHtml(m.handle)}</td>` +
+						`<td class="pts"><strong>${fmtPts(m.pts.total)}</strong></td>` +
+						`<td class="pts">${fmtPts(m.pts.money)}</td>` +
+						`<td class="pts">${fmtPts(m.pts.labor)}</td>` +
+						`<td>${fmtDate(m.joinedTs)}</td>` +
+						`<td class="${m.removed ? 'st-removed' : 'st-active'}">${m.removed ? '已移除' : '在册'}</td>` +
+						`</tr>`,
+				)
+				.join('');
+		}
+
+		init();
+	</script>
+</BaseLayout>
