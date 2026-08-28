@@ -17,6 +17,7 @@ const ICONS = {
 	eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
 	flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
 	trendingUp: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+	shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
 };
 
 const COVERS = [
@@ -29,6 +30,7 @@ const COVERS = [
 	{ slug: 'paranormal-miracles-metaphysics', title: '超常与神迹', subtitle: '形而上学的终结', icon: 'eye', from: '#6b21a8', to: '#c9a4ef' },
 	{ slug: 'sisters-to-rogues-prohibition', title: '从「姐妹」到「流氓」', subtitle: '新中国初期禁娼运动', icon: 'flag', from: '#be123c', to: '#f193a5' },
 	{ slug: 'site-commercialization-redesign', title: '从博客到产品站', subtitle: '商业化重构记录', icon: 'trendingUp', from: '#15803d', to: '#8fd9a8' },
+	{ slug: 'ai-security-audit-hardening', title: 'AI 给我的网站做安全体检', subtitle: '从检测到修复的全记录', icon: 'shield', from: '#0f3d5c', to: '#5fb8d9' },
 ];
 
 const FONT = "'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif";
