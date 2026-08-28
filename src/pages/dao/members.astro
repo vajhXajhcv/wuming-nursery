@@ -7,7 +7,7 @@ const description = '无名苗圃共同体在册成员与贡献点。贡献点�
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
+	<style is:global>
 		.page-header {
 			margin-bottom: 1.5em;
 		}
@@ -23,22 +23,8 @@ const description = '无名苗圃共同体在册成员与贡献点。贡献点�
 		.table-wrapper {
 			overflow-x: auto;
 		}
-		.member-table {
-			width: 100%;
-			border-collapse: collapse;
-			font-size: 0.88em;
-		}
-		.member-table th,
 		.member-table td {
-			border-bottom: 1px solid var(--border);
-			padding: 0.6em 0.7em;
-			text-align: left;
 			white-space: nowrap;
-		}
-		.member-table th {
-			color: var(--text-secondary);
-			font-weight: 600;
-			font-size: 0.85em;
 		}
 		.pts {
 			font-variant-numeric: tabular-nums;
@@ -58,11 +44,6 @@ const description = '无名苗圃共同体在册成员与贡献点。贡献点�
 		tr.removed .handle {
 			text-decoration: line-through;
 		}
-		.empty {
-			text-align: center;
-			color: var(--text-secondary);
-			padding: 3em 0;
-		}
 	</style>
 	<main>
 		<div class="page-header">
@@ -71,7 +52,7 @@ const description = '无名苗圃共同体在册成员与贡献点。贡献点�
 		</div>
 
 		<div class="table-wrapper">
-			<table class="member-table">
+			<table class="table member-table">
 				<thead>
 					<tr>
 						<th>成员</th>
@@ -84,7 +65,7 @@ const description = '无名苗圃共同体在册成员与贡献点。贡献点�
 				</thead>
 				<tbody id="member-body">
 					<tr>
-						<td colspan="6" class="empty">加载中…</td>
+						<td colspan="6" class="empty">⏳ 加载中…</td>
 					</tr>
 				</tbody>
 			</table>
@@ -92,37 +73,19 @@ const description = '无名苗圃共同体在册成员与贡献点。贡献点�
 	</main>
 
 	<script>
-		import { replay } from '../../lib/dao-core';
-		import type { ChainRecord } from '../../lib/dao-core';
-
-		function escapeHtml(s: unknown): string {
-			return String(s ?? '')
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/"/g, '&quot;');
-		}
-		function fmtDate(ts: number): string {
-			const d = new Date(ts);
-			const p = (n: number) => String(n).padStart(2, '0');
-			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-		}
-		function fmtPts(n: number): string {
-			return Number.isInteger(n) ? String(n) : n.toFixed(2);
-		}
+		import { loadChain, escapeHtml, fmtDate, fmtPts, errorHtml, bindRetry } from '../../lib/dao-ui';
 
 		async function init() {
 			const body = document.getElementById('member-body') as HTMLElement;
-			let records: ChainRecord[];
+			let c;
 			try {
-				const resp = await fetch('/api/ledger/list');
-				const data = await resp.json();
-				records = data.records || [];
-			} catch {
-				body.innerHTML = '<tr><td colspan="6" class="empty">加载失败，请刷新重试。</td></tr>';
+				c = await loadChain();
+			} catch (err) {
+				body.innerHTML = '<tr><td colspan="6">' + errorHtml((err as Error).message || '加载失败，请刷新重试。') + '</td></tr>';
+				bindRetry(body, init);
 				return;
 			}
-			const state = replay(records);
+			const { state } = c;
 			const rows = Object.values(state.members)
 				.map((m) => {
 					const p = state.points[m.handle] || { total: 0, money: 0, labor: 0 };

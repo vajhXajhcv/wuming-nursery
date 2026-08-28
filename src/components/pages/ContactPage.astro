@@ -212,13 +212,10 @@ const t = dicts[lang];
 				margin: 2em 0;
 			}
 			.contact-card {
-				background: var(--bg-elevated);
-				border-radius: var(--radius-lg);
 				padding: 1.3em 1.4em;
-				border: 1px solid var(--border);
 				text-decoration: none;
 				color: inherit;
-				transition: border-color 0.2s, box-shadow 0.2s;
+				transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 				display: flex;
 				align-items: flex-start;
 				gap: 1em;
@@ -226,6 +223,7 @@ const t = dicts[lang];
 			.contact-card:hover {
 				border-color: var(--accent);
 				box-shadow: var(--shadow-md);
+				transform: translateY(-2px);
 			}
 			.contact-icon {
 				width: 40px;
@@ -303,26 +301,11 @@ const t = dicts[lang];
 			}
 			.modal-close {
 				margin-top: 1em;
-				padding: 0.55em 1.4em;
-				background: transparent;
-				border: 1px solid var(--border);
-				border-radius: var(--radius-md);
-				cursor: pointer;
-				font-size: 0.9em;
-				color: var(--text);
-				transition: border-color 0.2s, color 0.15s;
-			}
-			.modal-close:hover {
-				border-color: var(--accent);
-				color: var(--accent);
 			}
 
 			/* Form section */
 			.form-section {
-				background: var(--bg-elevated);
-				border-radius: var(--radius-lg);
 				padding: 1.8em;
-				border: 1px solid var(--border);
 				margin: 2em 0;
 			}
 			.form-section h2 {
@@ -339,44 +322,15 @@ const t = dicts[lang];
 				margin-bottom: 0.3em;
 				font-weight: 500;
 			}
-			.form-row input,
-			.form-row textarea,
-			.form-row select {
-				width: 100%;
-				padding: 0.6em 0.8em;
-				border: 1px solid var(--border);
+			.form-row .input,
+			.form-row .textarea {
 				border-radius: var(--radius-md);
-				font-size: 1em;
-				font-family: inherit;
 				background: var(--bg);
-				color: var(--text);
-				box-sizing: border-box;
-				transition: border-color 0.2s;
+				font-size: 1em;
 			}
-			.form-row input:focus,
-			.form-row textarea:focus,
-			.form-row select:focus {
-				outline: none;
-				border-color: var(--accent);
-			}
-			.form-row textarea {
+			.form-row .textarea {
 				resize: vertical;
 				min-height: 120px;
-			}
-			.submit-btn {
-				display: inline-block;
-				padding: 0.65em 1.6em;
-				background: var(--accent);
-				color: white;
-				border: none;
-				border-radius: var(--radius-md);
-				font-size: 0.95em;
-				font-weight: 600;
-				cursor: pointer;
-				transition: background 0.15s;
-			}
-			.submit-btn:hover {
-				background: var(--accent-dark);
 			}
 
 			.note {
@@ -397,7 +351,7 @@ const t = dicts[lang];
 
 			<section class="contact-grid">
 				{t.channels.map((c) => (
-					<a href={c.href} class="contact-card" target={c.href.startsWith('http') ? '_blank' : undefined} rel={c.href.startsWith('http') ? 'noopener' : undefined} data-channel={c.href === '#wechat' ? 'wechat' : c.title}>
+					<a href={c.href} class="card contact-card" target={c.href.startsWith('http') ? '_blank' : undefined} rel={c.href.startsWith('http') ? 'noopener' : undefined} data-channel={c.href === '#wechat' ? 'wechat' : c.title}>
 						<div class="contact-icon">{c.icon}</div>
 						<div class="contact-info">
 							<h3>{c.title}</h3>
@@ -408,20 +362,20 @@ const t = dicts[lang];
 				))}
 			</section>
 
-			<section class="form-section">
+			<section class="card form-section">
 				<h2>{t.formTitle}</h2>
 				<form action="https://formspree.io/f/xoqgvjvq" method="POST">
 					<div class="form-row">
 						<label for="name">{t.labelName}</label>
-						<input type="text" id="name" name="name" placeholder={t.placeholderName} required />
+						<input type="text" id="name" name="name" placeholder={t.placeholderName} class="input" required />
 					</div>
 					<div class="form-row">
 						<label for="email">{t.labelEmail}</label>
-						<input type="email" id="email" name="email" placeholder="your@email.com" required />
+						<input type="email" id="email" name="email" placeholder="your@email.com" class="input" required />
 					</div>
 					<div class="form-row">
 						<label for="service">{t.labelService}</label>
-						<select id="service" name="service">
+						<select id="service" name="service" class="input">
 							{t.serviceOptions.map((o) => (
 								<option value={o.value}>{o.text}</option>
 							))}
@@ -429,9 +383,9 @@ const t = dicts[lang];
 					</div>
 					<div class="form-row">
 						<label for="message">{t.labelMessage}</label>
-						<textarea id="message" name="message" placeholder={t.placeholderMessage} required></textarea>
+						<textarea id="message" name="message" placeholder={t.placeholderMessage} class="textarea" required></textarea>
 					</div>
-					<button type="submit" class="submit-btn">{t.submitBtn}</button>
+					<button type="submit" class="btn btn-primary">{t.submitBtn}</button>
 					<p class="note">{t.formNote}</p>
 				</form>
 			</section>
@@ -442,7 +396,7 @@ const t = dicts[lang];
 				<h3>{t.modalTitle}</h3>
 				<p>{t.modalDesc}</p>
 				<div class="wechat-id">ll1186607113</div>
-				<button class="modal-close" id="modal-close">{t.modalClose}</button>
+				<button class="btn btn-outline modal-close" id="modal-close">{t.modalClose}</button>
 			</div>
 		</div>
 

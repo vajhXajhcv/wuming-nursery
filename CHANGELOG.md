@@ -1,5 +1,32 @@
 # 更新日志
 
+## 2026-08-28（前端设计系统收敛 + DAO 页面重构 + 自建评论系统）
+
+### 新增
+
+- **设计令牌扩展**：`src/styles/global.css` 新增语义色 `--c-ok/--c-err/--c-warn`、字号阶梯 `--text-*`、间距阶梯 `--space-*`。
+- **全局 UI 类库** `src/styles/ui.css`：`.card`、`.btn`/`.btn-primary`/`.btn-outline`、`.badge`、`.stat-card`、`.empty`、`.input`/`.textarea`、`.table`，由 BaseHead 全站引入。
+- **DAO 前端共享层** `src/lib/dao-ui.ts`：`loadChain()`（拉链 + 验链 + 重放 + 页面级缓存）、`apiPost()`、格式化助手、成员密钥签名助手；`src/components/dao/` 共享组件：StatCards、ChainStatus、VoteBar、ProposalCards、MemberGate。
+
+### 调整
+
+- **DAO 与账本页面重构**：8 个 DAO 页面 + 2 个 ledger 页面换用共享层，删除每页重复的语义色块与助手函数（净减约 1200 行），统一补齐加载/错误/空三态；链格式、签名消息、localStorage key、URL 参数全部不变。
+- **营销页收敛**：首页/定价/服务/工具/联系/Paywall 等 9 个页面组件删除重复的按钮/卡片/表单样式，改引全局类（净减约 500 行），视觉保持不变。
+- **视觉刷新**：Header 下拉菜单统一面板样式并加出现动画；首页 hero 间距节奏 token 化；可点击卡片统一 hover 微动效。
+- 暗色下 `.btn-primary` 改为深色文字，修复浅紫底白字对比度不足。
+
+### 修复
+
+- DAO 页面 JS 动态渲染的内容（提案卡、投票条、贡献榜、锚定行）此前因 Astro 样式作用域不带 `data-astro-cid` 属性而整体无样式，本次改用全局样式后修复。
+
+### 新增（自建评论系统，替换 giscus）
+
+- **评论功能**：博客/笔记文章页评论区改为自建（`functions/api/comments.ts` + `src/components/Comments.astro`），先审后发——游客评论经 Cloudflare Turnstile 人机验证后进入待审核队列，批准后才公开。
+- **DAO 身份联动**：DAO 成员可用本地私钥对评论签名（`comment|<slug>|<name>|<content>|<cts>`，±10 分钟防重放），验签通过即免审公开并带「成员」标记。
+- **防护**：纯文本存储（HTML 标签服务端剥离）、昵称 ≤20 字 / 正文 ≤1000 字、按 IP 限流（游客 5 条/小时、成员 30 条/小时）、不存 IP/邮箱；`TURNSTILE_HOSTNAMES` 可配域名白名单。
+- **审核**：`/dao/admin` 新增评论审核面板（通过/拒绝/删除）；管理接口 `functions/api/admin/comments.ts`。
+- **CSP**：`public/_headers` 移除 giscus 白名单，放行 `challenges.cloudflare.com`。
+
 ## 2026-08-23（DAO 可验证治理系统上线）
 
 ### 新增

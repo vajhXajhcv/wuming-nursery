@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProposalCards from '../../components/dao/ProposalCards.astro';
+import VoteBar from '../../components/dao/VoteBar.astro';
 import { SITE_TITLE } from '../../consts';
 
 const title = `提案 - ${SITE_TITLE}`;
@@ -7,15 +9,7 @@ const description = '无名苗圃共同体治理提案：支出、文本决议�
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
-		main {
-			--c-ok: #16a34a;
-			--c-err: #dc2626;
-		}
-		[data-theme='dark'] main {
-			--c-ok: #4ade80;
-			--c-err: #f87171;
-		}
+	<style is:global>
 		.page-header {
 			margin-bottom: 1.5em;
 			display: flex;
@@ -42,78 +36,6 @@ const description = '无名苗圃共同体治理提案：支出、文本决议�
 			padding-bottom: 0.35em;
 			border-bottom: 1px solid var(--border);
 		}
-		.prop-card {
-			display: block;
-			text-decoration: none;
-			color: var(--text);
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			padding: 0.9em 1.2em;
-			margin-bottom: 0.7em;
-		}
-		.prop-card:hover {
-			border-color: var(--accent);
-		}
-		.prop-top {
-			display: flex;
-			align-items: baseline;
-			gap: 0.6em;
-			flex-wrap: wrap;
-		}
-		.pid {
-			color: var(--text-secondary);
-			font-variant-numeric: tabular-nums;
-			font-size: 0.85em;
-		}
-		.badge {
-			font-size: 0.72em;
-			padding: 0.1em 0.6em;
-			border-radius: 999px;
-			background: var(--accent-soft);
-			color: var(--accent);
-			white-space: nowrap;
-		}
-		.prop-title {
-			font-weight: 600;
-		}
-		.prop-meta {
-			color: var(--text-secondary);
-			font-size: 0.82em;
-			margin: 0.25em 0 0.5em;
-		}
-		.vote-bar {
-			height: 6px;
-			border-radius: 3px;
-			background: var(--border);
-			overflow: hidden;
-			display: flex;
-		}
-		.vote-bar .for {
-			background: var(--c-ok);
-		}
-		.vote-bar .against {
-			background: var(--c-err);
-		}
-		.vote-bar .abstain {
-			background: var(--text-secondary);
-		}
-		.vote-nums {
-			font-size: 0.78em;
-			color: var(--text-secondary);
-			margin-top: 0.3em;
-			font-variant-numeric: tabular-nums;
-		}
-		.quorum-ok {
-			color: var(--c-ok);
-		}
-		.quorum-no {
-			color: var(--c-err);
-		}
-		.muted {
-			color: var(--text-secondary);
-			font-size: 0.88em;
-		}
 	</style>
 	<main>
 		<div class="page-header">
@@ -123,30 +45,18 @@ const description = '无名苗圃共同体治理提案：支出、文本决议�
 			</div>
 			<a class="new-link" href="/dao/propose">＋ 发起提案</a>
 		</div>
-		<div id="groups" class="muted">加载中…</div>
+		<div id="groups"><div class="empty">⏳ 加载中…</div></div>
 	</main>
 
+	<!-- 提案卡片与投票条由 JS 渲染，这里仅注入全局样式 -->
+	<ProposalCards />
+	<VoteBar />
+
 	<script>
-		import { replay, tally, proposalStatus } from '../../lib/dao-core';
-		import type { ChainRecord, ProposalStatus } from '../../lib/dao-core';
+		import { proposalStatus } from '../../lib/dao-core';
+		import type { ProposalStatus } from '../../lib/dao-core';
+		import { loadChain, proposalCardHtml, errorHtml, bindRetry } from '../../lib/dao-ui';
 
-		function escapeHtml(s: unknown): string {
-			return String(s ?? '')
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/"/g, '&quot;');
-		}
-		function fmtTime(ts: number): string {
-			const d = new Date(ts);
-			const p = (n: number) => String(n).padStart(2, '0');
-			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-		}
-		function fmtPts(n: number): string {
-			return Number.isInteger(n) ? String(n) : n.toFixed(2);
-		}
-
-		const PTYPE_LABEL: Record<string, string> = { spend: '支出', text: '文本', param: '参数' };
 		const GROUPS: { status: ProposalStatus; label: string }[] = [
 			{ status: 'active', label: '投票中' },
 			{ status: 'expired', label: '待关闭' },
@@ -157,20 +67,19 @@ const description = '无名苗圃共同体治理提案：支出、文本决议�
 
 		async function init() {
 			const container = document.getElementById('groups') as HTMLElement;
-			let records: ChainRecord[];
+			let c;
 			try {
-				const resp = await fetch('/api/ledger/list');
-				const data = await resp.json();
-				records = data.records || [];
-			} catch {
-				container.textContent = '加载失败，请刷新重试。';
+				c = await loadChain();
+			} catch (err) {
+				container.innerHTML = errorHtml((err as Error).message || '加载失败，请刷新重试。');
+				bindRetry(container, init);
 				return;
 			}
-			const state = replay(records);
+			const { records, state } = c;
 			const now = Date.now();
 			const props = Object.values(state.proposals).sort((a, b) => b.pid - a.pid);
 			if (!props.length) {
-				container.textContent = '暂无提案。';
+				container.innerHTML = '<div class="empty">暂无提案。</div>';
 				return;
 			}
 			let html = '';
@@ -178,32 +87,8 @@ const description = '无名苗圃共同体治理提案：支出、文本决议�
 				const list = props.filter((p) => proposalStatus(p, now) === g.status);
 				if (!list.length) continue;
 				html += `<h2 class="group-title">${g.label}（${list.length}）</h2>`;
-				for (const p of list) {
-					const t = tally(records, p);
-					const denom = t.turnout || 1;
-					const forW = (t.for / denom) * 100;
-					const againstW = (t.against / denom) * 100;
-					const abstainW = (t.abstain / denom) * 100;
-					const turnoutPct = t.totalWeight > 0 ? ((t.turnout / t.totalWeight) * 100).toFixed(1) : '0.0';
-					const timeLabel =
-						g.status === 'active' || g.status === 'expired'
-							? '截止 ' + fmtTime(p.data.deadline)
-							: '关闭 ' + fmtTime((p.resolution ?? p.execution)!.ts);
-					html +=
-						`<a class="prop-card" href="/dao/proposal?pid=${p.pid}">` +
-						`<div class="prop-top"><span class="pid">#${p.pid}</span>` +
-						`<span class="badge">${PTYPE_LABEL[p.data.ptype] || escapeHtml(p.data.ptype)}</span>` +
-						`<span class="prop-title">${escapeHtml(p.data.title)}</span></div>` +
-						`<div class="prop-meta">发起人 ${escapeHtml(p.data.proposer)} · ${timeLabel}</div>` +
-						`<div class="vote-bar"><div class="for" style="width:${forW}%"></div><div class="against" style="width:${againstW}%"></div><div class="abstain" style="width:${abstainW}%"></div></div>` +
-						`<div class="vote-nums">赞成 ${fmtPts(t.for)} · 反对 ${fmtPts(t.against)} · 弃权 ${fmtPts(t.abstain)} · 参与率 ${turnoutPct}% · ` +
-						(t.quorumReached
-							? '<span class="quorum-ok">已达法定人数</span>'
-							: '<span class="quorum-no">未达法定人数</span>') +
-						`</div></a>`;
-				}
+				for (const p of list) html += proposalCardHtml(records, p, g.status);
 			}
-			container.classList.remove('muted');
 			container.innerHTML = html;
 		}
 

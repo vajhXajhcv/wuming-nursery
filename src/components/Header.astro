@@ -307,25 +307,38 @@ const langOptions = LOCALES.map((l) => ({
 		transform: rotate(180deg);
 	}
 	.dropdown-menu {
-		display: none;
 		position: absolute;
 		top: calc(100% - 2px);
 		left: 0;
 		min-width: 200px;
 		background: var(--bg-elevated);
 		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
+		border-radius: var(--radius-lg);
 		box-shadow: var(--shadow-lg);
-		padding: 0.35em;
+		padding: var(--space-2);
 		z-index: 101;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(4px);
+		pointer-events: none;
+		transition:
+			opacity 0.18s ease,
+			transform 0.18s ease,
+			visibility 0s linear 0.18s;
 	}
 	.dropdown.open .dropdown-menu {
-		display: block;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		pointer-events: auto;
+		transition:
+			opacity 0.18s ease,
+			transform 0.18s ease;
 	}
 	.dropdown-menu a {
 		display: block;
 		padding: 0.55em 0.85em;
-		border-radius: var(--radius-sm);
+		border-radius: var(--radius-md);
 		color: var(--text);
 		text-decoration: none;
 		font-size: 0.9em;
@@ -451,10 +464,16 @@ const langOptions = LOCALES.map((l) => ({
 		}
 		.dropdown-menu {
 			position: static;
+			display: none;
+			opacity: 1;
+			visibility: visible;
+			transform: none;
+			pointer-events: auto;
+			transition: none;
 			box-shadow: none;
 			border: none;
 			background: transparent;
-			padding-left: 1em;
+			padding: 0 0 0 1em;
 		}
 		.dropdown.open .dropdown-menu {
 			display: block;

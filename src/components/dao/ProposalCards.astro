@@ -1,0 +1,77 @@
+---
+/**
+ * 提案卡片样式宿主：提案内容由页面脚本用 dao-ui 的
+ * proposalItemHtml() / proposalCardHtml() 动态渲染（innerHTML），
+ * 本组件只负责把 .prop-item / .prop-card 等样式以 is:global 注入页面。
+ * 用法：<ProposalCards />（不渲染可见节点）。
+ */
+---
+
+<style is:global>
+	/* 总览页小卡片变体 */
+	.prop-item {
+		display: block;
+		text-decoration: none;
+		color: var(--text);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 0.7em 1em;
+		margin-bottom: 0.6em;
+		font-size: 0.9em;
+	}
+	.prop-item:hover {
+		border-color: var(--accent);
+	}
+	/* 列表页大卡片变体 */
+	.prop-card {
+		display: block;
+		text-decoration: none;
+		color: var(--text);
+		background: var(--bg-elevated);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 0.9em 1.2em;
+		margin-bottom: 0.7em;
+	}
+	.prop-card:hover {
+		border-color: var(--accent);
+	}
+	.prop-top {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6em;
+		flex-wrap: wrap;
+	}
+	.prop-card .pid {
+		color: var(--text-secondary);
+		font-variant-numeric: tabular-nums;
+		font-size: 0.85em;
+	}
+	.prop-title {
+		font-weight: 600;
+	}
+	.prop-meta {
+		color: var(--text-secondary);
+		font-size: 0.85em;
+		margin: 0.2em 0 0.4em;
+	}
+	.prop-card .prop-meta {
+		font-size: 0.82em;
+		margin: 0.25em 0 0.5em;
+	}
+	.vote-nums {
+		font-size: 0.8em;
+		color: var(--text-secondary);
+		margin-top: 0.3em;
+		font-variant-numeric: tabular-nums;
+	}
+	.prop-card .vote-nums {
+		font-size: 0.78em;
+	}
+	.quorum-ok {
+		color: var(--c-ok);
+	}
+	.quorum-no {
+		color: var(--c-err);
+	}
+</style>

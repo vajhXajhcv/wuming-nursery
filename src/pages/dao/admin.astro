@@ -7,15 +7,7 @@ const description = '创始人控制台（需要管理令牌）。';
 ---
 
 <BaseLayout title={title} description={description} draft={true}>
-	<style>
-		main {
-			--c-ok: #16a34a;
-			--c-err: #dc2626;
-		}
-		[data-theme='dark'] main {
-			--c-ok: #4ade80;
-			--c-err: #f87171;
-		}
+	<style is:global>
 		.page-header {
 			margin-bottom: 1.5em;
 		}
@@ -28,14 +20,10 @@ const description = '创始人控制台（需要管理令牌）。';
 			font-size: 0.9em;
 			margin: 0;
 		}
-		.panel {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
-			padding: 1.3em 1.5em;
+		.admin-panel {
 			margin-bottom: 1.2em;
 		}
-		.panel h2 {
+		.admin-panel h2 {
 			font-size: 1.05em;
 			margin: 0 0 0.8em;
 		}
@@ -48,25 +36,6 @@ const description = '创始人控制台（需要管理令牌）。';
 			color: var(--text-secondary);
 			margin-bottom: 0.3em;
 		}
-		.field input,
-		.field select,
-		.field textarea {
-			width: 100%;
-			box-sizing: border-box;
-			padding: 0.55em 0.8em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			background: var(--bg);
-			color: var(--text);
-			font-size: 0.95em;
-			font-family: inherit;
-		}
-		.field input:focus,
-		.field select:focus,
-		.field textarea:focus {
-			outline: none;
-			border-color: var(--accent);
-		}
 		.row {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
@@ -77,42 +46,15 @@ const description = '创始人控制台（需要管理令牌）。';
 				grid-template-columns: 1fr;
 			}
 		}
-		.btn {
-			padding: 0.55em 1.3em;
-			border: none;
-			border-radius: var(--radius-md);
-			background: var(--accent);
-			color: white;
-			font-size: 0.9em;
-			font-weight: 600;
-			cursor: pointer;
-			min-height: 40px;
-		}
-		.btn:hover {
-			background: var(--accent-dark);
-		}
-		.btn:disabled {
-			opacity: 0.6;
-			cursor: not-allowed;
-		}
-		.btn.sm {
+		.btn-sm {
 			padding: 0.35em 1em;
 			font-size: 0.82em;
 			min-height: 0;
 		}
-		.btn.danger {
+		.btn-danger {
 			background: transparent;
 			color: var(--c-err);
 			border: 1px solid var(--c-err);
-		}
-		.btn.secondary {
-			background: transparent;
-			color: var(--text);
-			border: 1px solid var(--border);
-		}
-		.btn.secondary:hover {
-			border-color: var(--accent);
-			color: var(--accent);
 		}
 		.result {
 			margin-top: 0.8em;
@@ -167,41 +109,41 @@ const description = '创始人控制台（需要管理令牌）。';
 			<p>创始人专用。所有写操作都走带 ADMIN_TOKEN 的 API，结果即时上链。</p>
 		</div>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>管理令牌</h2>
 			<div class="field">
 				<label for="admin-token">ADMIN_TOKEN（与账本录入页共用）</label>
-				<input type="password" id="admin-token" placeholder="ADMIN_TOKEN" />
+				<input type="password" id="admin-token" class="input" placeholder="ADMIN_TOKEN" />
 			</div>
-			<button class="btn secondary" id="refresh-btn">刷新链数据</button>
+			<button class="btn btn-outline" id="refresh-btn">刷新链数据</button>
 			<span class="muted" id="chain-info" style="margin-left:0.8em"></span>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>1 · 待审成员</h2>
 			<div id="pending-list" class="muted">输入令牌后点击「刷新链数据」。</div>
 			<div class="result" id="member-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>2 · 移除成员</h2>
 			<div class="field">
 				<label for="remove-handle">handle</label>
-				<input type="text" id="remove-handle" placeholder="要移除的成员 handle" />
+				<input type="text" id="remove-handle" class="input" placeholder="要移除的成员 handle" />
 			</div>
-			<button class="btn danger" id="remove-btn">移除成员</button>
+			<button class="btn btn-danger" id="remove-btn">移除成员</button>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>3 · 录入贡献</h2>
 			<div class="row">
 				<div class="field">
 					<label for="c-handle">handle</label>
-					<input type="text" id="c-handle" />
+					<input type="text" id="c-handle" class="input" />
 				</div>
 				<div class="field">
 					<label for="c-kind">类型</label>
-					<select id="c-kind">
+					<select id="c-kind" class="input">
 						<option value="money">money（资金）</option>
 						<option value="article">article（文章）</option>
 						<option value="code">code（代码）</option>
@@ -215,103 +157,95 @@ const description = '创始人控制台（需要管理令牌）。';
 			<div class="row">
 				<div class="field">
 					<label for="c-points">贡献点</label>
-					<input type="number" id="c-points" min="0.01" step="any" />
+					<input type="number" id="c-points" class="input" min="0.01" step="any" />
 				</div>
 				<div class="field">
 					<label for="c-ref">交叉引用 ref</label>
-					<input type="text" id="c-ref" placeholder="kind=money 时填 ledger#<seq>" />
+					<input type="text" id="c-ref" class="input" placeholder="kind=money 时填 ledger#<seq>" />
 				</div>
 			</div>
 			<div class="field">
 				<label for="c-evidence">依据 evidence（链接或说明，可选）</label>
-				<input type="text" id="c-evidence" />
+				<input type="text" id="c-evidence" class="input" />
 			</div>
-			<button class="btn" id="c-btn">上链核定</button>
+			<button class="btn btn-primary" id="c-btn">上链核定</button>
 			<div class="result" id="c-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>4 · 关闭提案（已过投票期）</h2>
 			<div id="close-list" class="muted">加载链数据后显示。</div>
 			<div class="result" id="close-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>5 · 执行支出（已通过且未执行）</h2>
 			<div id="execute-list" class="muted">加载链数据后显示。</div>
 			<div class="result" id="execute-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>6 · 参数变更（留空 = 不改）</h2>
 			<div class="row">
 				<div class="field">
 					<label for="p-threshold">proposeThreshold（提案门槛）</label>
-					<input type="number" id="p-threshold" min="0" step="any" />
+					<input type="number" id="p-threshold" class="input" min="0" step="any" />
 				</div>
 				<div class="field">
 					<label for="p-period">votingPeriodMs（投票期，毫秒）</label>
-					<input type="number" id="p-period" min="0" step="any" />
+					<input type="number" id="p-period" class="input" min="0" step="any" />
 				</div>
 			</div>
 			<div class="row">
 				<div class="field">
 					<label for="p-quorum">quorumBps（法定人数，基点）</label>
-					<input type="number" id="p-quorum" min="0" step="any" />
+					<input type="number" id="p-quorum" class="input" min="0" step="any" />
 				</div>
 				<div class="field">
 					<label for="p-ppy">pointsPerYuan（资金折算率）</label>
-					<input type="number" id="p-ppy" min="0" step="any" />
+					<input type="number" id="p-ppy" class="input" min="0" step="any" />
 				</div>
 			</div>
-			<button class="btn" id="p-btn">提交参数变更</button>
+			<button class="btn btn-primary" id="p-btn">提交参数变更</button>
 			<div class="result" id="p-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card admin-panel">
 			<h2>7 · 锚定登记</h2>
 			<p class="muted">一般由 scripts/anchor-ots.mjs 自动调用；此处供手工补登记。</p>
 			<div class="row">
 				<div class="field">
 					<label for="a-seq">anchoredSeq（被锚定的链高）</label>
-					<input type="number" id="a-seq" min="0" step="1" />
+					<input type="number" id="a-seq" class="input" min="0" step="1" />
 				</div>
 				<div class="field">
 					<label for="a-file">otsFile（证明文件名）</label>
-					<input type="text" id="a-file" placeholder="如 head-123.ots" />
+					<input type="text" id="a-file" class="input" placeholder="如 head-123.ots" />
 				</div>
 			</div>
 			<div class="field">
 				<label for="a-hash">anchoredHash（该高度的记录哈希）</label>
-				<input type="text" id="a-hash" />
+				<input type="text" id="a-hash" class="input" />
 			</div>
-			<button class="btn" id="a-btn">登记锚定</button>
+			<button class="btn btn-primary" id="a-btn">登记锚定</button>
 			<div class="result" id="a-result"></div>
+		</section>
+
+		<section class="card admin-panel">
+			<h2>8 · 评论审核</h2>
+			<div id="cm-list" class="muted">输入令牌后点击「刷新链数据」。</div>
+			<div class="result" id="cm-result"></div>
 		</section>
 	</main>
 
 	<script>
-		import { replay, proposalStatus } from '../../lib/dao-core';
+		import { proposalStatus } from '../../lib/dao-core';
 		import type { ChainRecord, DaoState } from '../../lib/dao-core';
+		import { loadChain, apiPost, escapeHtml, fmtTime, fmtPts } from '../../lib/dao-ui';
 
 		const $ = (id: string) => document.getElementById(id) as HTMLElement;
 		const input = (id: string) => document.getElementById(id) as HTMLInputElement;
 
-		function escapeHtml(s: unknown): string {
-			return String(s ?? '')
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/"/g, '&quot;');
-		}
-		function fmtTime(ts: number): string {
-			const d = new Date(ts);
-			const p = (n: number) => String(n).padStart(2, '0');
-			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-		}
-		function fmtPts(n: number): string {
-			return Number.isInteger(n) ? String(n) : n.toFixed(2);
-		}
 		function show(id: string, msg: string, ok: boolean) {
 			const el = $(id);
 			el.textContent = msg;
@@ -330,14 +264,8 @@ const description = '创始人控制台（需要管理令牌）。';
 			return tokenInput.value.trim();
 		}
 
-		async function adminPost(path: string, body: unknown): Promise<any> {
-			const resp = await fetch(path, {
-				method: 'POST',
-				headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + token() },
-				body: JSON.stringify(body),
-			});
-			const data = await resp.json().catch(() => ({}));
-			if (!resp.ok) throw new Error((data as any).error || 'HTTP ' + resp.status);
+		async function adminPost<T = unknown>(path: string, body: unknown): Promise<T> {
+			const data = await apiPost<T>(path, body, token());
 			try {
 				localStorage.setItem('ledger:admin-token', token());
 			} catch {}
@@ -351,23 +279,98 @@ const description = '创始人控制台（需要管理令牌）。';
 			}
 			$('chain-info').textContent = '⏳ 加载中…';
 			try {
-				const resp = await fetch('/api/ledger/list');
-				const data = await resp.json();
-				records = data.records || [];
-				state = replay(records);
+				// 管理操作后必须拿最新链，不走缓存
+				const c = await loadChain(true);
+				records = c.records;
+				state = c.state;
 				$('chain-info').textContent = `已加载 ${records.length} 条记录`;
 			} catch {
 				$('chain-info').textContent = '❌ 链数据加载失败';
 				return;
 			}
-			await Promise.all([renderPending(), renderClose(), renderExecute(), fillParams()]);
+			await Promise.all([renderPending(), renderClose(), renderExecute(), fillParams(), renderComments()]);
+		}
+
+		// ---- 评论审核（数据在 COMMENTS KV，与链无关；GET 需自带 Authorization 头）----
+		interface AdminComment {
+			key: string;
+			slug: string;
+			name: string;
+			content: string;
+			ts: number;
+			member?: string;
+		}
+
+		async function renderComments() {
+			const box = $('cm-list');
+			let list: AdminComment[] = [];
+			try {
+				const resp = await fetch('/api/admin/comments?status=pending', {
+					headers: { Authorization: 'Bearer ' + token() },
+				});
+				const data = (await resp.json()) as { comments?: AdminComment[]; error?: string };
+				if (!resp.ok) throw new Error(data.error || `请求失败（HTTP ${resp.status}）`);
+				list = Array.isArray(data.comments) ? data.comments : [];
+			} catch (err) {
+				box.innerHTML =
+					'<span class="muted">评论列表获取失败：' + escapeHtml((err as Error).message) + '</span>';
+				return;
+			}
+			if (!list.length) {
+				box.innerHTML = '<span class="muted">暂无待审核评论。</span>';
+				return;
+			}
+			box.classList.remove('muted');
+			box.innerHTML = list
+				.map((c) => {
+					const snippet =
+						c.content.length > 80 ? c.content.slice(0, 80) + '…' : c.content;
+					return (
+						`<div class="pending-row"><span class="grow">` +
+						`<span class="mono">${escapeHtml(c.slug)}</span> <strong>${escapeHtml(c.name)}</strong>` +
+						(c.member ? ` <span class="badge badge-ok">成员</span>` : '') +
+						`<br><span class="muted">${escapeHtml(snippet)}</span></span>` +
+						`<span class="muted">${fmtTime(c.ts)}</span>` +
+						`<button class="btn btn-primary btn-sm" data-approve="${escapeHtml(c.key)}">通过</button>` +
+						`<button class="btn btn-outline btn-sm" data-reject="${escapeHtml(c.key)}">拒绝</button>` +
+						`<button class="btn btn-danger btn-sm" data-delete="${escapeHtml(c.key)}">删除</button></div>`
+					);
+				})
+				.join('');
+			box.querySelectorAll('[data-approve]').forEach((b) =>
+				b.addEventListener('click', () =>
+					commentAction((b as HTMLElement).dataset.approve!, 'approve'),
+				),
+			);
+			box.querySelectorAll('[data-reject]').forEach((b) =>
+				b.addEventListener('click', () =>
+					commentAction((b as HTMLElement).dataset.reject!, 'reject'),
+				),
+			);
+			box.querySelectorAll('[data-delete]').forEach((b) =>
+				b.addEventListener('click', () => {
+					if (confirm('确认物理删除这条评论？不可恢复。')) {
+						commentAction((b as HTMLElement).dataset.delete!, 'delete');
+					}
+				}),
+			);
+		}
+
+		async function commentAction(key: string, action: 'approve' | 'reject' | 'delete') {
+			try {
+				await adminPost('/api/admin/comments', { key, action });
+				show('cm-result', '✅ 操作成功', true);
+				await renderComments();
+			} catch (err) {
+				show('cm-result', (err as Error).message, false);
+			}
 		}
 
 		async function renderPending() {
 			const box = $('pending-list');
 			let list: any[] = [];
 			try {
-				const data = await adminPost('/api/dao/pending', {});
+				const data = await adminPost<any>('/api/dao/pending', {});
 				list = Array.isArray(data) ? data : data.pending || data.members || [];
 			} catch (err) {
 				box.innerHTML = '<span class="muted">待审列表获取失败：' + escapeHtml((err as Error).message) + '</span>';
@@ -385,8 +388,8 @@ const description = '创始人控制台（需要管理令牌）。';
 						`<div class="pending-row"><span class="grow"><strong>${escapeHtml(p.handle)}</strong> ` +
 						`<span class="mono">${escapeHtml(fp)}…</span></span>` +
 						`<span class="muted">${p.ts ? fmtTime(p.ts) : ''}</span>` +
-						`<button class="btn sm" data-approve="${escapeHtml(p.handle)}">批准</button>` +
-						`<button class="btn sm danger" data-reject="${escapeHtml(p.handle)}">拒绝</button></div>`
+						`<button class="btn btn-primary btn-sm" data-approve="${escapeHtml(p.handle)}">批准</button>` +
+						`<button class="btn btn-danger btn-sm" data-reject="${escapeHtml(p.handle)}">拒绝</button></div>`
 					);
 				})
 				.join('');
@@ -425,7 +428,7 @@ const description = '创始人控制台（需要管理令牌）。';
 					(p) =>
 						`<div class="action-row"><span class="grow">#${p.pid} ${escapeHtml(p.data.title)}</span>` +
 						`<span class="muted">截止 ${fmtTime(p.data.deadline)}</span>` +
-						`<button class="btn sm" data-close="${p.pid}">关闭计票</button></div>`,
+						`<button class="btn btn-primary btn-sm" data-close="${p.pid}">关闭计票</button></div>`,
 				)
 				.join('');
 			box.querySelectorAll('[data-close]').forEach((b) =>
@@ -464,7 +467,7 @@ const description = '创始人控制台（需要管理令牌）。';
 					(p) =>
 						`<div class="action-row"><span class="grow">#${p.pid} ${escapeHtml(p.data.title)}</span>` +
 						`<span class="muted">¥${escapeHtml(p.data.amount)} → ${escapeHtml(p.data.recipient)}</span>` +
-						`<button class="btn sm" data-execute="${p.pid}">执行支出</button></div>`,
+						`<button class="btn btn-primary btn-sm" data-execute="${p.pid}">执行支出</button></div>`,
 				)
 				.join('');
 			box.querySelectorAll('[data-execute]').forEach((b) =>

@@ -1,0 +1,305 @@
+---
+/**
+ * 自建评论组件：
+ *   - 公开评论列表（GET /api/comments，仅 approved；成员评论带「成员」徽章）
+ *   - 提交表单：游客走 Turnstile（提交后待审核）；DAO 成员签名免审、即时公开
+ * 样式复用全局 ui.css（.input/.textarea/.btn/.badge/.empty），私有类以 cm- 前缀。
+ * 注意：列表是动态 innerHTML 渲染，相关样式必须 is:global（Astro 作用域样式够不到）。
+ */
+import { TURNSTILE_SITEKEY } from '../consts';
+
+interface Props {
+	slug: string; // 评论归属的文章 slug（如 blog/xxx、notes/xxx）
+}
+const { slug } = Astro.props;
+---
+
+<div class="cm-root" data-slug={slug} data-sitekey={TURNSTILE_SITEKEY}>
+	<div class="cm-list"><div class="empty">⏳ 评论加载中…</div></div>
+
+	<form class="cm-form">
+		<div class="cm-field">
+			<label for="cm-name">昵称</label>
+			<input type="text" id="cm-name" class="input" maxlength="20" placeholder="怎么称呼你（≤20 字）" />
+		</div>
+		<div class="cm-field">
+			<label for="cm-content">评论</label>
+			<textarea id="cm-content" class="textarea" maxlength="1000" placeholder="写下你的想法（≤1000 字）"></textarea>
+		</div>
+		<div class="cm-member">
+			<label class="cm-member-toggle">
+				<input type="checkbox" class="cm-member-checkbox" />
+				以 DAO 成员身份签名（免审核，即时公开）
+			</label>
+			<select class="input cm-identity" hidden></select>
+			<div class="cm-member-hint" hidden></div>
+		</div>
+		<div class="cm-turnstile"></div>
+		<button type="submit" class="btn btn-primary cm-submit">发表评论</button>
+		<div class="cm-result" hidden></div>
+		<p class="cm-note">评论经审核后公开；DAO 成员签名评论即时公开。</p>
+	</form>
+</div>
+
+<style is:global>
+	.cm-list {
+		margin-bottom: 1.2em;
+	}
+	.cm-item {
+		padding: 0.8em 0;
+		border-bottom: 1px dashed var(--border);
+	}
+	.cm-item:last-child {
+		border-bottom: none;
+	}
+	.cm-item-head {
+		display: flex;
+		align-items: center;
+		gap: 0.6em;
+		flex-wrap: wrap;
+		margin-bottom: 0.3em;
+	}
+	.cm-item-name {
+		font-weight: 600;
+		font-size: 0.92em;
+	}
+	.cm-item-time {
+		color: var(--text-secondary);
+		font-size: 0.78em;
+	}
+	.cm-item-body {
+		font-size: 0.92em;
+		line-height: 1.7;
+		word-break: break-word;
+	}
+	.cm-field {
+		margin-bottom: 0.9em;
+	}
+	.cm-field label {
+		display: block;
+		font-size: 0.85em;
+		color: var(--text-secondary);
+		margin-bottom: 0.3em;
+	}
+	.cm-member {
+		margin-bottom: 0.9em;
+	}
+	.cm-member-toggle {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		font-size: 0.88em;
+		cursor: pointer;
+	}
+	.cm-member-toggle input[disabled] {
+		cursor: not-allowed;
+	}
+	.cm-member .input {
+		margin-top: 0.5em;
+	}
+	.cm-member-hint {
+		font-size: 0.8em;
+		color: var(--text-secondary);
+		margin-top: 0.4em;
+	}
+	.cm-turnstile {
+		margin-bottom: 0.9em;
+	}
+	.cm-result {
+		margin-top: 0.8em;
+		padding: 0.7em 1em;
+		border-radius: var(--radius-md);
+		font-size: 0.85em;
+	}
+	.cm-result.ok {
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+	.cm-result.err {
+		background: rgba(220, 38, 38, 0.08);
+		color: var(--c-err);
+	}
+	.cm-note {
+		margin: 0.8em 0 0;
+		font-size: 0.78em;
+		color: var(--text-secondary);
+	}
+</style>
+
+<script>
+	import {
+		apiPost,
+		escapeHtml,
+		fmtTime,
+		listMemberKeys,
+		signMessage,
+		errorHtml,
+		bindRetry,
+	} from '../lib/dao-ui';
+
+	interface CommentItem {
+		name: string;
+		content: string;
+		ts: number;
+		member?: string;
+	}
+
+	// 与服务端 comments.ts 的 cleanText 保持一致：去 HTML 标签 + 首尾空白。
+	// 成员签名针对清洗后的文本，两边清洗规则不同会导致验签失败。
+	const cleanText = (s: string) => s.replace(/<[^>]*>/g, '').trim();
+
+	document.querySelectorAll<HTMLElement>('.cm-root').forEach((root) => {
+		const slug = root.dataset.slug || '';
+		const sitekey = root.dataset.sitekey || '';
+		const listBox = root.querySelector<HTMLElement>('.cm-list')!;
+		const form = root.querySelector<HTMLFormElement>('.cm-form')!;
+		const nameInput = root.querySelector<HTMLInputElement>('#cm-name')!;
+		const contentInput = root.querySelector<HTMLTextAreaElement>('#cm-content')!;
+		const memberToggle = root.querySelector<HTMLInputElement>('.cm-member-checkbox')!;
+		const identitySel = root.querySelector<HTMLSelectElement>('.cm-identity')!;
+		const memberHint = root.querySelector<HTMLElement>('.cm-member-hint')!;
+		const turnstileBox = root.querySelector<HTMLElement>('.cm-turnstile')!;
+		const submitBtn = root.querySelector<HTMLButtonElement>('.cm-submit')!;
+		const resultBox = root.querySelector<HTMLElement>('.cm-result')!;
+
+		function showResult(msg: string, ok: boolean) {
+			resultBox.textContent = msg;
+			resultBox.className = 'cm-result ' + (ok ? 'ok' : 'err');
+			resultBox.hidden = false;
+		}
+
+		async function loadComments() {
+			listBox.innerHTML = '<div class="empty">⏳ 评论加载中…</div>';
+			let list: CommentItem[] = [];
+			try {
+				const resp = await fetch('/api/comments?slug=' + encodeURIComponent(slug));
+				const data = (await resp.json()) as { comments?: CommentItem[]; error?: string };
+				if (!resp.ok) throw new Error(data.error || `请求失败（HTTP ${resp.status}）`);
+				list = Array.isArray(data.comments) ? data.comments : [];
+			} catch (err) {
+				listBox.innerHTML = errorHtml('评论加载失败：' + (err as Error).message);
+				bindRetry(listBox, loadComments);
+				return;
+			}
+			if (!list.length) {
+				listBox.innerHTML = '<div class="empty">还没有评论，来说两句。</div>';
+				return;
+			}
+			listBox.innerHTML = list
+				.map(
+					(c) =>
+						`<div class="cm-item"><div class="cm-item-head">` +
+						`<span class="cm-item-name">${escapeHtml(c.name)}</span>` +
+						(c.member ? `<span class="badge badge-ok">成员</span>` : '') +
+						`<span class="cm-item-time">${fmtTime(c.ts)}</span></div>` +
+						`<div class="cm-item-body">${escapeHtml(c.content).replace(/\n/g, '<br>')}</div></div>`,
+				)
+				.join('');
+		}
+
+		// ---- Turnstile（游客通道，显式渲染，首次交互表单时懒加载）----
+		let widgetId: string | number | null = null;
+		let scriptReady: Promise<void> | null = null;
+		function ensureScript(): Promise<void> {
+			const w = window as unknown as { turnstile?: unknown };
+			if (w.turnstile) return Promise.resolve();
+			if (!scriptReady) {
+				scriptReady = new Promise((resolve, reject) => {
+					const s = document.createElement('script');
+					s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+					s.async = true;
+					s.onload = () => resolve();
+					s.onerror = () => reject(new Error('人机验证组件加载失败，请检查网络后重试。'));
+					document.head.appendChild(s);
+				});
+			}
+			return scriptReady;
+		}
+		async function renderTurnstile() {
+			if (widgetId !== null || !sitekey) return;
+			await ensureScript();
+			const w = window as unknown as {
+				turnstile: { render(el: HTMLElement, opts: { sitekey: string }): string | number };
+			};
+			widgetId = w.turnstile.render(turnstileBox, { sitekey });
+		}
+		form.addEventListener('focusin', () => void renderTurnstile().catch(() => {}), { once: true });
+
+		// ---- 成员签名开关 ----
+		const handles = listMemberKeys();
+		function updateMemberUi() {
+			if (!handles.length) {
+				memberToggle.disabled = true;
+				memberHint.hidden = false;
+				memberHint.innerHTML =
+					'本机还没有 DAO 成员身份，可先到 <a href="/dao/join">/dao/join</a> 生成密钥并申请加入，或导入已有私钥。';
+				return;
+			}
+			memberHint.hidden = true;
+			const on = memberToggle.checked;
+			identitySel.hidden = !on;
+			turnstileBox.style.display = on ? 'none' : '';
+			if (on && !identitySel.options.length) {
+				identitySel.innerHTML = handles
+					.map((h) => `<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`)
+					.join('');
+			}
+		}
+		memberToggle.addEventListener('change', updateMemberUi);
+		updateMemberUi();
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const name = cleanText(nameInput.value);
+			const content = cleanText(contentInput.value);
+			if (!name || name.length > 20) {
+				showResult('昵称必填且不超过 20 字。', false);
+				return;
+			}
+			if (!content || content.length > 1000) {
+				showResult('评论内容必填且不超过 1000 字。', false);
+				return;
+			}
+
+			submitBtn.disabled = true;
+			resultBox.hidden = true;
+			try {
+				let body: Record<string, unknown>;
+				if (memberToggle.checked && handles.length) {
+					const handle = identitySel.value;
+					const cts = Date.now();
+					const sig = await signMessage(handle, `comment|${slug}|${name}|${content}|${cts}`);
+					body = { slug, name, content, handle, sig, cts };
+				} else {
+					await renderTurnstile();
+					const w = window as unknown as {
+						turnstile?: { getResponse(id: string | number): string };
+					};
+					const token = widgetId !== null && w.turnstile ? w.turnstile.getResponse(widgetId) : '';
+					if (!token) {
+						showResult('请先完成人机验证。', false);
+						return;
+					}
+					body = { slug, name, content, token };
+				}
+				const data = await apiPost<{ ok: boolean; status: string }>('/api/comments', body);
+				showResult(
+					data.status === 'approved'
+						? '✅ 已发布（DAO 成员签名评论即时公开）。'
+						: '✅ 已提交，审核通过后公开。',
+					true,
+				);
+				contentInput.value = '';
+				const w = window as unknown as { turnstile?: { reset(id: string | number): void } };
+				if (widgetId !== null && w.turnstile) w.turnstile.reset(widgetId);
+				await loadComments();
+			} catch (err) {
+				showResult((err as Error).message, false);
+			} finally {
+				submitBtn.disabled = false;
+			}
+		});
+
+		loadComments();
+	});
+</script>

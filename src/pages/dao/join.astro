@@ -7,15 +7,7 @@ const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃�
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
-		main {
-			--c-ok: #16a34a;
-			--c-err: #dc2626;
-		}
-		[data-theme='dark'] main {
-			--c-ok: #4ade80;
-			--c-err: #f87171;
-		}
+	<style is:global>
 		.page-header {
 			margin-bottom: 1.5em;
 		}
@@ -54,14 +46,10 @@ const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃�
 			color: var(--text-secondary);
 			line-height: 1.6;
 		}
-		.panel {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
-			padding: 1.4em 1.6em;
+		.join-panel {
 			margin-bottom: 1.2em;
 		}
-		.panel h2 {
+		.join-panel h2 {
 			font-size: 1.05em;
 			margin: 0 0 0.8em;
 		}
@@ -74,53 +62,9 @@ const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃�
 			color: var(--text-secondary);
 			margin-bottom: 0.3em;
 		}
-		.field input,
-		.field textarea {
-			width: 100%;
-			box-sizing: border-box;
-			padding: 0.55em 0.8em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			background: var(--bg);
-			color: var(--text);
-			font-size: 0.95em;
-			font-family: inherit;
-		}
-		.field textarea {
+		.field textarea.mono {
 			font-family: monospace;
 			font-size: 0.8em;
-		}
-		.field input:focus,
-		.field textarea:focus {
-			outline: none;
-			border-color: var(--accent);
-		}
-		.btn {
-			padding: 0.6em 1.4em;
-			border: none;
-			border-radius: var(--radius-md);
-			background: var(--accent);
-			color: white;
-			font-size: 0.95em;
-			font-weight: 600;
-			cursor: pointer;
-			min-height: 40px;
-		}
-		.btn:hover {
-			background: var(--accent-dark);
-		}
-		.btn:disabled {
-			opacity: 0.6;
-			cursor: not-allowed;
-		}
-		.btn.secondary {
-			background: transparent;
-			color: var(--text);
-			border: 1px solid var(--border);
-		}
-		.btn.secondary:hover {
-			border-color: var(--accent);
-			color: var(--accent);
 		}
 		.warn {
 			background: var(--accent-soft);
@@ -187,58 +131,58 @@ const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃�
 			</div>
 		</div>
 
-		<section class="panel">
+		<section class="card join-panel">
 			<h2>第一步 · 生成我的密钥对</h2>
-			<button class="btn" id="gen-btn">生成我的密钥对</button>
+			<button class="btn btn-primary" id="gen-btn">生成我的密钥对</button>
 			<div id="key-area" style="display:none">
 				<p class="muted">公钥（将随申请提交并上链公示）：</p>
 				<div class="key-out" id="pubkey-out"></div>
 				<div class="warn">
 					⚠️ 请立即下载并妥善备份私钥。私钥只存在于你的浏览器里，<strong>丢失即失去这个身份</strong>，任何人（包括创始人）都无法帮你找回。
 				</div>
-				<button class="btn secondary" id="dl-btn">下载私钥（JSON）</button>
+				<button class="btn btn-outline" id="dl-btn">下载私钥（JSON）</button>
 			</div>
 		</section>
 
-		<section class="panel">
+		<section class="card join-panel">
 			<h2>第二步 · 提交加入申请</h2>
 			<div class="field">
 				<label for="handle">化名 handle（2-24 字符，允许中英文、数字、_、-）</label>
-				<input type="text" id="handle" maxlength="24" placeholder="给自己起个化名" />
+				<input type="text" id="handle" class="input" maxlength="24" placeholder="给自己起个化名" />
 			</div>
-			<button class="btn" id="apply-btn" disabled>提交申请</button>
+			<button class="btn btn-primary" id="apply-btn" disabled>提交申请</button>
 			<div class="result" id="apply-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card join-panel">
 			<h2>查询我的状态</h2>
 			<div class="field">
 				<label for="query-handle">化名 handle</label>
-				<input type="text" id="query-handle" maxlength="24" placeholder="输入申请时用的 handle" />
+				<input type="text" id="query-handle" class="input" maxlength="24" placeholder="输入申请时用的 handle" />
 			</div>
-			<button class="btn secondary" id="query-btn">查询状态</button>
+			<button class="btn btn-outline" id="query-btn">查询状态</button>
 			<div class="result" id="query-result"></div>
 		</section>
 
-		<section class="panel">
+		<section class="card join-panel">
 			<h2>导入私钥（换设备用）</h2>
 			<p class="muted">在新设备上投票前，把备份的私钥导入本机浏览器。私钥只存进 localStorage，不会上传。</p>
 			<div class="field">
 				<label for="import-handle">化名 handle</label>
-				<input type="text" id="import-handle" maxlength="24" />
+				<input type="text" id="import-handle" class="input" maxlength="24" />
 			</div>
 			<div class="field">
 				<label for="import-jwk">私钥 JWK（粘贴 JSON 全文）</label>
-				<textarea id="import-jwk" rows="4" placeholder='{"kty":"EC","crv":"P-256","x":"...","y":"...","d":"..."}'></textarea>
+				<textarea id="import-jwk" class="textarea mono" rows="4" placeholder='{"kty":"EC","crv":"P-256","x":"...","y":"...","d":"..."}'></textarea>
 			</div>
-			<button class="btn secondary" id="import-btn">导入本机</button>
+			<button class="btn btn-outline" id="import-btn">导入本机</button>
 			<div class="result" id="import-result"></div>
 		</section>
 	</main>
 
 	<script>
-		import { replay } from '../../lib/dao-core';
-		import type { ChainRecord, EcPubJwk } from '../../lib/dao-core';
+		import type { EcPubJwk } from '../../lib/dao-core';
+		import { loadChain, apiPost } from '../../lib/dao-ui';
 
 		const $ = (id: string) => document.getElementById(id) as HTMLElement;
 		const input = (id: string) => document.getElementById(id) as HTMLInputElement;
@@ -294,13 +238,7 @@ const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃�
 			}
 			btn.disabled = true;
 			try {
-				const resp = await fetch('/api/dao/join', {
-					method: 'POST',
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify({ handle, pubkey: generatedPub }),
-				});
-				const data = await resp.json().catch(() => ({}));
-				if (!resp.ok) throw new Error((data as any).error || '提交失败（HTTP ' + resp.status + '）');
+				await apiPost('/api/dao/join', { handle, pubkey: generatedPub });
 				try {
 					localStorage.setItem('dao:key:' + handle, JSON.stringify(generatedPriv));
 				} catch {}
@@ -321,10 +259,7 @@ const description = '生成 ECDSA 密钥对，提交申请，成为无名苗圃�
 			}
 			show(result, '⏳ 正在本地重放链数据…', true);
 			try {
-				const resp = await fetch('/api/ledger/list');
-				const data = await resp.json();
-				const records: ChainRecord[] = data.records || [];
-				const state = replay(records);
+				const { state } = await loadChain(true);
 				const m = state.members[handle];
 				if (m && !m.removed) {
 					show(result, '✅ ' + handle + ' 已是在册成员（加入于链上 #' + m.joinedSeq + '）。', true);

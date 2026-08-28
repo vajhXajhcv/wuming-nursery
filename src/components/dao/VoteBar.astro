@@ -1,0 +1,49 @@
+---
+/**
+ * 投票条。两种用法：
+ * 1) 静态：<VoteBar forPct={60} againstPct={40} abstainPct={0} big={false} />
+ * 2) 动态（页面脚本 innerHTML）：用 dao-ui 的 voteBarHtml() 生成同款结构，
+ *    页面引入 <VoteBar />（不传参，不渲染任何节点）仅注入全局样式。
+ */
+interface Props {
+	forPct?: number;
+	againstPct?: number;
+	abstainPct?: number;
+	big?: boolean;
+}
+const { forPct, againstPct, abstainPct = 0, big = false } = Astro.props;
+const render = typeof forPct === 'number' && typeof againstPct === 'number';
+---
+
+{
+	render && (
+		<div class={big ? 'vote-bar big' : 'vote-bar'}>
+			<div class="for" style={`width:${forPct}%`} />
+			<div class="against" style={`width:${againstPct}%`} />
+			{abstainPct > 0 && <div class="abstain" style={`width:${abstainPct}%`} />}
+		</div>
+	)
+}
+
+<style is:global>
+	.vote-bar {
+		height: 6px;
+		border-radius: 3px;
+		background: var(--border);
+		overflow: hidden;
+		display: flex;
+	}
+	.vote-bar.big {
+		height: 10px;
+		border-radius: 5px;
+	}
+	.vote-bar .for {
+		background: var(--c-ok);
+	}
+	.vote-bar .against {
+		background: var(--c-err);
+	}
+	.vote-bar .abstain {
+		background: var(--text-secondary);
+	}
+</style>

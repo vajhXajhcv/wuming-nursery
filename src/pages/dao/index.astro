@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import StatCards from '../../components/dao/StatCards.astro';
+import ChainStatus from '../../components/dao/ChainStatus.astro';
+import ProposalCards from '../../components/dao/ProposalCards.astro';
+import VoteBar from '../../components/dao/VoteBar.astro';
 import { SITE_TITLE } from '../../consts';
 
 const title = `DAO 总览 - ${SITE_TITLE}`;
@@ -7,15 +11,7 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
-		main {
-			--c-ok: #16a34a;
-			--c-err: #dc2626;
-		}
-		[data-theme='dark'] main {
-			--c-ok: #4ade80;
-			--c-err: #f87171;
-		}
+	<style is:global>
 		.manifesto {
 			margin-bottom: 1.5em;
 			padding: 1.6em 1.8em;
@@ -33,79 +29,6 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 			line-height: 1.8;
 			margin: 0;
 		}
-		.stats {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-			gap: 0.8em;
-			margin: 1.5em 0;
-		}
-		.stat {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			padding: 0.9em 1.1em;
-		}
-		.stat .stat-label {
-			font-size: 0.75em;
-			color: var(--text-secondary);
-		}
-		.stat .stat-value {
-			font-size: 1.3em;
-			font-weight: 700;
-			font-variant-numeric: tabular-nums;
-		}
-		.stat .stat-value.income {
-			color: var(--c-ok);
-		}
-		.stat .stat-value.expense {
-			color: var(--c-err);
-		}
-		.stat .stat-sub {
-			font-size: 0.72em;
-			color: var(--text-secondary);
-			margin-top: 0.2em;
-		}
-		.chain-status {
-			display: flex;
-			align-items: center;
-			gap: 0.8em;
-			flex-wrap: wrap;
-			padding: 0.8em 1.1em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			background: var(--bg-elevated);
-			font-size: 0.88em;
-			margin-bottom: 1.5em;
-		}
-		.chain-badge {
-			font-weight: 600;
-		}
-		.chain-badge.ok {
-			color: var(--c-ok);
-		}
-		.chain-badge.bad {
-			color: var(--c-err);
-		}
-		.chain-head {
-			color: var(--text-secondary);
-			font-family: monospace;
-			font-size: 0.85em;
-			word-break: break-all;
-		}
-		#verify-btn {
-			margin-left: auto;
-			padding: 0.35em 1em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-sm);
-			background: transparent;
-			color: var(--text);
-			font-size: 0.85em;
-			cursor: pointer;
-		}
-		#verify-btn:hover {
-			border-color: var(--accent);
-			color: var(--accent);
-		}
 		.two-col {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
@@ -117,14 +40,7 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 				grid-template-columns: 1fr;
 			}
 		}
-		.panel {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
-			padding: 1.2em 1.4em;
-			margin-bottom: 1em;
-		}
-		.panel h2 {
+		.dao-panel h2 {
 			font-size: 1.05em;
 			margin: 0 0 0.8em;
 		}
@@ -135,6 +51,7 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 			padding: 0.45em 0;
 			border-bottom: 1px dashed var(--border);
 			font-size: 0.9em;
+			flex-wrap: wrap;
 		}
 		.board-row:last-child {
 			border-bottom: none;
@@ -151,50 +68,9 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 			margin-left: auto;
 			color: var(--text-secondary);
 			font-variant-numeric: tabular-nums;
-			white-space: nowrap;
 		}
 		.board-pts strong {
 			color: var(--accent);
-		}
-		.prop-item {
-			display: block;
-			text-decoration: none;
-			color: var(--text);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			padding: 0.7em 1em;
-			margin-bottom: 0.6em;
-			font-size: 0.9em;
-		}
-		.prop-item:hover {
-			border-color: var(--accent);
-		}
-		.prop-title {
-			font-weight: 600;
-		}
-		.prop-meta {
-			color: var(--text-secondary);
-			font-size: 0.85em;
-			margin: 0.2em 0 0.4em;
-		}
-		.vote-bar {
-			height: 6px;
-			border-radius: 3px;
-			background: var(--border);
-			overflow: hidden;
-			display: flex;
-		}
-		.vote-bar .for {
-			background: var(--c-ok);
-		}
-		.vote-bar .against {
-			background: var(--c-err);
-		}
-		.vote-nums {
-			font-size: 0.8em;
-			color: var(--text-secondary);
-			margin-top: 0.3em;
-			font-variant-numeric: tabular-nums;
 		}
 		.anchor-row {
 			display: flex;
@@ -250,53 +126,49 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 			</p>
 		</section>
 
-		<div class="stats">
-			<div class="stat">
+		<StatCards>
+			<div class="stat-card">
 				<div class="stat-label">金库收入</div>
 				<div class="stat-value income" id="stat-in">—</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">金库支出</div>
 				<div class="stat-value expense" id="stat-out">—</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">金库结余</div>
 				<div class="stat-value" id="stat-balance">—</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">在册成员</div>
 				<div class="stat-value" id="stat-members">—</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">提案数</div>
 				<div class="stat-value" id="stat-proposals">—</div>
 				<div class="stat-sub" id="stat-proposals-sub"></div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">最近锚定</div>
 				<div class="stat-value" id="stat-anchor">—</div>
 				<div class="stat-sub" id="stat-anchor-sub"></div>
 			</div>
-		</div>
+		</StatCards>
 
-		<div class="chain-status">
-			<span class="chain-badge" id="chain-badge">⏳ 加载中…</span>
-			<span class="chain-head" id="chain-head"></span>
-			<button id="verify-btn">浏览器独立验链</button>
-		</div>
+		<ChainStatus />
 
 		<div class="two-col">
-			<section class="panel">
+			<section class="card dao-panel">
 				<h2>贡献榜 Top 10</h2>
 				<div id="board" class="muted">加载中…</div>
 			</section>
-			<section class="panel">
+			<section class="card dao-panel">
 				<h2>进行中的提案</h2>
 				<div id="active-proposals" class="muted">加载中…</div>
 			</section>
 		</div>
 
-		<section class="panel">
+		<section class="card dao-panel">
 			<h2>锚定历史（OpenTimestamps）</h2>
 			<div id="anchors" class="muted">加载中…</div>
 		</section>
@@ -325,45 +197,40 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 		</div>
 	</main>
 
+	<!-- 动态内容由 JS 渲染：注入 .prop-item/.vote-bar 的全局样式 -->
+	<ProposalCards />
+	<VoteBar />
+
 	<script>
-		import { verifyChain, replay, tally, proposalStatus } from '../../lib/dao-core';
-		import type { ChainRecord, ChainHead } from '../../lib/dao-core';
+		import { proposalStatus } from '../../lib/dao-core';
+		import {
+			loadChain,
+			escapeHtml,
+			fmtTime,
+			fmtPts,
+			fmtMoney,
+			proposalItemHtml,
+			errorHtml,
+			bindRetry,
+		} from '../../lib/dao-ui';
 
 		const $ = (id: string) => document.getElementById(id) as HTMLElement;
 
-		function escapeHtml(s: unknown): string {
-			return String(s ?? '')
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/"/g, '&quot;');
-		}
-		function fmtTime(ts: number): string {
-			const d = new Date(ts);
-			const p = (n: number) => String(n).padStart(2, '0');
-			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-		}
-		function fmtPts(n: number): string {
-			return Number.isInteger(n) ? String(n) : n.toFixed(2);
-		}
-
-		let chainRecords: ChainRecord[] = [];
-		let chainHead: ChainHead | null = null;
-
 		async function init() {
-			let data: any;
+			let c;
 			try {
-				const resp = await fetch('/api/ledger/list');
-				data = await resp.json();
-			} catch {
-				$('chain-badge').textContent = '❌ 加载失败';
-				$('board').textContent = '加载失败，请刷新重试。';
-				$('active-proposals').textContent = '加载失败。';
+				c = await loadChain();
+			} catch (err) {
+				const msg = (err as Error).message || '加载失败，请刷新重试。';
+				$('board').innerHTML = errorHtml(msg);
+				bindRetry($('board'), init);
+				$('active-proposals').innerHTML = errorHtml(msg);
+				bindRetry($('active-proposals'), init);
+				$('anchors').innerHTML = '<span class="muted">加载失败。</span>';
 				return;
 			}
-			const records: ChainRecord[] = data.records || [];
-			chainRecords = records;
-			chainHead = data.head || null;
+			const { records, state } = c;
+			const now = Date.now();
 
 			// 金库统计：只取 income/expense
 			let tin = 0;
@@ -372,12 +239,9 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 				if (r.type === 'income') tin += parseFloat(r.amount) || 0;
 				else if (r.type === 'expense') tout += parseFloat(r.amount) || 0;
 			}
-			$('stat-in').textContent = '¥' + tin.toFixed(2);
-			$('stat-out').textContent = '¥' + tout.toFixed(2);
-			$('stat-balance').textContent = '¥' + (tin - tout).toFixed(2);
-
-			const state = replay(records);
-			const now = Date.now();
+			$('stat-in').textContent = fmtMoney(tin);
+			$('stat-out').textContent = fmtMoney(tout);
+			$('stat-balance').textContent = fmtMoney(tin - tout);
 
 			const memberCount = Object.values(state.members).filter((m) => !m.removed).length;
 			$('stat-members').textContent = String(memberCount);
@@ -401,19 +265,6 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 				$('stat-anchor').textContent = '—';
 			}
 
-			// 链状态（服务端结论仅作展示，独立验证点按钮）
-			const badge = $('chain-badge');
-			if (data.chain && data.chain.valid) {
-				badge.textContent = '✅ 链完整（服务端）';
-				badge.className = 'chain-badge ok';
-			} else if (data.chain) {
-				badge.textContent = '⚠️ 链校验异常 @#' + data.chain.brokenAt;
-				badge.className = 'chain-badge bad';
-			} else {
-				badge.textContent = '—';
-			}
-			$('chain-head').textContent = data.head ? '链头 ' + data.head.hash.slice(0, 16) + '…' : '';
-
 			// 贡献榜
 			const board = Object.entries(state.points)
 				.map(([handle, p]) => ({ handle, ...p }))
@@ -428,27 +279,12 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 								`<span class="board-pts"><strong>${fmtPts(b.total)}</strong> 点（资金 ${fmtPts(b.money)} · 劳动 ${fmtPts(b.labor)}）</span></div>`,
 						)
 						.join('')
-				: '<span class="muted">暂无贡献记录</span>';
+				: '<div class="empty">暂无贡献记录</div>';
 
 			// 进行中的提案
 			$('active-proposals').innerHTML = activeProps.length
-				? activeProps
-						.map((p) => {
-							const t = tally(records, p);
-							const denom = t.for + t.against;
-							const forW = denom ? (t.for / denom) * 100 : 0;
-							const againstW = denom ? (t.against / denom) * 100 : 0;
-							return (
-								`<a class="prop-item" href="/dao/proposal?pid=${p.pid}">` +
-								`<div class="prop-title">#${p.pid} ${escapeHtml(p.data.title)}</div>` +
-								`<div class="prop-meta">截止 ${fmtTime(p.data.deadline)}</div>` +
-								`<div class="vote-bar"><div class="for" style="width:${forW}%"></div><div class="against" style="width:${againstW}%"></div></div>` +
-								`<div class="vote-nums">赞成 ${fmtPts(t.for)} · 反对 ${fmtPts(t.against)}</div>` +
-								`</a>`
-							);
-						})
-						.join('')
-				: '<span class="muted">暂无进行中的提案</span>';
+				? activeProps.map((p) => proposalItemHtml(records, p)).join('')
+				: '<div class="empty">暂无进行中的提案</div>';
 
 			// 锚定历史（404 容忍；index.json 为数组，条目 {seq, hash, ts, files:{日历:文件名}}）
 			try {
@@ -484,23 +320,6 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 				$('anchors').innerHTML = '<span class="muted">暂无锚定</span>';
 			}
 		}
-
-		document.getElementById('verify-btn')?.addEventListener('click', async () => {
-			const badge = $('chain-badge');
-			badge.textContent = '⏳ 正在本地重算…';
-			badge.className = 'chain-badge';
-			const res = await verifyChain(chainRecords, chainHead ?? undefined);
-			if (res.valid) {
-				badge.textContent = `✅ 本地验证通过（${chainRecords.length} 条）`;
-				badge.className = 'chain-badge ok';
-			} else if (res.brokenAt === -1) {
-				badge.textContent = '❌ 链头与末条记录不符';
-				badge.className = 'chain-badge bad';
-			} else {
-				badge.textContent = '❌ 链断裂于 #' + res.brokenAt;
-				badge.className = 'chain-badge bad';
-			}
-		});
 
 		init();
 	</script>

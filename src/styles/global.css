@@ -15,6 +15,27 @@
 	--accent-dark: #4338ca;
 	--accent-soft: #eef2ff;
 
+	/* 语义色（全站统一，DAO/账本页原在每页重复定义，已收敛至此） */
+	--c-ok: #16a34a;
+	--c-err: #dc2626;
+	--c-warn: #d97706;
+
+	/* 字号阶梯 */
+	--text-xs: 0.75em;
+	--text-sm: 0.85em;
+	--text-base: 1em;
+	--text-lg: 1.1em;
+	--text-xl: 1.3em;
+	--text-2xl: 1.6em;
+
+	/* 间距阶梯 */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+
 	--radius-sm: 6px;
 	--radius-md: 10px;
 	--radius-lg: 14px;
@@ -48,6 +69,10 @@
 	--accent: #8b8df0;
 	--accent-dark: #a5a7f5;
 	--accent-soft: rgba(139, 141, 240, 0.14);
+
+	--c-ok: #4ade80;
+	--c-err: #f87171;
+	--c-warn: #fbbf24;
 
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
 	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);

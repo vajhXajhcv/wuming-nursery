@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import StatCards from '../../components/dao/StatCards.astro';
+import ChainStatus from '../../components/dao/ChainStatus.astro';
 import { SITE_TITLE } from '../../consts';
 
 const title = `公开账本 - ${SITE_TITLE}`;
@@ -7,7 +9,7 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
+	<style is:global>
 		.page-header {
 			margin-bottom: 1.5em;
 		}
@@ -20,127 +22,28 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 			font-size: 0.9em;
 			margin: 0;
 		}
-		.stats {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-			gap: 0.8em;
-			margin: 1.5em 0;
-		}
-		.stat {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			padding: 0.9em 1.1em;
-		}
-		.stat .stat-label {
-			font-size: 0.75em;
-			color: var(--text-secondary);
-		}
-		.stat .stat-value {
-			font-size: 1.3em;
-			font-weight: 700;
-			font-variant-numeric: tabular-nums;
-		}
-		.stat .stat-value.income {
-			color: #16a34a;
-		}
-		.stat .stat-value.expense {
-			color: #dc2626;
-		}
-		.chain-status {
-			display: flex;
-			align-items: center;
-			gap: 0.8em;
-			flex-wrap: wrap;
-			padding: 0.8em 1.1em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			background: var(--bg-elevated);
-			font-size: 0.88em;
-			margin-bottom: 1.5em;
-		}
-		.chain-badge {
-			font-weight: 600;
-		}
-		.chain-badge.ok {
-			color: #16a34a;
-		}
-		.chain-badge.bad {
-			color: #dc2626;
-		}
-		.chain-head {
-			color: var(--text-secondary);
-			font-family: monospace;
-			font-size: 0.85em;
-			word-break: break-all;
-		}
-		#verify-btn {
-			margin-left: auto;
-			padding: 0.35em 1em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-sm);
-			background: transparent;
-			color: var(--text);
-			font-size: 0.85em;
-			cursor: pointer;
-		}
-		#verify-btn:hover {
-			border-color: var(--accent);
-			color: var(--accent);
-		}
 		.ledger-table-wrapper {
 			overflow-x: auto;
 		}
-		.ledger-table {
-			width: 100%;
-			border-collapse: collapse;
-			font-size: 0.88em;
-		}
-		.ledger-table th,
 		.ledger-table td {
-			border-bottom: 1px solid var(--border);
-			padding: 0.6em 0.7em;
-			text-align: left;
 			white-space: nowrap;
-		}
-		.ledger-table th {
-			color: var(--text-secondary);
-			font-weight: 600;
-			font-size: 0.85em;
 		}
 		.ledger-table td.note {
 			white-space: normal;
 			min-width: 12em;
 		}
 		.amount-in {
-			color: #16a34a;
+			color: var(--c-ok);
 			font-variant-numeric: tabular-nums;
 		}
 		.amount-out {
-			color: #dc2626;
+			color: var(--c-err);
 			font-variant-numeric: tabular-nums;
-		}
-		.src {
-			font-size: 0.8em;
-			padding: 0.1em 0.55em;
-			border-radius: 999px;
-			border: 1px solid var(--border);
-			color: var(--text-secondary);
-		}
-		.src.auto {
-			background: var(--accent-soft);
-			color: var(--accent);
-			border-color: transparent;
 		}
 		.hash-cell {
 			font-family: monospace;
 			font-size: 0.78em;
 			color: var(--text-secondary);
-		}
-		.empty {
-			text-align: center;
-			color: var(--text-secondary);
-			padding: 3em 0;
 		}
 		.explain {
 			margin-top: 2.5em;
@@ -165,33 +68,29 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 			<p>每一笔收入与支出公开记录。哈希链防篡改，任何人可独立验证。</p>
 		</div>
 
-		<div class="stats">
-			<div class="stat">
+		<StatCards min="140px">
+			<div class="stat-card">
 				<div class="stat-label">总收入</div>
 				<div class="stat-value income" id="stat-in">¥0.00</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">总支出</div>
 				<div class="stat-value expense" id="stat-out">¥0.00</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">结余</div>
 				<div class="stat-value" id="stat-balance">¥0.00</div>
 			</div>
-			<div class="stat">
+			<div class="stat-card">
 				<div class="stat-label">记录数</div>
 				<div class="stat-value" id="stat-count">0</div>
 			</div>
-		</div>
+		</StatCards>
 
-		<div class="chain-status">
-			<span class="chain-badge" id="chain-badge">⏳ 加载中…</span>
-			<span class="chain-head" id="chain-head"></span>
-			<button id="verify-btn">独立验证哈希链</button>
-		</div>
+		<ChainStatus buttonLabel="独立验证哈希链" />
 
 		<div class="ledger-table-wrapper">
-			<table class="ledger-table">
+			<table class="table ledger-table">
 				<thead>
 					<tr>
 						<th>#</th>
@@ -206,7 +105,7 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 				</thead>
 				<tbody id="ledger-body">
 					<tr>
-						<td colspan="8" class="empty">加载中…</td>
+						<td colspan="8" class="empty">⏳ 加载中…</td>
 					</tr>
 				</tbody>
 			</table>
@@ -221,12 +120,8 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 	</main>
 
 	<script>
-		import { verifyChain } from '../../lib/dao-core';
-		import type { ChainRecord, ChainHead } from '../../lib/dao-core';
+		import { loadChain, escapeHtml, fmtTime, fmtMoney, errorHtml, bindRetry } from '../../lib/dao-ui';
 
-		const body = document.getElementById('ledger-body') as HTMLElement;
-		const badge = document.getElementById('chain-badge') as HTMLElement;
-		const headEl = document.getElementById('chain-head') as HTMLElement;
 		const SRC_LABELS: Record<string, string> = {
 			manual: '手动',
 			alipay: '自动·支付宝',
@@ -234,29 +129,17 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 			dao: 'DAO',
 		};
 
-		let records: ChainRecord[] = [];
-		let head: ChainHead | null = null;
-
-		function escapeHtml(s: unknown): string {
-			return String(s)
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/"/g, '&quot;');
-		}
-
 		async function init() {
-			let data: any;
+			const body = document.getElementById('ledger-body') as HTMLElement;
+			let c;
 			try {
-				const resp = await fetch('/api/ledger/list');
-				data = await resp.json();
-			} catch {
-				body.innerHTML = '<tr><td colspan="8" class="empty">加载失败，请刷新重试。</td></tr>';
-				badge.textContent = '❌ 加载失败';
+				c = await loadChain();
+			} catch (err) {
+				body.innerHTML = '<tr><td colspan="8">' + errorHtml((err as Error).message || '加载失败，请刷新重试。') + '</td></tr>';
+				bindRetry(body, init);
 				return;
 			}
-			records = data.records || [];
-			head = data.head || null;
+			const { records } = c;
 			// 表格与统计只取财务记录；DAO 治理事件不进账本表格（详见 /dao）
 			const fin = records.filter((r) => r.type === 'income' || r.type === 'expense');
 
@@ -267,20 +150,10 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 				if (r.type === 'income') tin += parseFloat(r.amount) || 0;
 				else tout += parseFloat(r.amount) || 0;
 			}
-			document.getElementById('stat-in')!.textContent = '¥' + tin.toFixed(2);
-			document.getElementById('stat-out')!.textContent = '¥' + tout.toFixed(2);
-			document.getElementById('stat-balance')!.textContent = '¥' + (tin - tout).toFixed(2);
+			document.getElementById('stat-in')!.textContent = fmtMoney(tin);
+			document.getElementById('stat-out')!.textContent = fmtMoney(tout);
+			document.getElementById('stat-balance')!.textContent = fmtMoney(tin - tout);
 			document.getElementById('stat-count')!.textContent = String(fin.length);
-
-			// 服务端结论仅作展示，真正验证由浏览器独立完成
-			if (data.chain && data.chain.valid) {
-				badge.textContent = '✅ 链完整（服务端）';
-				badge.className = 'chain-badge ok';
-			} else if (data.chain) {
-				badge.textContent = '⚠️ 链校验异常 @#' + data.chain.brokenAt;
-				badge.className = 'chain-badge bad';
-			}
-			headEl.textContent = head ? '链头 ' + head.hash.slice(0, 16) + '…' : '';
 
 			// 表格
 			if (!fin.length) {
@@ -290,14 +163,11 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 					.slice()
 					.reverse()
 					.map((r) => {
-						const d = new Date(r.ts);
-						const p = (n: number) => String(n).padStart(2, '0');
-						const time = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 						const isIn = r.type === 'income';
 						const srcLabel = SRC_LABELS[r.source] || r.source;
-						const srcClass = r.source === 'manual' ? 'src' : 'src auto';
+						const srcClass = r.source === 'manual' ? 'badge badge-neutral' : 'badge';
 						return (
-							'<tr><td>' + r.seq + '</td><td>' + time + '</td>' +
+							'<tr><td>' + r.seq + '</td><td>' + fmtTime(r.ts) + '</td>' +
 							'<td>' + (isIn ? '收入' : '支出') + '</td>' +
 							'<td>' + escapeHtml(r.category) + '</td>' +
 							'<td class="note">' + escapeHtml(r.note) + '</td>' +
@@ -309,23 +179,6 @@ const description = '每一笔收入与支出公开记录，哈希链防篡改�
 					.join('');
 			}
 		}
-
-		// 浏览器端独立验链（共享核心 verifyChain，与 functions/api 同一份逻辑）
-		document.getElementById('verify-btn')!.addEventListener('click', async () => {
-			badge.textContent = '⏳ 正在本地重算…';
-			badge.className = 'chain-badge';
-			const res = await verifyChain(records, head ?? undefined);
-			if (res.valid) {
-				badge.textContent = '✅ 本地验证通过（' + records.length + ' 条）';
-				badge.className = 'chain-badge ok';
-			} else if (res.brokenAt === -1) {
-				badge.textContent = '❌ 链头与末条记录不符';
-				badge.className = 'chain-badge bad';
-			} else {
-				badge.textContent = '❌ 链断裂于 #' + res.brokenAt;
-				badge.className = 'chain-badge bad';
-			}
-		});
 
 		init();
 	</script>

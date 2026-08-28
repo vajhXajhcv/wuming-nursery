@@ -208,34 +208,6 @@ const jsonLd = JSON.stringify({
 			line-height: 1.7;
 		}
 
-		.btn {
-			display: inline-block;
-			padding: 0.6em 1.3em;
-			border-radius: var(--radius-md);
-			text-decoration: none;
-			font-weight: 600;
-			font-size: 0.92em;
-			border: 1px solid transparent;
-			transition: background 0.15s, border-color 0.2s, color 0.15s;
-		}
-		.btn-primary {
-			background: var(--accent);
-			color: white;
-		}
-		.btn-primary:hover {
-			background: var(--accent-dark);
-			color: white;
-		}
-		.btn-secondary {
-			background: transparent;
-			color: var(--text);
-			border-color: var(--border);
-		}
-		.btn-secondary:hover {
-			border-color: var(--accent);
-			color: var(--accent);
-		}
-
 		section {
 			margin: 3em 0;
 		}
@@ -253,9 +225,6 @@ const jsonLd = JSON.stringify({
 			margin: 1.5em 0;
 		}
 		.price-card {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
 			padding: 1.5em;
 			transition: border-color 0.2s, box-shadow 0.2s;
 		}
@@ -285,8 +254,6 @@ const jsonLd = JSON.stringify({
 		}
 
 		.addons {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
 			border-radius: var(--radius-md);
 			padding: 1.2em 1.5em;
 		}
@@ -320,8 +287,6 @@ const jsonLd = JSON.stringify({
 			gap: 1.2em;
 		}
 		.process-card {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
 			border-radius: var(--radius-md);
 			padding: 1.4em 1.2em;
 		}
@@ -429,9 +394,9 @@ const jsonLd = JSON.stringify({
 		<section class="hero">
 			<h1>{t.heroTitle}</h1>
 			<p>{t.heroDesc}</p>
-			<div style="margin-top:1.5em;">
+			<div style="margin-top: var(--space-6);">
 				<a href={contactHref} class="btn btn-primary">{t.consultBtn}</a>
-				<a href={pricingHref} class="btn btn-secondary">{t.pricingBtn}</a>
+				<a href={pricingHref} class="btn btn-outline">{t.pricingBtn}</a>
 			</div>
 		</section>
 
@@ -439,7 +404,7 @@ const jsonLd = JSON.stringify({
 			<h2>{t.priceSectionTitle}</h2>
 			<div class="price-grid">
 				{t.prices.map((p) => (
-					<div class="price-card">
+					<div class="card price-card">
 						<h3>{p.type}</h3>
 						<div class="price">{p.price}</div>
 						<div class="period">{t.periodLabel}{p.period}</div>
@@ -447,7 +412,7 @@ const jsonLd = JSON.stringify({
 					</div>
 				))}
 			</div>
-			<div class="addons">
+			<div class="card addons">
 				<h3>{t.addonsTitle}</h3>
 				<ul>
 					{t.addons.map((a) => (
@@ -464,7 +429,7 @@ const jsonLd = JSON.stringify({
 			<h2>{t.processTitle}</h2>
 			<div class="process-grid">
 				{t.process.map((p) => (
-					<div class="process-card">
+					<div class="card process-card">
 						<div class="step">{p.step}</div>
 						<h4>{p.title}</h4>
 						<p>{p.desc}</p>

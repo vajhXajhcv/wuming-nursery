@@ -10,15 +10,7 @@ const dayMs = 24 * 3600 * 1000;
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
-		main {
-			--c-ok: #16a34a;
-			--c-err: #dc2626;
-		}
-		[data-theme='dark'] main {
-			--c-ok: #4ade80;
-			--c-err: #f87171;
-		}
+	<style is:global>
 		.page-header {
 			margin-bottom: 1.5em;
 		}
@@ -50,21 +42,7 @@ const dayMs = 24 * 3600 * 1000;
 			margin: 0.4em 0;
 		}
 		.param-table {
-			width: 100%;
-			border-collapse: collapse;
-			font-size: 0.88em;
 			margin: 0.8em 0;
-		}
-		.param-table th,
-		.param-table td {
-			border-bottom: 1px solid var(--border);
-			padding: 0.55em 0.7em;
-			text-align: left;
-		}
-		.param-table th {
-			color: var(--text-secondary);
-			font-weight: 600;
-			font-size: 0.85em;
 		}
 		.param-table td.val {
 			font-weight: 700;
@@ -182,7 +160,7 @@ const dayMs = 24 * 3600 * 1000;
 				<li>通过条件：达到法定人数，且赞成权重严格大于反对权重（简单多数）。</li>
 				<li>权重快照：每个成员的投票权重按<strong>提案上链高度</strong>（seq）快照计算，提案之后新增的贡献点不计入该提案。</li>
 			</ul>
-			<table class="param-table">
+			<table class="table param-table">
 				<thead>
 					<tr>
 						<th>参数</th>
@@ -255,57 +233,33 @@ const dayMs = 24 * 3600 * 1000;
 	</main>
 
 	<script>
-		import { verifyChain, replay } from '../../lib/dao-core';
-		import type { ChainRecord, ChainHead, DaoParams } from '../../lib/dao-core';
-
-		let chainData: { records: ChainRecord[]; head: ChainHead | null } | null = null;
-
-		function fmtParam(key: keyof DaoParams, v: number): string {
-			if (key === 'votingPeriodMs') return v / (24 * 3600 * 1000) + ' 天';
-			if (key === 'quorumBps') return v / 100 + '%';
-			return String(v);
-		}
+		import type { DaoParams } from '../../lib/dao-core';
+		import { loadChain, fmtParam, runLocalVerify } from '../../lib/dao-ui';
 
 		async function init() {
 			const badge = document.getElementById('chain-badge') as HTMLElement;
 			try {
-				const resp = await fetch('/api/ledger/list');
-				chainData = await resp.json();
+				const c = await loadChain();
+				badge.textContent = `已加载 ${c.records.length} 条链上记录`;
+				// 用链上最新 params 事件替换参数表当前值
+				(Object.keys(c.state.params) as (keyof DaoParams)[]).forEach((k) => {
+					const cell = document.querySelector(`[data-param="${k}"]`);
+					if (cell) cell.textContent = fmtParam(k, c.state.params[k]);
+				});
 			} catch {
 				badge.textContent = '❌ 链数据加载失败';
 				badge.className = 'bad';
-				return;
 			}
-			const records = chainData!.records || [];
-			badge.textContent = `已加载 ${records.length} 条链上记录`;
-			// 用链上最新 params 事件替换参数表当前值
-			const state = replay(records);
-			(Object.keys(state.params) as (keyof DaoParams)[]).forEach((k) => {
-				const cell = document.querySelector(`[data-param="${k}"]`);
-				if (cell) cell.textContent = fmtParam(k, state.params[k]);
-			});
 		}
 
-		document.getElementById('verify-btn')?.addEventListener('click', async () => {
+		document.getElementById('verify-btn')?.addEventListener('click', () => {
 			const badge = document.getElementById('chain-badge') as HTMLElement;
-			if (!chainData) return;
-			badge.textContent = '⏳ 正在本地重算…';
-			badge.className = '';
-			const res = await verifyChain(chainData.records || [], chainData.head ?? undefined);
-			if (res.valid) {
-				badge.textContent = `✅ 本地验证通过（${(chainData.records || []).length} 条）`;
-				badge.className = 'ok';
-			} else if (res.brokenAt === -1) {
-				badge.textContent = '❌ 链头与末条记录不符';
-				badge.className = 'bad';
-			} else {
-				badge.textContent = '❌ 链断裂于 #' + res.brokenAt;
-				badge.className = 'bad';
-			}
+			runLocalVerify(badge);
 		});
 
 		document.getElementById('download-btn')?.addEventListener('click', async () => {
 			try {
+				// 下载保留接口原始响应（含服务端 chain 结论），故不走 loadChain 缓存
 				const resp = await fetch('/api/ledger/list');
 				const data = await resp.json();
 				const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

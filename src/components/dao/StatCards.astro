@@ -1,0 +1,24 @@
+---
+/**
+ * 统计卡网格外壳：内部放 ui.css 的 .stat-card（.stat-label/.stat-value/.stat-sub）。
+ * 用法：<StatCards><div class="stat-card"><div class="stat-label">…</div>…</div></StatCards>
+ * min 调整每卡最小宽度（默认 150px）。
+ */
+interface Props {
+	min?: string;
+}
+const { min } = Astro.props;
+---
+
+<div class="dao-stats" style={min ? `--dao-stat-min:${min}` : undefined}>
+	<slot />
+</div>
+
+<style is:global>
+	.dao-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(var(--dao-stat-min, 150px), 1fr));
+		gap: 0.8em;
+		margin: 1.5em 0;
+	}
+</style>

@@ -45,7 +45,7 @@ const relatedPosts = allPosts
 	.map((p) => p.post);
 ---
 
-<BlogPost {...post.data} prevPost={prevPost} nextPost={nextPost} readingTime={readingTime} wordCount={displayWordCount} relatedPosts={relatedPosts}>
+<BlogPost {...post.data} slug={`blog/${post.id}`} prevPost={prevPost} nextPost={nextPost} readingTime={readingTime} wordCount={displayWordCount} relatedPosts={relatedPosts}>
 	{post.data.paid ? (
 		<>
 			<p class="paid-excerpt">{post.data.description}</p>

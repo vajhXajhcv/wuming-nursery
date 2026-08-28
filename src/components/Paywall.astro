@@ -14,7 +14,7 @@ const afdianUrl = afdianUrlFor(slug);
 ---
 
 <div class="paywall" id="paywall">
-	<div class="paywall-box">
+	<div class="card paywall-box">
 		<div class="paywall-icon">🔒</div>
 		<h2 class="paywall-title">本文为付费内容</h2>
 		<p class="paywall-price">
@@ -26,16 +26,16 @@ const afdianUrl = afdianUrlFor(slug);
 		</p>
 
 		<div class="paywall-section">
-			<button type="button" class="paywall-buy" id="paywall-buy">支付宝购买</button>
-			<a class="paywall-afdian" href={afdianUrl} target="_blank" rel="noopener">爱发电购买（匿名友好）</a>
+			<button type="button" class="btn btn-primary paywall-buy" id="paywall-buy">支付宝购买</button>
+			<a class="btn btn-outline paywall-afdian" href={afdianUrl} target="_blank" rel="noopener">爱发电购买（匿名友好）</a>
 			<p class="paywall-channel-note">支付宝付款后自动解锁；爱发电付款后用订单号在下方兑换。</p>
 		</div>
 
 		<div class="paywall-section paywall-redeem-section">
 			<p class="paywall-token-label">爱发电付款了？粘贴订单号兑换</p>
 			<div class="paywall-token-form">
-				<input type="text" id="paywall-order-input" placeholder="爱发电订单号" autocomplete="off" />
-				<button type="button" id="paywall-redeem-btn">兑换</button>
+				<input type="text" id="paywall-order-input" class="input" placeholder="爱发电订单号" autocomplete="off" />
+				<button type="button" id="paywall-redeem-btn" class="btn btn-primary">兑换</button>
 			</div>
 			<p class="paywall-redeem-hint">订单号在爱发电付款结果页或「我的订单」中，为一长串数字。</p>
 		</div>
@@ -43,8 +43,8 @@ const afdianUrl = afdianUrlFor(slug);
 		<div class="paywall-section paywall-token-section">
 			<p class="paywall-token-label">已有访问令牌？</p>
 			<div class="paywall-token-form">
-				<input type="text" id="paywall-token-input" placeholder="粘贴访问令牌" autocomplete="off" />
-				<button type="button" id="paywall-unlock-btn">解锁</button>
+				<input type="text" id="paywall-token-input" class="input" placeholder="粘贴访问令牌" autocomplete="off" />
+				<button type="button" id="paywall-unlock-btn" class="btn btn-primary">解锁</button>
 			</div>
 		</div>
 
@@ -233,12 +233,8 @@ const afdianUrl = afdianUrlFor(slug);
 
 <style>
 	.paywall-box {
-		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
 		padding: 2em 1.5em;
 		text-align: center;
-		background: var(--bg-elevated);
-		box-shadow: var(--shadow-sm);
 		margin: 1.5em 0;
 	}
 	.paywall-icon {
@@ -277,34 +273,14 @@ const afdianUrl = afdianUrlFor(slug);
 		margin-top: 1.4em;
 	}
 	.paywall-buy {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
 		padding: 0.6em 2.2em;
 		min-height: 40px;
-		border: 1px solid transparent;
-		border-radius: var(--radius-md);
-		background: var(--accent);
-		color: #fff;
 		font-size: 1em;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background 0.15s;
 	}
 	.paywall-afdian {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
 		padding: 0.6em 1.4em;
 		min-height: 40px;
 		margin-left: 0.6em;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		background: transparent;
-		color: var(--text);
-		font-size: 0.92em;
-		text-decoration: none;
-		transition: border-color 0.2s, color 0.15s;
 	}
 	.paywall-afdian:hover {
 		border-color: #946ce6;
@@ -314,13 +290,6 @@ const afdianUrl = afdianUrlFor(slug);
 		margin: 0.8em 0 0;
 		font-size: 0.78em;
 		color: var(--text-secondary);
-	}
-	.paywall-buy:hover {
-		background: var(--accent-dark);
-	}
-	.paywall-buy:disabled {
-		opacity: 0.6;
-		cursor: wait;
 	}
 	.paywall-token-section {
 		border-top: 1px dashed var(--border);
@@ -346,34 +315,14 @@ const afdianUrl = afdianUrlFor(slug);
 		justify-content: center;
 		gap: 0.5em;
 	}
-	.paywall-token-form input {
-		padding: 0.55em 1em;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		font-size: 0.85em;
+	.paywall-token-form .input {
 		width: 260px;
 		max-width: 100%;
-		background: var(--bg);
-		color: var(--text);
-		transition: border-color 0.2s;
-	}
-	.paywall-token-form input:focus {
-		outline: none;
-		border-color: var(--accent);
-	}
-	.paywall-token-form button {
-		padding: 0.55em 1.4em;
-		border: none;
 		border-radius: var(--radius-md);
-		background: var(--accent);
-		color: #fff;
-		font-size: 0.9em;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background 0.15s;
+		background: var(--bg);
 	}
-	.paywall-token-form button:hover {
-		background: var(--accent-dark);
+	.paywall-token-form .btn {
+		padding: 0.55em 1.4em;
 	}
 	.paywall-status {
 		display: none;
@@ -385,7 +334,7 @@ const afdianUrl = afdianUrlFor(slug);
 		display: block;
 	}
 	.paywall-status.error {
-		color: #dc2626;
+		color: var(--c-err);
 	}
 	.paid-content[hidden] {
 		display: none;

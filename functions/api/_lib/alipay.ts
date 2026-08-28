@@ -5,7 +5,7 @@
 // ---- 环境绑定类型（避免依赖 @cloudflare/workers-types） ----
 export interface KVNamespace {
 	get(key: string): Promise<string | null>;
-	put(key: string, value: string): Promise<void>;
+	put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
 	delete(key: string): Promise<void>;
 	list(options?: {
 		prefix?: string;
@@ -22,6 +22,7 @@ export interface Env {
 	ORDERS: KVNamespace;
 	CONTENT: KVNamespace;
 	LEDGER: KVNamespace;
+	COMMENTS: KVNamespace; // 评论：c:<slug>:<ts>:<rand> 记录 + rl:<ip> 限流计数
 	ALIPAY_APP_ID: string;
 	// 应用私钥：非 Java 项目使用支付宝给的 appPrivatePkcsKey 原值（PKCS#1，无 PEM 头尾），
 	// 也兼容 PKCS#8（"BEGIN PRIVATE KEY" 或无头 base64）；导入时自动识别并适配
@@ -31,6 +32,8 @@ export interface Env {
 	ALIPAY_GATEWAY?: string; // 默认 https://openapi.alipay.com/gateway.do
 	ALIPAY_SELLER_ID?: string; // 可选：配置后异步通知必须匹配 seller_id
 	ADMIN_TOKEN?: string; // admin 管理接口（退款/关单）的 Bearer 令牌
+	TURNSTILE_SECRET?: string; // 评论游客通道的 Turnstile 密钥；未配置时游客评论 fail-closed
+	TURNSTILE_HOSTNAMES?: string; // 可选：逗号分隔的前端域名白名单，配置后 siteverify 返回的 hostname 必须命中
 }
 
 export const DEFAULT_GATEWAY = 'https://openapi.alipay.com/gateway.do';

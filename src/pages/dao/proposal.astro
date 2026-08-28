@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import VoteBar from '../../components/dao/VoteBar.astro';
+import MemberGate from '../../components/dao/MemberGate.astro';
 import { SITE_TITLE } from '../../consts';
 
 const title = `提案详情 - ${SITE_TITLE}`;
@@ -7,15 +9,7 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 ---
 
 <BaseLayout title={title} description={description}>
-	<style>
-		main {
-			--c-ok: #16a34a;
-			--c-err: #dc2626;
-		}
-		[data-theme='dark'] main {
-			--c-ok: #4ade80;
-			--c-err: #f87171;
-		}
+	<style is:global>
 		.back {
 			font-size: 0.85em;
 			color: var(--text-secondary);
@@ -24,12 +18,12 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 		.back:hover {
 			color: var(--accent);
 		}
-		.panel {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
-			padding: 1.3em 1.5em;
+		.dao-card {
 			margin: 1em 0;
+		}
+		.dao-card h2 {
+			font-size: 1.05em;
+			margin: 0 0 0.8em;
 		}
 		.prop-head {
 			display: flex;
@@ -41,17 +35,9 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 			font-size: 1.3em;
 			margin: 0;
 		}
-		.pid {
+		.prop-head .pid {
 			color: var(--text-secondary);
 			font-variant-numeric: tabular-nums;
-		}
-		.badge {
-			font-size: 0.72em;
-			padding: 0.1em 0.6em;
-			border-radius: 999px;
-			background: var(--accent-soft);
-			color: var(--accent);
-			white-space: nowrap;
 		}
 		.badge.st-active {
 			background: var(--accent);
@@ -80,22 +66,8 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 			border-top: 1px solid var(--border);
 			padding-top: 1em;
 		}
-		.vote-bar {
-			height: 10px;
-			border-radius: 5px;
-			background: var(--border);
-			overflow: hidden;
-			display: flex;
+		.dao-card .vote-bar {
 			margin: 0.6em 0;
-		}
-		.vote-bar .for {
-			background: var(--c-ok);
-		}
-		.vote-bar .against {
-			background: var(--c-err);
-		}
-		.vote-bar .abstain {
-			background: var(--text-secondary);
 		}
 		.tally-nums {
 			display: grid;
@@ -135,20 +107,6 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 			flex-wrap: wrap;
 			margin-top: 0.8em;
 		}
-		.vote-btn {
-			padding: 0.55em 1.6em;
-			border-radius: var(--radius-md);
-			border: 1px solid var(--border);
-			background: transparent;
-			color: var(--text);
-			font-size: 0.95em;
-			font-weight: 600;
-			cursor: pointer;
-		}
-		.vote-btn:disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
 		.vote-btn.for {
 			border-color: var(--c-ok);
 			color: var(--c-ok);
@@ -164,15 +122,7 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 			margin-bottom: 0.3em;
 		}
 		.field select {
-			width: 100%;
 			max-width: 320px;
-			padding: 0.55em 0.8em;
-			border: 1px solid var(--border);
-			border-radius: var(--radius-md);
-			background: var(--bg);
-			color: var(--text);
-			font-size: 0.95em;
-			font-family: inherit;
 		}
 		.result {
 			margin-top: 0.8em;
@@ -195,22 +145,8 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 		.table-wrapper {
 			overflow-x: auto;
 		}
-		.vote-table {
-			width: 100%;
-			border-collapse: collapse;
-			font-size: 0.86em;
-		}
-		.vote-table th,
 		.vote-table td {
-			border-bottom: 1px solid var(--border);
-			padding: 0.55em 0.7em;
-			text-align: left;
 			white-space: nowrap;
-		}
-		.vote-table th {
-			color: var(--text-secondary);
-			font-weight: 600;
-			font-size: 0.85em;
 		}
 		.invalid-vote td {
 			color: var(--text-secondary);
@@ -222,30 +158,40 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 	</style>
 	<main>
 		<p><a class="back" href="/dao/proposals">← 返回提案列表</a></p>
-		<div id="app" class="muted">加载中…</div>
+		<div id="app"><div class="empty">⏳ 加载中…</div></div>
+		<MemberGate auto={false} />
 	</main>
+
+	<!-- 计票投票条由 JS 渲染，这里仅注入全局样式 -->
+	<VoteBar />
 
 	<script>
 		import {
-			replay,
-			tally,
 			proposalStatus,
 			pointsAt,
+			tally,
 			voteMessage,
 			verifyMemberSignature,
-			b64urlFromBytes,
 		} from '../../lib/dao-core';
 		import type { ChainRecord, ChainHead, DaoState, ProposalState, VoteChoice } from '../../lib/dao-core';
+		import {
+			loadChain,
+			fetchHeadHash,
+			apiPost,
+			signMessage,
+			listMemberKeys,
+			escapeHtml,
+			fmtTime,
+			fmtPts,
+			fmtParam,
+			voteBarHtml,
+			errorHtml,
+			bindRetry,
+			PTYPE_LABEL,
+			STATUS_LABEL,
+			CHOICE_LABEL,
+		} from '../../lib/dao-ui';
 
-		const PTYPE_LABEL: Record<string, string> = { spend: '支出', text: '文本', param: '参数' };
-		const STATUS_LABEL: Record<string, string> = {
-			active: '投票中',
-			expired: '待关闭',
-			passed: '已通过',
-			rejected: '已拒绝',
-			executed: '已执行',
-		};
-		const CHOICE_LABEL: Record<string, string> = { for: '赞成', against: '反对', abstain: '弃权' };
 		const PARAM_LABEL: Record<string, string> = {
 			proposeThreshold: '提案门槛',
 			votingPeriodMs: '投票期',
@@ -253,75 +199,32 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 			pointsPerYuan: '资金折算率（¥1 = N 点）',
 		};
 
-		function escapeHtml(s: unknown): string {
-			return String(s ?? '')
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/"/g, '&quot;');
-		}
-		function fmtTime(ts: number): string {
-			const d = new Date(ts);
-			const p = (n: number) => String(n).padStart(2, '0');
-			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-		}
-		function fmtPts(n: number): string {
-			return Number.isInteger(n) ? String(n) : n.toFixed(2);
-		}
-		function fmtParam(key: string, v: unknown): string {
-			if (key === 'votingPeriodMs') return Number(v) / (24 * 3600 * 1000) + ' 天';
-			if (key === 'quorumBps') return Number(v) / 100 + '%';
-			return String(v);
-		}
-		function listIdentities(): string[] {
-			const out: string[] = [];
-			try {
-				for (let i = 0; i < localStorage.length; i++) {
-					const k = localStorage.key(i);
-					if (k && k.startsWith('dao:key:')) out.push(k.slice('dao:key:'.length));
-				}
-			} catch {}
-			return out;
-		}
-		async function signMessage(privJwk: JsonWebKey, msg: string): Promise<string> {
-			const key = await crypto.subtle.importKey(
-				'jwk',
-				privJwk,
-				{ name: 'ECDSA', namedCurve: 'P-256' },
-				false,
-				['sign'],
-			);
-			const buf = await crypto.subtle.sign(
-				{ name: 'ECDSA', hash: 'SHA-256' },
-				key,
-				new TextEncoder().encode(msg),
-			);
-			return b64urlFromBytes(new Uint8Array(buf));
-		}
-
 		const pid = Number(new URLSearchParams(location.search).get('pid'));
 		const app = document.getElementById('app') as HTMLElement;
+		const gate = document.querySelector('.member-gate') as HTMLElement | null;
 
 		let records: ChainRecord[] = [];
 		let head: ChainHead | null = null;
 		let state: DaoState | null = null;
 		let prop: ProposalState | null = null;
 
-		async function load() {
-			let data: any;
+		async function load(): Promise<boolean> {
+			let c;
 			try {
-				const resp = await fetch('/api/ledger/list');
-				data = await resp.json();
-			} catch {
-				app.textContent = '加载失败，请刷新重试。';
+				c = await loadChain(true);
+			} catch (err) {
+				app.innerHTML = errorHtml((err as Error).message || '加载失败，请刷新重试。');
+				bindRetry(app, init);
+				if (gate) gate.style.display = 'none';
 				return false;
 			}
-			records = data.records || [];
-			head = data.head || null;
-			state = replay(records);
+			records = c.records;
+			head = c.head;
+			state = c.state;
 			prop = state.proposals[pid] || null;
 			if (!prop) {
-				app.innerHTML = '<p class="muted">未找到提案 #' + escapeHtml(pid) + '。</p>';
+				app.innerHTML = '<div class="empty">未找到提案 #' + escapeHtml(pid) + '。</div>';
+				if (gate) gate.style.display = 'none';
 				return false;
 			}
 			return true;
@@ -372,23 +275,23 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 					`<a href="/ledger">公开账本</a>支出记录 #${prop.execution.ledgerSeq}。</div>`;
 			}
 
+			// 投票区：仅在投票期渲染；本机无身份时改用 MemberGate 引导卡
+			const ids = listMemberKeys();
 			let voteAreaHtml = '';
-			if (status === 'active') {
-				const ids = listIdentities();
+			if (status === 'active' && ids.length) {
 				voteAreaHtml =
-					`<div class="panel vote-area"><h2>投票</h2>` +
-					(ids.length
-						? `<div class="field"><label for="identity">选择本机身份</label>` +
-							`<select id="identity">${ids.map((h) => `<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`).join('')}</select>` +
-							`<div class="muted" id="id-hint" style="margin-top:0.4em"></div></div>` +
-							`<div class="btn-row">` +
-							`<button class="vote-btn for" data-choice="for">赞成</button>` +
-							`<button class="vote-btn against" data-choice="against">反对</button>` +
-							`<button class="vote-btn" data-choice="abstain">弃权</button>` +
-							`</div><div class="result" id="vote-result"></div>`
-						: `<p class="muted">本机没有可用身份。请先到 <a href="/dao/join">加入页</a> 生成密钥并申请成为成员，或导入已有私钥。</p>`) +
+					`<div class="card dao-card vote-area"><h2>投票</h2>` +
+					`<div class="field"><label for="identity">选择本机身份</label>` +
+					`<select id="identity" class="input">${ids.map((h) => `<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`).join('')}</select>` +
+					`<div class="muted" id="id-hint" style="margin-top:0.4em"></div></div>` +
+					`<div class="btn-row">` +
+					`<button class="btn btn-outline vote-btn for" data-choice="for">赞成</button>` +
+					`<button class="btn btn-outline vote-btn against" data-choice="against">反对</button>` +
+					`<button class="btn btn-outline vote-btn" data-choice="abstain">弃权</button>` +
+					`</div><div class="result" id="vote-result"></div>` +
 					`</div>`;
 			}
+			if (gate) gate.style.display = status === 'active' && !ids.length ? '' : 'none';
 
 			// 投票记录（逐条浏览器验签）
 			const voteRows = await Promise.all(
@@ -407,7 +310,7 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 				}),
 			);
 			const votesHtml = voteRows.length
-				? `<div class="table-wrapper"><table class="vote-table"><thead><tr><th>成员</th><th>选择</th><th>权重</th><th>签名</th><th>状态</th></tr></thead><tbody>` +
+				? `<div class="table-wrapper"><table class="table vote-table"><thead><tr><th>成员</th><th>选择</th><th>权重</th><th>签名</th><th>状态</th></tr></thead><tbody>` +
 					voteRows
 						.map(
 							({ v, sigOk }) =>
@@ -421,9 +324,8 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 					`</tbody></table></div>`
 				: '<p class="muted">暂无投票记录。</p>';
 
-			app.classList.remove('muted');
 			app.innerHTML =
-				`<div class="panel">` +
+				`<div class="card dao-card">` +
 				`<div class="prop-head"><span class="pid">#${prop.pid}</span>` +
 				`<span class="badge">${PTYPE_LABEL[d.ptype] || escapeHtml(d.ptype)}</span>` +
 				`<span class="badge ${status === 'active' ? 'st-active' : ''}">${STATUS_LABEL[status]}</span>` +
@@ -431,8 +333,8 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 				`<div class="meta-grid">${metaHtml}</div>` +
 				`<div class="body-text">${escapeHtml(d.body)}</div>` +
 				`</div>` +
-				`<div class="panel"><h2>计票</h2>` +
-				`<div class="vote-bar"><div class="for" style="width:${forW}%"></div><div class="against" style="width:${againstW}%"></div><div class="abstain" style="width:${abstainW}%"></div></div>` +
+				`<div class="card dao-card"><h2>计票</h2>` +
+				voteBarHtml(forW, againstW, abstainW, true) +
 				`<div class="tally-nums">` +
 				`<div><div class="k">赞成</div><div class="v">${fmtPts(t.for)}</div></div>` +
 				`<div><div class="k">反对</div><div class="v">${fmtPts(t.against)}</div></div>` +
@@ -444,9 +346,9 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 				receiptHtml +
 				`</div>` +
 				voteAreaHtml +
-				`<div class="panel"><h2>投票记录（${prop.votes.length}）</h2>${votesHtml}</div>`;
+				`<div class="card dao-card"><h2>投票记录（${prop.votes.length}）</h2>${votesHtml}</div>`;
 
-			if (status === 'active') bindVoteArea();
+			if (status === 'active' && ids.length) bindVoteArea();
 		}
 
 		function bindVoteArea() {
@@ -479,28 +381,19 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 						result.textContent = msg;
 						result.className = 'result ' + (ok ? 'ok' : 'err');
 					};
-					let privJwk: JsonWebKey;
-					try {
-						privJwk = JSON.parse(localStorage.getItem('dao:key:' + handle) || '');
-					} catch {
-						show('本机找不到该身份的私钥，请先到加入页导入。', false);
-						return;
-					}
 					document.querySelectorAll('.vote-btn').forEach((b) => ((b as HTMLButtonElement).disabled = true));
 					try {
 						// 投票前取最新链头，最大化签名通过率
-						const resp = await fetch('/api/ledger/list');
-						const fresh = await resp.json();
-						const headHash: string = (fresh.head && fresh.head.hash) || (head && head.hash) || '';
+						const headHash = await fetchHeadHash().catch(() => (head && head.hash) || '');
 						if (!headHash) throw new Error('取不到链头哈希');
-						const sig = await signMessage(privJwk, voteMessage(headHash, prop.pid, choice));
-						const vr = await fetch('/api/dao/vote', {
-							method: 'POST',
-							headers: { 'content-type': 'application/json' },
-							body: JSON.stringify({ pid: prop.pid, handle, choice, headHash, sig }),
-						});
-						const vdata = await vr.json().catch(() => ({}));
-						if (vr.status === 409) {
+						const sig = await signMessage(handle, voteMessage(headHash, prop.pid, choice));
+						await apiPost('/api/dao/vote', { pid: prop.pid, handle, choice, headHash, sig });
+						show('✅ 投票已上链，正在刷新…', true);
+						await load();
+						await render();
+					} catch (err) {
+						const e = err as Error & { status?: number };
+						if (e.status === 409) {
 							await load();
 							await render();
 							const r2 = document.getElementById('vote-result') as HTMLElement | null;
@@ -510,12 +403,7 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 							}
 							return;
 						}
-						if (!vr.ok) throw new Error((vdata as any).error || '投票失败（HTTP ' + vr.status + '）');
-						show('✅ 投票已上链，正在刷新…', true);
-						await load();
-						await render();
-					} catch (err) {
-						show((err as Error).message || '投票失败。', false);
+						show(e.message || '投票失败。', false);
 						document
 							.querySelectorAll('.vote-btn')
 							.forEach((b) => ((b as HTMLButtonElement).disabled = false));
@@ -526,7 +414,8 @@ const description = '无名苗圃共同体治理提案详情与投票。';
 
 		async function init() {
 			if (!Number.isFinite(pid) || pid <= 0) {
-				app.textContent = '链接缺少有效的 pid 参数。';
+				app.innerHTML = '<div class="empty">链接缺少有效的 pid 参数。</div>';
+				if (gate) gate.style.display = 'none';
 				return;
 			}
 			if (await load()) await render();

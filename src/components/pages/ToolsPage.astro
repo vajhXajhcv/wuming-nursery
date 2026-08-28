@@ -220,9 +220,6 @@ const jsonLd = JSON.stringify({
 		}
 
 		.flagship {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
 			padding: 1.8em;
 			margin: 1.8em 0;
 		}
@@ -290,44 +287,6 @@ const jsonLd = JSON.stringify({
 			gap: 0.4em;
 			margin-top: 1.2em;
 		}
-		.flagship-tags span {
-			font-size: 0.75em;
-			padding: 0.2em 0.7em;
-			border-radius: 999px;
-			background: var(--accent-soft);
-			color: var(--accent);
-		}
-
-		.btn {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.4em;
-			padding: 0.6em 1.3em;
-			border-radius: var(--radius-md);
-			text-decoration: none;
-			font-weight: 600;
-			transition: background 0.15s, border-color 0.2s, color 0.15s;
-			border: 1px solid transparent;
-			cursor: pointer;
-			font-size: 0.92em;
-		}
-		.btn-primary {
-			background: var(--accent);
-			color: white;
-		}
-		.btn-primary:hover {
-			background: var(--accent-dark);
-			color: white;
-		}
-		.btn-secondary {
-			background: transparent;
-			color: var(--text);
-			border-color: var(--border);
-		}
-		.btn-secondary:hover {
-			border-color: var(--accent);
-			color: var(--accent);
-		}
 
 		.section-title {
 			font-size: 1.25em;
@@ -342,19 +301,17 @@ const jsonLd = JSON.stringify({
 			gap: 1em;
 		}
 		.tool-card {
-			background: var(--bg-elevated);
-			border: 1px solid var(--border);
-			border-radius: var(--radius-lg);
 			padding: 1.4em;
 			text-decoration: none;
 			color: inherit;
-			transition: border-color 0.2s, box-shadow 0.2s;
+			transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 			display: flex;
 			flex-direction: column;
 		}
 		.tool-card:hover {
 			border-color: var(--accent);
 			box-shadow: var(--shadow-md);
+			transform: translateY(-2px);
 		}
 		.tool-card h3 {
 			margin: 0 0 0.2em;
@@ -373,12 +330,6 @@ const jsonLd = JSON.stringify({
 			margin-bottom: 1em;
 		}
 		.tool-card .status {
-			display: inline-block;
-			font-size: 0.72em;
-			padding: 0.15em 0.7em;
-			border-radius: 999px;
-			background: var(--accent-soft);
-			color: var(--accent);
 			font-weight: 500;
 			margin-bottom: 0.8em;
 			align-self: flex-start;
@@ -427,7 +378,7 @@ const jsonLd = JSON.stringify({
 			<p>{t.heroDesc}</p>
 		</section>
 
-		<section class="flagship">
+		<section class="card flagship">
 			<div class="flagship-header">
 				<div class="flagship-icon">📄</div>
 				<div class="flagship-title">
@@ -441,19 +392,19 @@ const jsonLd = JSON.stringify({
 			</ul>
 			<div class="flagship-actions">
 				{t.flagship.links.map((link) => (
-					<a href={link.href} class={`btn ${link.primary ? 'btn-primary' : 'btn-secondary'}`}>{link.text}</a>
+					<a href={link.href} class={`btn ${link.primary ? 'btn-primary' : 'btn-outline'}`}>{link.text}</a>
 				))}
 			</div>
 			<div class="flagship-tags">
-				{t.flagship.tags.map((tag) => <span>{tag}</span>)}
+				{t.flagship.tags.map((tag) => <span class="badge">{tag}</span>)}
 			</div>
 		</section>
 
 		<h2 class="section-title">{t.sectionTitle}</h2>
 		<div class="tool-grid">
 			{t.tools.map((tool) => (
-				<a href={tool.href} class="tool-card">
-					<span class="status">{tool.status}</span>
+				<a href={tool.href} class="card tool-card">
+					<span class="badge status">{tool.status}</span>
 					<h3>{tool.name}</h3>
 					<p class="tagline">{tool.tagline}</p>
 					<p class="desc">{tool.description}</p>

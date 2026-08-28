@@ -1,0 +1,92 @@
+---
+/**
+ * 链状态条：服务端校验徽标 + 链头短哈希 + 「浏览器独立验链」按钮。
+ * 自包含：挂载后自行 loadChain()（与页面脚本共享同一次请求），按钮触发本地重算。
+ * buttonLabel 可改按钮文案（账本页用「独立验证哈希链」）。
+ */
+interface Props {
+	buttonLabel?: string;
+}
+const { buttonLabel = '浏览器独立验链' } = Astro.props;
+---
+
+<div class="chain-status">
+	<span class="chain-badge">⏳ 加载中…</span>
+	<span class="chain-head"></span>
+	<button type="button" class="chain-verify-btn">{buttonLabel}</button>
+</div>
+
+<style is:global>
+	.chain-status {
+		display: flex;
+		align-items: center;
+		gap: 0.8em;
+		flex-wrap: wrap;
+		padding: 0.8em 1.1em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		background: var(--bg-elevated);
+		font-size: 0.88em;
+		margin-bottom: 1.5em;
+	}
+	.chain-badge {
+		font-weight: 600;
+	}
+	.chain-badge.ok {
+		color: var(--c-ok);
+	}
+	.chain-badge.bad {
+		color: var(--c-err);
+	}
+	.chain-head {
+		color: var(--text-secondary);
+		font-family: monospace;
+		font-size: 0.85em;
+		word-break: break-all;
+	}
+	.chain-verify-btn {
+		margin-left: auto;
+		padding: 0.35em 1em;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-sm);
+		background: transparent;
+		color: var(--text);
+		font-size: 0.85em;
+		cursor: pointer;
+	}
+	.chain-verify-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+</style>
+
+<script>
+	import { loadChain, shortHash, runLocalVerify } from '../../lib/dao-ui';
+
+	document.querySelectorAll('.chain-status').forEach((root) => {
+		const badge = root.querySelector('.chain-badge') as HTMLElement | null;
+		const headEl = root.querySelector('.chain-head') as HTMLElement | null;
+		const btn = root.querySelector('.chain-verify-btn') as HTMLButtonElement | null;
+		if (!badge || !btn) return;
+
+		loadChain()
+			.then((c) => {
+				if (c.serverChain && c.serverChain.valid) {
+					badge.textContent = '✅ 链完整（服务端）';
+					badge.classList.add('ok');
+				} else if (c.serverChain) {
+					badge.textContent = '⚠️ 链校验异常 @#' + c.serverChain.brokenAt;
+					badge.classList.add('bad');
+				} else {
+					badge.textContent = '—';
+				}
+				if (headEl) headEl.textContent = c.head ? '链头 ' + shortHash(c.head.hash) : '';
+			})
+			.catch((err: unknown) => {
+				badge.textContent = '❌ ' + ((err as Error).message || '加载失败');
+				badge.classList.add('bad');
+			});
+
+		btn.addEventListener('click', () => runLocalVerify(badge));
+	});
+</script>

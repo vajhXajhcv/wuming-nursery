@@ -265,10 +265,7 @@ const t = dicts[lang];
 			margin: 2em 0;
 		}
 		.service-card {
-			background: var(--bg-elevated);
-			border-radius: var(--radius-lg);
 			padding: 1.6em;
-			border: 1px solid var(--border);
 			transition: border-color 0.2s, box-shadow 0.2s;
 			display: flex;
 			flex-direction: column;
@@ -364,10 +361,8 @@ const t = dicts[lang];
 			gap: 1.2em;
 		}
 		.process-card {
-			background: var(--bg-elevated);
-			border-radius: var(--radius-md);
 			padding: 1.4em 1.2em;
-			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
 		}
 		.process-card .step {
 			font-size: 1.6em;
@@ -452,21 +447,6 @@ const t = dicts[lang];
 			font-size: 0.92em;
 			margin: 0 0 1.2em;
 		}
-		.cta-btn {
-			display: inline-block;
-			padding: 0.65em 1.6em;
-			background: var(--accent);
-			color: white;
-			border-radius: var(--radius-md);
-			text-decoration: none;
-			font-weight: 600;
-			font-size: 0.92em;
-			transition: background 0.15s;
-		}
-		.cta-btn:hover {
-			background: var(--accent-dark);
-			color: white;
-		}
 
 		@media (max-width: 720px) {
 			.service-grid { grid-template-columns: 1fr; }
@@ -484,7 +464,7 @@ const t = dicts[lang];
 
 		<section class="service-grid">
 			{t.services.map((s) => (
-				<div class="service-card">
+				<div class="card service-card">
 					<div class="icon">{s.icon}</div>
 					<h3>{s.title}</h3>
 					<div class="subtitle">{s.subtitle}</div>
@@ -508,7 +488,7 @@ const t = dicts[lang];
 			<h2 class="section-title">{t.processTitle}</h2>
 			<div class="process-grid">
 				{t.process.map((p) => (
-					<div class="process-card">
+					<div class="card process-card">
 						<div class="step">{p.step}</div>
 						<h4>{p.title}</h4>
 						<p>{p.desc}</p>
@@ -535,7 +515,7 @@ const t = dicts[lang];
 		<section class="cta-box">
 			<h2>{t.ctaTitle}</h2>
 			<p>{t.ctaDesc}</p>
-			<a href={lang === 'zh' ? '/contact' : `/${lang}/contact/`} class="cta-btn">{t.ctaBtn}</a>
+			<a href={lang === 'zh' ? '/contact' : `/${lang}/contact/`} class="btn btn-primary">{t.ctaBtn}</a>
 		</section>
 	</main>
 	<script is:inline>
