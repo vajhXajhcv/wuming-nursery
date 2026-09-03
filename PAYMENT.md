@@ -11,6 +11,7 @@
 - `functions/api/status.ts`：前端轮询查单（pending 时回退 `alipay.trade.query` 主动查），已支付则签发访问令牌。
 - `functions/api/content.ts`：校验令牌，从 KV 返回正文 HTML。
 - `functions/api/admin/{refund,refund-query,close}.ts`：商户自用退款 / 退款查询 / 关单接口（需 `Authorization: Bearer ${ADMIN_TOKEN}`）。
+- `functions/api/track.ts`：匿名转化漏斗统计（`paywall_view`/`alipay_click`/`afdian_click`/`redeem_click`，按天计数存 ORDERS KV，不收集任何身份信息）；数据在 `/dao/admin`「转化漏斗」面板查看。
 - `scripts/upload-paid-content.mjs`：把 `dist-paid-content/` 上传到 KV（`CONTENT` binding）。
 - `scripts/mint-token.mjs`：本地手动签发令牌（人工赠送 / 老读者）。
 

@@ -11,17 +11,17 @@ const { lang = DEFAULT_LOCALE } = Astro.props;
 
 const dicts = {
 	zh: {
-		home: '首页', products: '产品', services: '服务', pricing: '定价', dao: 'DAO', garden: '🌱 自留区', contact: '联系',
+		home: '首页', products: '产品', services: '服务与定价', dao: 'DAO', garden: '🌱 自留区', contact: '联系',
 		tools: '工具总览', md2docx: '在线 Markdown 转 Word', formatter: 'docx-formatter-cn', docs: '使用文档',
 		blog: '写作', notes: '笔记', about: '关于我',
 	},
 	en: {
-		home: 'Home', products: 'Products', services: 'Services', pricing: 'Pricing', dao: 'DAO', garden: '🌱 Garden', contact: 'Contact',
+		home: 'Home', products: 'Products', services: 'Services & Pricing', dao: 'DAO', garden: '🌱 Garden', contact: 'Contact',
 		tools: 'All Tools', md2docx: 'Online Markdown → Word', formatter: 'docx-formatter-cn', docs: 'Docs',
 		blog: 'Blog', notes: 'Notes', about: 'About',
 	},
 	ja: {
-		home: 'ホーム', products: '製品', services: 'サービス', pricing: '料金', dao: 'DAO', garden: '🌱 ガーデン', contact: 'お問い合わせ',
+		home: 'ホーム', products: '製品', services: 'サービスと料金', dao: 'DAO', garden: '🌱 ガーデン', contact: 'お問い合わせ',
 		tools: 'ツール一覧', md2docx: 'オンライン Markdown → Word', formatter: 'docx-formatter-cn', docs: 'ドキュメント',
 		blog: 'ブログ', notes: 'ノート', about: '私について',
 	},
@@ -87,7 +87,6 @@ const langOptions = LOCALES.map((l) => ({
 			</div>
 
 			<HeaderLink href={L('/services')}>{t.services}</HeaderLink>
-			<HeaderLink href={L('/pricing')}>{t.pricing}</HeaderLink>
 
 			<div class="dropdown" data-dropdown>
 				<button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true">

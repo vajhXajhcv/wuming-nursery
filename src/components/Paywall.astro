@@ -73,6 +73,21 @@ const afdianUrl = afdianUrlFor(slug);
 			statusEl.classList.toggle('visible', !!msg);
 		}
 
+		// 匿名转化漏斗埋点：sendBeacon 优先，失败静默，绝不影响支付流程
+		function track(event) {
+			try {
+				var body = JSON.stringify({ event: event });
+				if (navigator.sendBeacon) {
+					navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }));
+				} else {
+					fetch('/api/track', { method: 'POST', body: body, keepalive: true }).catch(function () {});
+				}
+			} catch (e) {}
+		}
+
+		// 每次加载付费墙计一次 view（不去重）
+		track('paywall_view');
+
 		function showContent(html) {
 			content.innerHTML = html;
 			content.hidden = false;
@@ -150,6 +165,7 @@ const afdianUrl = afdianUrlFor(slug);
 
 		if (buyBtn) {
 			buyBtn.addEventListener('click', async function () {
+				track('alipay_click');
 				buyBtn.disabled = true;
 				setStatus('正在创建订单…');
 				try {
@@ -188,6 +204,13 @@ const afdianUrl = afdianUrlFor(slug);
 			});
 		}
 
+		var afdianLink = wall.querySelector('.paywall-afdian');
+		if (afdianLink) {
+			afdianLink.addEventListener('click', function () {
+				track('afdian_click');
+			});
+		}
+
 		if (unlockBtn && tokenInput) {
 			unlockBtn.addEventListener('click', function () {
 				var token = tokenInput.value.trim();
@@ -206,6 +229,7 @@ const afdianUrl = afdianUrlFor(slug);
 					setStatus('请先粘贴爱发电订单号。', true);
 					return;
 				}
+				track('redeem_click');
 				redeemBtn.disabled = true;
 				setStatus('正在核实爱发电订单…');
 				try {

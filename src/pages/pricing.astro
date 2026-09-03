@@ -1,5 +1,17 @@
 ---
-import PricingPage from '../components/pages/PricingPage.astro';
+// /pricing 已合并进 /services，此页仅做重定向
+const target = '/services#pricing';
 ---
 
-<PricingPage lang="zh" />
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="refresh" content={`0; url=${target}`} />
+		<link rel="canonical" href="https://wumingmp.me/services" />
+		<title>页面已迁移 - 无名苗圃</title>
+	</head>
+	<body>
+		<p>定价页已合并至「服务与定价」，正在跳转… <a href={target}>如果没有自动跳转，请点击这里</a>。</p>
+	</body>
+</html>

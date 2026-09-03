@@ -1,0 +1,53 @@
+# OTS 锚定自动化：把公开账本链头通过 OpenTimestamps 锚定到比特币，
+# 并把待定证明升级为含区块 attestation 的完整证明（详见 scripts/anchor-ots.mjs 头注释）。
+#
+# 首次使用（可选）：在仓库 Settings → Secrets and variables → Actions 中配置
+# ADMIN_TOKEN。配置后脚本会把锚定事件写回链上（POST /api/dao/anchor）；
+# 不配则 ADMIN_TOKEN 为空，脚本自动跳过写链，只更新 public/dao/anchors/ 下的证明文件。
+#
+# 证明文件变更会以 github-actions[bot] 身份提交回 main 分支（commit 带 [skip ci]），
+# 随下一次部署公开。
+
+name: Anchor OTS
+
+on:
+  workflow_dispatch: # 手动触发
+  schedule:
+    # 每周一 03:17 UTC（cron 用 UTC；分钟避开 :00 / :30 整点高峰）
+    - cron: '17 3 * * 1'
+
+permissions:
+  contents: write # 提交并推送 public/dao/anchors/ 的变更
+
+jobs:
+  anchor:
+    name: OTS 锚定与证明升级
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          # package.json 的 engines 要求 >=22.12.0
+          node-version: '22'
+
+      - name: 运行锚定脚本
+        # secret 不存在时为空字符串，脚本会自动跳过写链，无需额外判断。
+        # 脚本失败（exit 非 0）会让工作流失败，不吞错误。
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: node scripts/anchor-ots.mjs
+
+      - name: 提交并推送证明文件变更
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/dao/anchors/
+          if git diff --cached --quiet; then
+            echo "无变更，跳过提交"
+          else
+            git commit -m "chore(dao): OTS 锚定/证明升级 [skip ci]"
+            git push
+          fi

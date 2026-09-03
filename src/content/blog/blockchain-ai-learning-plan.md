@@ -53,10 +53,7 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
    ↑___________________________________________|
 ```
 
-**具体规则**：
-1. **任何协议机制**：AI 解释后，必须去以太坊官方文档或黄皮书找对应段落确认。
-2. **任何代码**：AI 生成后，必须在 Foundry/Anvil 跑通测试，不能只看"像对的"。
-3. **任何数学推导**：AI 给出的公式，必须手动代入一个小例子验证（如用 Python 算一遍）。
+具体执行时记住三条规则。第一，**任何协议机制**：AI 解释后，必须去以太坊官方文档或黄皮书找对应段落确认。第二，**任何代码**：AI 生成后，必须在 Foundry/Anvil 跑通测试，不能只看"像对的"。第三，**任何数学推导**：AI 给出的公式，必须手动代入一个小例子验证（如用 Python 算一遍）。
 
 ### 2.2 Prompt 工程：区块链专用模板
 
@@ -129,11 +126,7 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 ## 三、24 周计划 × AI 增强
 
-每周结构：
-- **AI 输入**：如何用 AI 加速阅读/理解
-- **AI 输出**：如何用 AI 辅助代码/笔记/测试
-- **AI 检验**：如何用 AI 验证你是否真懂
-- **本周 Prompt 库**：可直接复制使用的 Prompt
+每周按固定的四个环节展开：**AI 输入**，如何用 AI 加速阅读与理解；**AI 输出**，如何用 AI 辅助代码、笔记与测试；**AI 检验**，如何用 AI 验证你是否真懂；以及**本周 Prompt 库**，即可直接复制使用的 Prompt。
 
 ---
 
@@ -141,17 +134,11 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 1 周：密码学原子操作
 
-**AI 输入**：
-- 用 **模板 C** 让 AI 解释 Merkle Tree 的 inclusion proof。要求 AI 生成一个 Python 脚本，用随机数据生成树并验证。
-- 让 AI 对比 SHA-256 与 Keccak-256（以太坊用）的差异，输出表格。
+**AI 输入**：先用**模板 C** 让 AI 解释 Merkle Tree 的 inclusion proof，要求它生成一个 Python 脚本，用随机数据生成树并验证；再让 AI 对比 SHA-256 与 Keccak-256（以太坊用）的差异，输出成表格。
 
-**AI 输出**：
-- 手写 Python 脚本前，先用 AI 生成骨架，你填空关键逻辑（如哈希计算部分）。
-- 用 AI 生成测试用例："请生成 10 组边界测试数据，用于验证我的 Merkle Tree 实现"
+**AI 输出**：手写 Python 脚本前，先用 AI 生成骨架，由你填空关键逻辑（如哈希计算部分）；测试用例也交给 AI 起草——"请生成 10 组边界测试数据，用于验证我的 Merkle Tree 实现"。
 
-**AI 检验**：
-- 把你的 Python 实现贴给 AI，用 **模板 B** 审计（虽然是 Python，但逻辑审计仍然有效）。
-- 问 AI："如果我在 Merkle Tree 中使用不安全的哈希函数（如 MD5），攻击者如何构造碰撞？给出具体步骤。"
+**AI 检验**：把你的 Python 实现贴给 AI，用**模板 B** 审计（虽然是 Python，但逻辑审计仍然有效）；再追问一个攻击视角的问题："如果我在 Merkle Tree 中使用不安全的哈希函数（如 MD5），攻击者如何构造碰撞？给出具体步骤。"
 
 **本周 Prompt 库**：
 ```prompt
@@ -167,49 +154,33 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 2 周：分布式系统基础
 
-**AI 输入**：
-- 上传 Raft 论文 PDF 到 Kimi/Claude，用 **模板 A** 分析。
-- 让 AI 用"公司部门决策"的类比解释 PBFT 的三阶段协议（pre-prepare, prepare, commit）。
+**AI 输入**：上传 Raft 论文 PDF 到 Kimi/Claude，用**模板 A** 分析；再让 AI 用"公司部门决策"的类比解释 PBFT 的三阶段协议（pre-prepare, prepare, commit）。
 
-**AI 输出**：
-- 用 AI 生成 Raft 的 Python 骨架代码（Leader 选举 + 心跳），你实现日志复制部分。
-- 让 AI 设计一个"网络分区"测试场景："请生成 3 个测试用例，模拟脑裂（split-brain）场景，验证我的 Raft 实现是否正确处理"
+**AI 输出**：用 AI 生成 Raft 的 Python 骨架代码（Leader 选举 + 心跳），日志复制部分由你自己实现；接着让 AI 设计"网络分区"测试场景——"请生成 3 个测试用例，模拟脑裂（split-brain）场景，验证我的 Raft 实现是否正确处理"。
 
-**AI 检验**：
-- 问 AI："比特币的 PoW 共识和 Raft 的 Leader 选举，在'活性（liveness）'保证上有什么本质区别？请用形式化语言 + 通俗类比双重解释。"
+**AI 检验**：问 AI："比特币的 PoW 共识和 Raft 的 Leader 选举，在'活性（liveness）'保证上有什么本质区别？请用形式化语言 + 通俗类比双重解释。"
 
 ---
 
 #### 第 3 周：比特币深度解剖
 
-**AI 输入**：
-- 把中本聪白皮书分段喂给 AI，每段用 **模板 A** 分析。
-- 让 AI 解析一个真实比特币交易的 raw hex（从区块浏览器复制），逐字段解释。
+**AI 输入**：把中本聪白皮书分段喂给 AI，每段用**模板 A** 分析；再让 AI 解析一个真实比特币交易的 raw hex（从区块浏览器复制），逐字段解释。
 
-**AI 输出**：
-- 用 AI 辅助写比特币交易解析器："请写一段 Python 代码，解析比特币 raw transaction 的以下字段：version, input count, inputs, output count, outputs, locktime。使用 struct 模块。"
-- 让 AI 生成 UTXO 流转的 Mermaid 图代码，你贴到 Obsidian/Notion 中渲染。
+**AI 输出**：用 AI 辅助写比特币交易解析器——"请写一段 Python 代码，解析比特币 raw transaction 的以下字段：version, input count, inputs, output count, outputs, locktime。使用 struct 模块。"同时让 AI 生成 UTXO 流转的 Mermaid 图代码，你贴到 Obsidian/Notion 中渲染。
 
-**AI 检验**：
-- 把你的解析器输出与区块浏览器对比，有差异时让 AI 诊断："我的解析器输出 scriptPubKey 为 [X]，但浏览器显示 [Y]，可能是什么原因？"
+**AI 检验**：把你的解析器输出与区块浏览器对比，有差异时让 AI 诊断："我的解析器输出 scriptPubKey 为 [X]，但浏览器显示 [Y]，可能是什么原因？"
 
 ---
 
 #### 第 4 周：共识机制演进与 PoS
 
-**AI 输入**：
-- Gasper 论文摘要 + 第 3 章喂给 AI，用 **模板 A**。
-- 让 AI 对比 Casper FFG 与 LMD GHOST 的关系："为什么需要两个机制？只用一个有什么问题？"
+**AI 输入**：把 Gasper 论文摘要和第 3 章喂给 AI，用**模板 A** 分析；再让 AI 对比 Casper FFG 与 LMD GHOST 的关系——"为什么需要两个机制？只用一个有什么问题？"
 
-**AI 输出**：
-- 用 AI 生成 PoS 模拟器的 Python 骨架：验证者集合、随机选举、区块提议、Slashing 条件。
-- 让 AI 设计一个可视化方案："请用 matplotlib 代码展示 100 个验证者在 50 个 epoch 中的投票分布，模拟双签攻击的检测"
+**AI 输出**：用 AI 生成 PoS 模拟器的 Python 骨架，包括验证者集合、随机选举、区块提议、Slashing 条件；再让 AI 设计可视化方案："请用 matplotlib 代码展示 100 个验证者在 50 个 epoch 中的投票分布，模拟双签攻击的检测"。
 
-**AI 检验**：
-- 问 AI 一个陷阱题："PoS 中，如果验证者离线（不投票），和恶意投票（投错误票），惩罚机制为什么不同？这背后的经济学原理是什么？"
+**AI 检验**：问 AI 一个陷阱题："PoS 中，如果验证者离线（不投票），和恶意投票（投错误票），惩罚机制为什么不同？这背后的经济学原理是什么？"
 
-**阶段一出口考试（AI 辅助版）**：
-让 AI 生成 10 道简答题，你手写答案后，AI 批改并指出理解盲区。
+**阶段一出口考试（AI 辅助版）**：让 AI 生成 10 道简答题，你手写答案后，AI 批改并指出理解盲区。
 
 ---
 
@@ -217,62 +188,41 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 5 周：以太坊协议层
 
-**AI 输入**：
-- 以太坊白皮书 + 黄皮书（第 1-4 章）分段精读，AI 用 **模板 A**。
-- 让 AI 对比 EVM 栈机与 JVM 栈机的差异："为什么 EVM 设计了 1024 栈深度限制？"
+**AI 输入**：以太坊白皮书 + 黄皮书（第 1-4 章）分段精读，AI 侧用**模板 A**；再让 AI 对比 EVM 栈机与 JVM 栈机的差异——"为什么 EVM 设计了 1024 栈深度限制？"
 
-**AI 输出**：
-- 用 Foundry 初始化项目后，让 AI 生成一个 ERC-20 的完整实现（带事件、安全转账）。
-- 让 AI 解释你的第一个 Anvil 部署日志："我运行 forge script 后，输出 [LOG]，请解释每个字段含义。"
+**AI 输出**：用 Foundry 初始化项目后，让 AI 生成一个 ERC-20 的完整实现（带事件、安全转账）；部署后把日志交给 AI："我运行 forge script 后，输出 [LOG]，请解释每个字段含义。"
 
-**AI 检验**：
-- 用 **模板 B** 审计你的 ERC-20 合约。
-- 问 AI："为什么 EVM 的存储（storage）是 256-bit 键值对，而内存（memory）是线性字节数组？这如何影响 Gas 成本？"
+**AI 检验**：先用**模板 B** 审计你的 ERC-20 合约，再问 AI："为什么 EVM 的存储（storage）是 256-bit 键值对，而内存（memory）是线性字节数组？这如何影响 Gas 成本？"
 
 ---
 
 #### 第 6 周：Solidity 工程与安全
 
-**AI 输入**：
-- 把 OpenZeppelin 的 ERC-20.sol 贴给 AI，让它逐函数解释设计决策（如为什么用 `_mint` 内部函数）。
-- 让 AI 总结 Solidity 的 10 大经典漏洞模式，每个配一个最小代码示例。
+**AI 输入**：把 OpenZeppelin 的 ERC-20.sol 贴给 AI，让它逐函数解释设计决策（如为什么用 `_mint` 内部函数）；再让 AI 总结 Solidity 的 10 大经典漏洞模式，每个配一个最小代码示例。
 
-**AI 输出**：
-- 用 AI 生成 Re-entrancy Guard 的测试用例："请写 Foundry 测试，模拟重入攻击，验证 guard 是否生效。"
-- 让 AI 帮你完成 Ethernaut："我卡在第 X 关，合约代码是 [CODE]，我的攻击思路是 [IDEA]，请指出我遗漏了什么。"
+**AI 输出**：让 AI 生成 Re-entrancy Guard 的测试用例——"请写 Foundry 测试，模拟重入攻击，验证 guard 是否生效。"Ethernaut 卡关时同样可以求助："我卡在第 X 关，合约代码是 [CODE]，我的攻击思路是 [IDEA]，请指出我遗漏了什么。"
 
-**AI 检验**：
-- 把你的合约和测试贴给 AI，让它用 Slither 的逻辑（静态分析规则）模拟审计。
+**AI 检验**：把你的合约和测试贴给 AI，让它用 Slither 的逻辑（静态分析规则）模拟审计。
 
 ---
 
 #### 第 7 周：MEV 与交易生命周期
 
-**AI 输入**：
-- 让 AI 用 **模板 A** 分析 Flashbots 的 mev-boost 文档。
-- 让 AI 用"拍卖行"类比解释 PBS（Proposer-Builder Separation）。
+**AI 输入**：让 AI 用**模板 A** 分析 Flashbots 的 mev-boost 文档，并用"拍卖行"类比解释 PBS（Proposer-Builder Separation）。
 
-**AI 输出**：
-- 用 Foundry 模拟三明治攻击：让 AI 写攻击合约 + 受害者合约 + 测试脚本。
-- 让 AI 生成 MEV 收益的可视化代码："用 matplotlib 展示一个 Uniswap V2 池子在 100 笔交易中的价格滑点与 MEV 提取机会"
+**AI 输出**：用 Foundry 模拟三明治攻击，攻击合约、受害者合约和测试脚本都可以让 AI 起草；再让 AI 生成 MEV 收益的可视化代码——"用 matplotlib 展示一个 Uniswap V2 池子在 100 笔交易中的价格滑点与 MEV 提取机会"。
 
-**AI 检验**：
-- 问 AI："如果所有区块都由 Flashbots 的 builder 构建，这算不算一种中心化？与矿池中心化有何不同？"
+**AI 检验**：问 AI："如果所有区块都由 Flashbots 的 builder 构建，这算不算一种中心化？与矿池中心化有何不同？"
 
 ---
 
 #### 第 8 周：以太坊扩容前史
 
-**AI 输入**：
-- 让 AI 对比表格：Channel、Sidechain、Plasma、Validium，要求 AI 从"数据可用性假设"角度重新组织分类。
-- 让 AI 解释 Plasma 的退出博弈，用 **模板 C**（数学直觉）。
+**AI 输入**：让 AI 对比 Channel、Sidechain、Plasma、Validium，并要求它从"数据可用性假设"角度重新组织分类表格；再用**模板 C**（数学直觉）解释 Plasma 的退出博弈。
 
-**AI 输出**：
-- 让 AI 生成一个"扩容方案演进时间线"的 Mermaid 图。
-- 用 AI 辅助分析 Polygon PoS 的架构文档，提取关键组件。
+**AI 输出**：让 AI 生成一张"扩容方案演进时间线"的 Mermaid 图，并用 AI 辅助分析 Polygon PoS 的架构文档，提取关键组件。
 
-**AI 检验**：
-- 问 AI 陷阱题："Validium 把数据放在链下，如果数据提供者消失，用户如何安全退出？这算不算引入了新的信任假设？"
+**AI 检验**：问 AI 陷阱题："Validium 把数据放在链下，如果数据提供者消失，用户如何安全退出？这算不算引入了新的信任假设？"
 
 ---
 
@@ -312,61 +262,41 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 10 周：Rollup 原理总览
 
-**AI 输入**：
-- Vitalik 的 Rollup 指南 + L2Beat 方法论，AI 用 **模板 A**。
-- 让 AI 用"邮局系统"类比解释数据可用性（DA）："为什么 Rollup 需要把交易数据贴到 L1？"
+**AI 输入**：Vitalik 的 Rollup 指南加上 L2Beat 方法论，交给 AI 用**模板 A** 分析；再让 AI 用"邮局系统"类比解释数据可用性（DA）——"为什么 Rollup 需要把交易数据贴到 L1？"
 
-**AI 输出**：
-- 让 AI 生成 Rollup 成本计算器的 Python 脚本：输入 L1 Gas 价格、数据大小、压缩率，输出每笔交易的 L1 成本。
-- 让 AI 画 Optimistic vs ZK Rollup 的对比架构图（Mermaid）。
+**AI 输出**：让 AI 生成 Rollup 成本计算器的 Python 脚本：输入 L1 Gas 价格、数据大小、压缩率，输出每笔交易的 L1 成本；再让它画一张 Optimistic vs ZK Rollup 的对比架构图（Mermaid）。
 
-**AI 检验**：
-- 问 AI："EIP-4844 的 Blob 交易为什么比 calldata 便宜？从以太坊节点存储和验证的角度解释。"
+**AI 检验**：问 AI："EIP-4844 的 Blob 交易为什么比 calldata 便宜？从以太坊节点存储和验证的角度解释。"
 
 ---
 
 #### 第 11 周：Optimistic Rollup 工程
 
-**AI 输入**：
-- 把 OP Stack 的 Bedrock 文档喂给 AI，让它提取"启动一条 L2 的最小步骤清单"。
-- 让 AI 解释 Cannon 欺诈证明虚拟机："为什么需要 MIPS 架构的模拟器？直接用 EVM 不行吗？"
+**AI 输入**：把 OP Stack 的 Bedrock 文档喂给 AI，让它提取"启动一条 L2 的最小步骤清单"；再让它解释 Cannon 欺诈证明虚拟机——"为什么需要 MIPS 架构的模拟器？直接用 EVM 不行吗？"
 
-**AI 输出**：
-- 本地启动 OP Stack devnet 时，把报错日志贴给 AI 诊断。
-- 让 AI 生成对比脚本："写一段 Python 脚本，对比同一笔交易在 L1 和本地 L2 的 Gas 消耗，输出表格。"
+**AI 输出**：本地启动 OP Stack devnet 时，把报错日志贴给 AI 诊断；再让 AI 生成对比脚本——"写一段 Python 脚本，对比同一笔交易在 L1 和本地 L2 的 Gas 消耗，输出表格。"
 
-**AI 检验**：
-- 问 AI："Optimistic Rollup 的 sequencer 如果审查我的交易，我有什么救济手段？请对比 Arbitrum 与 Optimism 的不同设计。"
+**AI 检验**：问 AI："Optimistic Rollup 的 sequencer 如果审查我的交易，我有什么救济手段？请对比 Arbitrum 与 Optimism 的不同设计。"
 
 ---
 
 #### 第 12 周：ZK Rollup 入门
 
-**AI 输入**：
-- Scroll 的 zkEVM 博客 + zkSync/StarkNet 文档，AI 生成对比矩阵（Type 1-4 zkEVM）。
-- 让 AI 用 **模板 C** 解释 STARK 的 FRI（快速 Reed-Solomon 交互式证明）协议。
+**AI 输入**：把 Scroll 的 zkEVM 博客与 zkSync/StarkNet 文档交给 AI，生成对比矩阵（Type 1-4 zkEVM）；再让 AI 用**模板 C** 解释 STARK 的 FRI（快速 Reed-Solomon 交互式证明）协议。
 
-**AI 输出**：
-- 在 zkSync 测试网部署时，让 AI 解释编译输出和报错。
-- 让 AI 生成"ZK Rollup 交易生命周期"的时序图（Mermaid）。
+**AI 输出**：在 zkSync 测试网部署时，让 AI 解释编译输出和报错；再让它生成"ZK Rollup 交易生命周期"的时序图（Mermaid）。
 
-**AI 检验**：
-- 问 AI："zkEVM 的 Type 4（如 StarkNet）完全放弃 EVM 兼容性，这带来了哪些架构优势？为什么 Cairo VM 更适合 STARK？"
+**AI 检验**：问 AI："zkEVM 的 Type 4（如 StarkNet）完全放弃 EVM 兼容性，这带来了哪些架构优势？为什么 Cairo VM 更适合 STARK？"
 
 ---
 
 #### 第 13 周：数据可用性与模块化
 
-**AI 输入**：
-- Celestia 文档（DAS 部分）+ EigenLayer 白皮书，AI 用 **模板 A**。
-- 让 AI 用 **模板 C** 解释 Reed-Solomon 编码在 DAS 中的作用。
+**AI 输入**：Celestia 文档（DAS 部分）加上 EigenLayer 白皮书，AI 用**模板 A** 分析；再让 AI 用**模板 C** 解释 Reed-Solomon 编码在 DAS 中的作用。
 
-**AI 输出**：
-- 让 AI 生成 Celestia + 自建 Rollup 的架构图。
-- 用 AI 辅助写 DAS 模拟器："请写 Python 代码，模拟轻节点通过随机采样验证数据可用性，展示采样次数与置信度的关系。"
+**AI 输出**：让 AI 生成 Celestia + 自建 Rollup 的架构图；再用 AI 辅助写 DAS 模拟器——"请写 Python 代码，模拟轻节点通过随机采样验证数据可用性，展示采样次数与置信度的关系。"
 
-**AI 检验**：
-- 问 AI："如果 Celestia 的共识节点串谋，不发布完整数据但伪造采样证明，轻节点如何保护自己？这攻击可行吗？"
+**AI 检验**：问 AI："如果 Celestia 的共识节点串谋，不发布完整数据但伪造采样证明，轻节点如何保护自己？这攻击可行吗？"
 
 ---
 
@@ -376,32 +306,21 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 14 周：ZK 数学基础
 
-**AI 输入**：
-- Vitalik 的 ZK 博客 + MoonMath Manual，AI 用 **模板 C**（重点要 Python 代码）。
-- 让 AI 生成"从算术电路到证明"的完整流程图，标注每个阶段的输入输出。
+**AI 输入**：Vitalik 的 ZK 博客加 MoonMath Manual，AI 用**模板 C** 分析（重点要 Python 代码）；再让 AI 生成"从算术电路到证明"的完整流程图，标注每个阶段的输入输出。
 
-**AI 输出**：
-- 让 AI 写 Python 脚本：实现有限域上的多项式加法、乘法、求值、拉格朗日插值。
-- 让 AI 生成测试："请生成 5 组测试数据，验证我的多项式承诺实现是否正确。"
+**AI 输出**：让 AI 写 Python 脚本，实现有限域上的多项式加法、乘法、求值、拉格朗日插值；配套测试也交给它——"请生成 5 组测试数据，验证我的多项式承诺实现是否正确。"
 
-**AI 检验**：
-- 把你的 Python 实现与 AI 生成的参考实现对比，有差异时让 AI 逐行分析。
-- **关键问题**："QAP 中的 A·B = C 约束，为什么足以表示任意计算？请用一个小例子（如 x³ + x + 5 = 35）展示完整转化过程。"
+**AI 检验**：把你的 Python 实现与 AI 生成的参考实现对比，有差异时让 AI 逐行分析。这里的关键问题是："QAP 中的 A·B = C 约束，为什么足以表示任意计算？请用一个小例子（如 x³ + x + 5 = 35）展示完整转化过程。"
 
 ---
 
 #### 第 15 周：电路编程入门（Circom）
 
-**AI 输入**：
-- Circom 文档 + 0xPARC 材料，让 AI 提取"Circom 编程的 10 个常见陷阱"。
-- 让 AI 用 **模板 C** 解释 R1CS 约束与 Circom 语法的映射关系。
+**AI 输入**：把 Circom 文档和 0xPARC 材料交给 AI，让它提取"Circom 编程的 10 个常见陷阱"；再用**模板 C** 解释 R1CS 约束与 Circom 语法的映射关系。
 
-**AI 输出**：
-- 让 AI 生成基础电路模板："请写 Circom 电路，证明我知道 a 和 b 使得 a*b=c，包含输入输出信号定义。"
-- 让 AI 辅助调试："我运行 circom 时遇到 'Constraint not satisfied'，witness 中 signal X 的值为 Y，但预期为 Z，可能是什么原因？"
+**AI 输出**：让 AI 生成基础电路模板——"请写 Circom 电路，证明我知道 a 和 b 使得 a*b=c，包含输入输出信号定义。"调试时同样可以求助："我运行 circom 时遇到 'Constraint not satisfied'，witness 中 signal X 的值为 Y，但预期为 Z，可能是什么原因？"
 
-**AI 检验**：
-- 让 AI 审计你的 Circom 电路："请检查以下电路是否有 under-constrained 信号（即信号值不唯一确定）"
+**AI 检验**：让 AI 审计你的 Circom 电路："请检查以下电路是否有 under-constrained 信号（即信号值不唯一确定）"。
 
 **本周 Prompt**：
 ```prompt
@@ -418,31 +337,21 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 16 周：zkEVM 与高级证明系统
 
-**AI 输入**：
-- Scroll/Polygon zkEVM 架构博客，AI 生成"zkEVM 的工程挑战清单"。
-- 让 AI 对比 Groth16、PLONK、STARKs，输出决策矩阵（信任设置、证明大小、递归、量子安全）。
+**AI 输入**：把 Scroll/Polygon zkEVM 架构博客交给 AI，生成一份"zkEVM 的工程挑战清单"；再让它对比 Groth16、PLONK、STARKs，输出决策矩阵（信任设置、证明大小、递归、量子安全）。
 
-**AI 输出**：
-- 用 Noir 或 Cairo 写简单程序，让 AI 解释编译输出。
-- 让 AI 生成递归证明的直觉解释："为什么递归证明能压缩多个证明为一个？用俄罗斯套娃类比是否准确？"
+**AI 输出**：用 Noir 或 Cairo 写简单程序，让 AI 解释编译输出；再让 AI 生成递归证明的直觉解释——"为什么递归证明能压缩多个证明为一个？用俄罗斯套娃类比是否准确？"
 
-**AI 检验**：
-- 问 AI："zkEVM 中，KECCAK256 哈希的电路为什么特别大？STARK 友好的哈希函数（如 Poseidon）如何解决这个问题？代价是什么？"
+**AI 检验**：问 AI："zkEVM 中，KECCAK256 哈希的电路为什么特别大？STARK 友好的哈希函数（如 Poseidon）如何解决这个问题？代价是什么？"
 
 ---
 
 #### 第 17 周：ZK 应用与隐私工程
 
-**AI 输入**：
-- Tornado Cash 源码（学习用途），AI 用 **模板 B** 审计。
-- 让 AI 解释 nullifier 的密码学设计："为什么需要 nullifier hash 和 commitment hash 两个值？"
+**AI 输入**：把 Tornado Cash 源码（学习用途）贴给 AI，用**模板 B** 审计；再让 AI 解释 nullifier 的密码学设计——"为什么需要 nullifier hash 和 commitment hash 两个值？"
 
-**AI 输出**：
-- 让 AI 设计隐私投票的架构："请用 Circom 设计一个电路，证明：1) 投票者在白名单内；2) 未重复投票；3) 投票值为 0 或 1。"
-- 让 AI 生成前端集成方案："如何在前端生成 ZK 证明并提交到链上？请给出 React + snarkJS 的代码骨架。"
+**AI 输出**：让 AI 设计隐私投票的架构："请用 Circom 设计一个电路，证明：1) 投票者在白名单内；2) 未重复投票；3) 投票值为 0 或 1。"再让它生成前端集成方案："如何在前端生成 ZK 证明并提交到链上？请给出 React + snarkJS 的代码骨架。"
 
-**AI 检验**：
-- 问 AI："Tornado Cash 的匿名集（anonymity set）大小如何影响隐私？如果只有 10 个存款，隐私是否仍然有效？"
+**AI 检验**：问 AI："Tornado Cash 的匿名集（anonymity set）大小如何影响隐私？如果只有 10 个存款，隐私是否仍然有效？"
 
 ---
 
@@ -466,40 +375,27 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 #### 第 19 周：并行执行与新型 VM
 
-**AI 输入**：
-- Solana Sealevel + Sui Narwhal 论文，AI 用 **模板 A**。
-- 让 AI 用"多车道高速公路"类比解释 Solana 的并行执行。
+**AI 输入**：Solana Sealevel 和 Sui Narwhal 两篇论文，AI 用**模板 A** 分析；再让 AI 用"多车道高速公路"类比解释 Solana 的并行执行。
 
-**AI 输出**：
-- 让 AI 生成对比表：EVM 串行 vs Solana 并行 vs Sui DAG，从状态冲突检测、硬件要求、开发者体验三个维度。
-- 用 AI 辅助写 Sui Move 合约："请写一个 Sui Move 模块，实现一个简单的对象转账，解释 object-centric 与 account-centric 的区别。"
+**AI 输出**：让 AI 生成对比表：EVM 串行 vs Solana 并行 vs Sui DAG，从状态冲突检测、硬件要求、开发者体验三个维度展开；再用 AI 辅助写 Sui Move 合约——"请写一个 Sui Move 模块，实现一个简单的对象转账，解释 object-centric 与 account-centric 的区别。"
 
-**AI 检验**：
-- 问 AI："Solana 的并行执行需要交易预先声明访问的状态，如果声明不完整会怎样？这与数据库的乐观锁有什么异同？"
+**AI 检验**：问 AI："Solana 的并行执行需要交易预先声明访问的状态，如果声明不完整会怎样？这与数据库的乐观锁有什么异同？"
 
 ---
 
 #### 第 20 周：意图中心与账户抽象
 
-**AI 输入**：
-- ERC-4337 提案 + Anoma 白皮书，AI 用 **模板 A**。
-- 让 AI 用"外卖平台"类比解释 Intent-Centric：用户说"我要吃披萨"，平台决定哪家店、哪个骑手。
+**AI 输入**：ERC-4337 提案加 Anoma 白皮书，AI 用**模板 A** 分析；再让 AI 用"外卖平台"类比解释 Intent-Centric：用户说"我要吃披萨"，平台决定哪家店、哪个骑手。
 
-**AI 输出**：
-- 让 AI 生成 ERC-4337 的完整实现骨架：EntryPoint、Wallet Factory、Paymaster。
-- 用 AI 辅助部署："请解释 Pimlico bundler 的 API 调用流程，给出 TypeScript 代码示例。"
+**AI 输出**：让 AI 生成 ERC-4337 的完整实现骨架（EntryPoint、Wallet Factory、Paymaster）；部署时让 AI 辅助："请解释 Pimlico bundler 的 API 调用流程，给出 TypeScript 代码示例。"
 
-**AI 检验**：
-- 问 AI："Intent-Centric 引入了 solver 作为中介，solver 作恶怎么办？这与 MEV searcher 的角色有何重叠？"
+**AI 检验**：问 AI："Intent-Centric 引入了 solver 作为中介，solver 作恶怎么办？这与 MEV searcher 的角色有何重叠？"
 
 ---
 
 #### 第 21 周：前沿交叉（选 2 个方向）
 
-**AI 策略**：
-- **FHE**：让 AI 用 **模板 C** 解释全同态加密，重点要 Python 代码示例（用 Concrete 或 TenSEAL）。
-- **DePIN**：让 AI 分析 Filecoin 的 PoRep/PoSt，用 **模板 A** 提取技术骨架。
-- **AI+链**：让 AI 解释"去中心化推理"的验证问题——"如何证明链下运行的 AI 模型确实输出了某个结果？"
+本周的 AI 策略按所选方向区分。选 **FHE**，让 AI 用**模板 C** 解释全同态加密，重点要 Python 代码示例（用 Concrete 或 TenSEAL）；选 **DePIN**，让 AI 分析 Filecoin 的 PoRep/PoSt，用**模板 A** 提取技术骨架；选 **AI+链**，则让 AI 解释"去中心化推理"的验证问题——"如何证明链下运行的 AI 模型确实输出了某个结果？"
 
 ---
 
@@ -563,21 +459,13 @@ AI 输出 → 源码验证 → 论文交叉 → 本地运行确认
 
 ### 4.2 效率陷阱
 
-**不要**：
-- 让 AI 直接写完整代码，你复制粘贴 → 一周后看不懂自己的项目。
-- 用 AI 代替阅读白皮书 → 丢失细节和上下文，面试时露馅。
-- 同时开多个 AI 对话，每个问一半 → 知识碎片化。
+**不要**：让 AI 直接写完整代码，你复制粘贴——一周后你会看不懂自己的项目；用 AI 代替阅读白皮书，会丢失细节和上下文，面试时露馅；同时开多个 AI 对话、每个问一半，只会让知识碎片化。
 
-**要**：
-- AI 生成骨架 → 你填充核心逻辑 → AI 审计 → 你修改。
-- 每周至少 2 小时"无 AI 时间"：手写笔记、手绘流程图、手动推导公式。
-- 建立个人 Prompt 库：把验证过的 Prompt 保存到 Obsidian，复用而非重写。
+**要**：让 AI 生成骨架，你填充核心逻辑，再让 AI 审计、你来修改；每周至少留 2 小时"无 AI 时间"，手写笔记、手绘流程图、手动推导公式；建立个人 Prompt 库，把验证过的 Prompt 保存到 Obsidian，复用而非重写。
 
 ### 4.3 工具链配置建议
 
-**VS Code + AI 插件**：
-- 安装 Kimi CLI 或 Continue.dev（开源，支持多模型）
-- 配置快捷键：选中代码 → 解释 / 审计 / 生成测试
+**VS Code + AI 插件**：安装 Kimi CLI 或 Continue.dev（开源，支持多模型），并配置快捷键——选中代码即可一键解释、审计或生成测试。
 
 **Foundry + AI 工作流**：
 ```bash
@@ -588,9 +476,7 @@ forge build 2>&1 | kimi explain "这是 Foundry 编译错误，请解释原因�
 kimi generate-test --contract MyContract --invariant "balance should never decrease unexpectedly"
 ```
 
-**Obsidian + AI 笔记**：
-- 使用 Smart Connections 插件，自动关联相似笔记
-- 每周让 AI 基于笔记生成"本周知识摘要"
+**Obsidian + AI 笔记**：使用 Smart Connections 插件自动关联相似笔记，每周再让 AI 基于笔记生成"本周知识摘要"。
 
 ---
 
@@ -645,10 +531,7 @@ kimi generate-test --contract MyContract --invariant "balance should never decre
 
 这份计划的核心不是"用 AI 代替学习"，而是**用 AI 压缩低价值环节**（查文档、写样板代码、生成测试骨架），把节省的时间投入到**高价值环节**（手动推导 ZK 数学、亲自调试状态根错误、设计自己的架构）。
 
-24 周后，你应该能：
-- 独立阅读任意区块链论文，AI 只负责加速而非替代理解
-- 手写核心组件（Merkle Tree、简化 Rollup、基础电路），AI 负责审计和优化
-- 判断一个新协议的技术含金量，不被营销话术误导
+24 周后，你应该能做到三件事：独立阅读任意区块链论文，AI 只负责加速而非替代理解；手写核心组件（Merkle Tree、简化 Rollup、基础电路），AI 负责审计和优化；判断一个新协议的技术含金量，不被营销话术误导。
 
 **开始吧。第一周的最小产出是：一个能运行的 Merkle Tree Python 脚本和一篇 500 字笔记。**
 

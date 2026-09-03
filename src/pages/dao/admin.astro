@@ -102,6 +102,27 @@ const description = '创始人控制台（需要管理令牌）。';
 			color: var(--text-secondary);
 			font-size: 0.85em;
 		}
+		.funnel-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.85em;
+			margin-top: 0.6em;
+		}
+		.funnel-table th,
+		.funnel-table td {
+			text-align: right;
+			padding: 0.35em 0.5em;
+			border-bottom: 1px dashed var(--border);
+			white-space: nowrap;
+		}
+		.funnel-table th:first-child,
+		.funnel-table td:first-child {
+			text-align: left;
+		}
+		.funnel-summary {
+			font-size: 0.9em;
+			line-height: 1.9;
+		}
 	</style>
 	<main>
 		<div class="page-header">
@@ -236,6 +257,12 @@ const description = '创始人控制台（需要管理令牌）。';
 			<div id="cm-list" class="muted">输入令牌后点击「刷新链数据」。</div>
 			<div class="result" id="cm-result"></div>
 		</section>
+
+		<section class="card admin-panel">
+			<h2>9 · 转化漏斗（匿名统计）</h2>
+			<p class="muted">付费墙事件计数，公开只读，无需令牌。</p>
+			<div id="funnel-list" class="muted">加载中…</div>
+		</section>
 	</main>
 
 	<script>
@@ -288,7 +315,7 @@ const description = '创始人控制台（需要管理令牌）。';
 				$('chain-info').textContent = '❌ 链数据加载失败';
 				return;
 			}
-			await Promise.all([renderPending(), renderClose(), renderExecute(), fillParams(), renderComments()]);
+			await Promise.all([renderPending(), renderClose(), renderExecute(), fillParams(), renderComments(), renderFunnel()]);
 		}
 
 		// ---- 评论审核（数据在 COMMENTS KV，与链无关；GET 需自带 Authorization 头）----
@@ -364,6 +391,58 @@ const description = '创始人控制台（需要管理令牌）。';
 			} catch (err) {
 				show('cm-result', (err as Error).message, false);
 			}
+		}
+
+		// ---- 转化漏斗（GET /api/track 公开只读，数据在 ORDERS KV 的 stats:* 键下）----
+		interface TrackData {
+			days: string[];
+			totals: Record<string, number>;
+			daily: Record<string, Record<string, number>>;
+		}
+
+		const FUNNEL_EVENTS: [string, string][] = [
+			['paywall_view', '到达付费墙'],
+			['alipay_click', '点支付宝购买'],
+			['afdian_click', '点爱发电购买'],
+			['redeem_click', '点兑换'],
+		];
+
+		async function renderFunnel() {
+			const box = $('funnel-list');
+			let data: TrackData;
+			try {
+				const resp = await fetch('/api/track');
+				if (!resp.ok) throw new Error(`请求失败（HTTP ${resp.status}）`);
+				data = (await resp.json()) as TrackData;
+			} catch (err) {
+				box.innerHTML =
+					'<span class="muted">统计加载失败：' + escapeHtml((err as Error).message) + '</span>';
+				return;
+			}
+			const total = (e: string) => data.totals[e] || 0;
+			const days7 = data.days.slice(-7);
+			const sum7 = (e: string) =>
+				days7.reduce((s, d) => s + ((data.daily[e] || {})[d] || 0), 0);
+			const pct = (a: number, b: number) => (b > 0 ? ((a / b) * 100).toFixed(1) + '%' : '—');
+			const view = total('paywall_view');
+			let html =
+				'<div class="funnel-summary">' +
+				FUNNEL_EVENTS.map(
+					([e, label]) => `${label} <strong>${total(e)}</strong>`,
+				).join(' · ') +
+				`<br>view→click 转化率：支付宝 ${pct(total('alipay_click'), view)} · ` +
+				`爱发电 ${pct(total('afdian_click'), view)} · 兑换 ${pct(total('redeem_click'), view)}</div>`;
+			html += '<table class="funnel-table"><thead><tr><th>近 7 天</th>';
+			for (const d of days7) html += `<th>${escapeHtml(d.slice(5))}</th>`;
+			html += '<th>合计</th></tr></thead><tbody>';
+			for (const [e, label] of FUNNEL_EVENTS) {
+				html += `<tr><td>${escapeHtml(label)}</td>`;
+				for (const d of days7) html += `<td>${(data.daily[e] || {})[d] || 0}</td>`;
+				html += `<td><strong>${sum7(e)}</strong></td></tr>`;
+			}
+			html += '</tbody></table>';
+			box.classList.remove('muted');
+			box.innerHTML = html;
 		}
 
 		async function renderPending() {
@@ -498,6 +577,9 @@ const description = '创始人控制台（需要管理令牌）。';
 		}
 
 		$('refresh-btn').addEventListener('click', refresh);
+
+		// 转化漏斗公开只读，页面加载即拉取，不依赖令牌
+		renderFunnel();
 
 		$('remove-btn').addEventListener('click', async () => {
 			const handle = input('remove-handle').value.trim();

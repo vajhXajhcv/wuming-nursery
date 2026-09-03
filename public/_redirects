@@ -1,2 +1,5 @@
 /kaoyan/* /kaoyan/ 200
 /triworld/* /triworld/ 200
+/pricing /services 301
+/en/pricing /en/services 301
+/ja/pricing /ja/services 301

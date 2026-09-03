@@ -1,0 +1,15 @@
+[
+  {
+    "seq": 2,
+    "hash": "b1e1603cc3dbb1844cf998a52be0c2c4921fb1fc5818f222a73d403a7b86ab64",
+    "ts": 1788401623953,
+    "files": {
+      "alice": "0002-b1e1603c.alice.ots"
+    },
+    "upgraded": {
+      "alice": false,
+      "finney": false
+    },
+    "chained": false
+  }
+]

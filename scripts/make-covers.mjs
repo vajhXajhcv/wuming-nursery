@@ -31,6 +31,7 @@ const COVERS = [
 	{ slug: 'sisters-to-rogues-prohibition', title: '从「姐妹」到「流氓」', subtitle: '新中国初期禁娼运动', icon: 'flag', from: '#be123c', to: '#f193a5' },
 	{ slug: 'site-commercialization-redesign', title: '从博客到产品站', subtitle: '商业化重构记录', icon: 'trendingUp', from: '#15803d', to: '#8fd9a8' },
 	{ slug: 'ai-security-audit-hardening', title: 'AI 给我的网站做安全体检', subtitle: '从检测到修复的全记录', icon: 'shield', from: '#0f3d5c', to: '#5fb8d9' },
+	{ slug: 'site-progress-payment-ledger-dao', title: '网站阶段总结', subtitle: '支付、账本与组织', icon: 'flag', from: '#0e7490', to: '#7dd3fc' },
 ];
 
 const FONT = "'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif";

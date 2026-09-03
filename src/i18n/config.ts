@@ -19,7 +19,6 @@ export const TRANSLATED_PATHS: readonly string[] = [
 	'/',
 	'/about',
 	'/contact',
-	'/pricing',
 	'/services',
 	'/services/thesis-formatting',
 	'/services/custom-development',

@@ -42,7 +42,7 @@ tags: ["网站", "商业化", "独立开发", "创作者经济"]
 |------|--------|--------|
 | `/tools` | 免费试用 | 查看定价 |
 | `/projects/docx-formatter-cn` | 在线试用 | 阅读文档 |
-| `/pricing` | 选择方案 | 先试用免费版 |
+| `/services#pricing` | 选择方案 | 先试用免费版 |
 | `/services/thesis-formatting` | 立即咨询 | 查看定价 |
 
 每一页都给出下一步，不让用户在原地犹豫。

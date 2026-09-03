@@ -19,8 +19,9 @@ export default defineConfig({
 		mdx(),
 		sitemap({
 			// paid-src 是付费正文抽取用的临时页面，构建后会被删除，不进入 sitemap
+			// /pricing 已合并进 /services，仅为重定向页，不进入 sitemap
 			filter: (page) =>
-				!page.includes('/paid-src/') && !draftPaths.some((p) => page.endsWith(p)),
+				!page.includes('/paid-src/') && !page.includes('/pricing') && !draftPaths.some((p) => page.endsWith(p)),
 		}),
 	],
 	markdown: {

@@ -1,5 +1,23 @@
 # 更新日志
 
+## 2026-09-03（服务定价融合 + 转化漏斗 + 锚定自动化）
+
+### 新增
+
+- **付费转化漏斗**：`functions/api/track.ts` 匿名事件统计（白名单事件按天计数存 ORDERS KV，不收集 IP/UA）；Paywall 组件埋点（`paywall_view` / `alipay_click` / `afdian_click` / `redeem_click`，sendBeacon 上报、失败静默）；`/dao/admin` 新增「转化漏斗」面板（累计数、view→click 转化率、近 7 天趋势）。
+- **锚定自动化**：`.github/workflows/anchor-ots.yml`，每周一 03:17 UTC 自动执行 `scripts/anchor-ots.mjs`（锚定新链头 + 升级待定证明），变更由 github-actions[bot] 提交回仓库；配置 `ADMIN_TOKEN` secret 后同时把锚定事件写回链上。
+- **首次链头锚定**：seq 2 已通过 OpenTimestamps 提交至 alice 日历（finney 日历本地网络不可达，交由 CI 补齐），证明文件在 `/dao/anchors/`。
+- **博客文章**：《网站阶段总结：支付、账本与组织》。
+
+### 调整
+
+- **服务与定价页面融合**：`/services` 合并原定价页内容（`#pricing` 锚点），三语言同步；`/pricing`（zh/en/ja）改为 301/重定向页；导航合并为单一「服务与定价」入口；全站 `/pricing` 内部引用清理完毕。
+- 账本页锚定说明从「后续计划」更新为已锚定（指向 /dao 锚定历史）。
+
+### 移除（暂时）
+
+- **评论区前端下线**：`BlogPost.astro` 中评论组件改为注释（后端 `/api/comments` 尚未部署生效，避免读者看到无法提交的留言框）；后端代码与组件保留，重新开放时取消注释并部署即可。
+
 ## 2026-08-28（前端设计系统收敛 + DAO 页面重构 + 自建评论系统）
 
 ### 新增

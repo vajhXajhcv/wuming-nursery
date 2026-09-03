@@ -130,6 +130,8 @@ ADMIN_TOKEN=xxx node scripts/anchor-ots.mjs
 
 证明文件写入 `public/dao/anchors/`（`<seq>-<hash前8位>.<日历名>.ots` + `index.json`），需 `npm run deploy` 后在 `/dao/anchors/` 下公开可下载。日历承诺到比特币区块确认通常需数小时，之后重跑脚本即可把待定证明升级为含区块 attestation 的完整证明。
 
+**自动化**：`.github/workflows/anchor-ots.yml` 每周一自动执行上述流程并把证明文件提交回仓库（无需手动跑脚本）；在仓库 Settings → Secrets 配置 `ADMIN_TOKEN` 后，锚定事件也会自动写回链上。首次配置后可在 Actions 页手动触发一次验证。
+
 链校验（任何镜像方可用，实现与站点代码完全独立）：
 
 ```bash

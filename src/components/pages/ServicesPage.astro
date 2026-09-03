@@ -11,8 +11,8 @@ const { lang = DEFAULT_LOCALE } = Astro.props;
 
 const dicts = {
 	zh: {
-		title: `服务 - ${SITE_TITLE}`,
-		description: '独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务。',
+		title: `服务与定价 - ${SITE_TITLE}`,
+		description: '独立开发者提供网站开发、AI 自动化、文档工具与内容策略服务，以及 docx-formatter-cn 的定价方案。',
 		heroTitle: '我可以帮你做什么',
 		heroDesc1: '一个人就是一家公司的时代，技术和内容是最好的杠杆。',
 		heroDesc2: '把重复劳动交给代码和 AI，把时间留给创造和决策。',
@@ -51,7 +51,7 @@ const dicts = {
 				links: [
 					{ text: '在线试用', href: '/tools/md2docx' },
 					{ text: '产品主页', href: '/tools' },
-					{ text: '查看定价', href: '/pricing' },
+					{ text: '查看定价', href: '#pricing' },
 					{ text: '论文排版服务', href: '/services/thesis-formatting' },
 				],
 			},
@@ -65,6 +65,96 @@ const dicts = {
 				links: [] as { text: string; href: string }[],
 			},
 		],
+		pricingTitle: '定价方案',
+		pricingDesc: '无论你是想自己动手，还是省时间交给专业排版，都有一个合适的选项。',
+		badge: '推荐',
+		plans: [
+			{
+				name: '免费版',
+				price: '¥0',
+				period: '永久',
+				desc: '开源 CLI + 在线工具，适合动手能力强或想先体验的用户。',
+				features: [
+					'开源 CLI 工具',
+					'在线 Markdown 转 Word（浏览器内运行）',
+					'5 种内置模板（毕业论文/课程论文/武汉理工毕业设计/数学建模/公文）',
+					'LaTeX 公式 → Word 原生 OMML',
+					'三线表与自动编号',
+					'社区支持',
+				],
+				cta: '在线免费试用',
+				ctaHref: '/tools/md2docx',
+				ctaExternal: false,
+				highlight: false,
+			},
+			{
+				name: 'Pro 个人版',
+				price: '¥49',
+				period: '买断制',
+				desc: '为论文写作量身定做的桌面应用，安装即用。',
+				features: [
+					'PySide6 GUI 拖拽转换',
+					'批量 Markdown → Word',
+					'中文学位论文 + arXiv / Nature / Science / IEEE / APA 模板',
+					'自定义 JSON/YAML 模板',
+					'本地图片与相对路径解析',
+					'支持现有 Word 重新排版',
+					'一次购买，永久更新',
+				],
+				cta: '去爱发电购买',
+				ctaHref: 'https://afdian.com/a/jk342joy',
+				ctaExternal: true,
+				highlight: true,
+			},
+			{
+				name: '论文排版服务',
+				price: '¥199 起',
+				period: '按篇计费',
+				desc: '没时间调格式？把论文和要求发我，我按学校模板排好。',
+				features: [
+					'本科/硕士/毕业论文格式调整',
+					'封面、目录、页眉页脚、参考文献',
+					'公式、图表、三线表规范处理',
+					'交付后 2 轮免费修改',
+					'加急 24h 可选',
+				],
+				cta: '了解详情',
+				ctaHref: '/services/thesis-formatting',
+				ctaExternal: false,
+				highlight: false,
+			},
+			{
+				name: '软件定制开发',
+				price: '¥2,800 起',
+				period: '按项目计费',
+				desc: '网站、小程序、自动化脚本到企业系统，源码交付，按里程碑推进。',
+				features: [
+					'网站 / Web 工具开发',
+					'小程序 / 自动化脚本',
+					'企业定制系统',
+					'源码 + 部署文档全交付',
+					'30 天免费修复，长期维护可续签',
+				],
+				cta: '了解详情',
+				ctaHref: '/services/custom-development',
+				ctaExternal: false,
+				highlight: false,
+			},
+		],
+		compareTitle: '功能对比',
+		compareHeaders: ['功能', '免费版', 'Pro 版', '服务'],
+		compareRows: [
+			['Markdown → Word', '✓', '✓', '✓'],
+			['LaTeX 公式 → OMML', '✓', '✓', '✓'],
+			['三线表 / 自动编号', '✓', '✓', '✓'],
+			['GUI 桌面应用', '—', '✓', '—'],
+			['批量转换', '—', '✓', '协商'],
+			['中文论文模板', '✓', '✓', '✓'],
+			['期刊 / 预印本模板', '在线版', '✓', '✓'],
+			['自定义模板', 'CLI 编辑', '✓', '✓'],
+			['本地图片路径解析', '—', '✓', '✓'],
+			['人工代排版', '—', '—', '✓'],
+		],
 		processTitle: '合作流程',
 		process: [
 			{ step: '01', title: '需求沟通', desc: '15 分钟语音或文字，明确你的目标、预算和时间线。' },
@@ -77,15 +167,25 @@ const dicts = {
 			{ q: '没技术背景，能合作吗？', a: '完全没问题。我会用非技术语言沟通，你只需要告诉我「想要什么」，剩下的我来解决。' },
 			{ q: '可以先看案例或试做吗？', a: '可以。部分服务支持小范围试做（如一篇 SEO 文章、一个 Landing Page 原型），降低你的决策风险。' },
 			{ q: '交付周期一般多长？', a: '网站 1-2 周，AI 自动化 3-7 天，文档工具看复杂度 3-14 天。急单可商量。' },
+			{ q: 'Pro 版和免费版的核心区别是什么？', a: '核心排版引擎完全相同。Pro 版提供 GUI、批量转换、自定义模板和本地图片路径解析，适合不想用命令行的论文作者。' },
+			{ q: '购买 Pro 后如何获取更新？', a: '目前通过爱发电发放下载链接与更新通知，购买后永久免费获取后续版本。' },
+			{ q: '学校模板定制怎么收费？', a: '如果只是现有字段微调，通常包含在 Pro 版支持范围内；复杂学校模板定制按工时另议，可在论文排版服务中沟通。' },
+			{ q: '在线工具和 Pro 版有什么区别？', a: '在线工具在浏览器内运行，适合单次快速体验，暂不支持本地图片；Pro 版是桌面软件，支持批量、自定义模板和完整本地文件工作流。' },
 			{ q: '支持发票吗？', a: '支持。通过爱发电或企业转账均可开具发票。' },
 		],
 		ctaTitle: '有想法？聊聊看',
 		ctaDesc: '即使还没想清楚，也可以先沟通。我不会推销，只会给建议。',
 		ctaBtn: '开始咨询 →',
+		jsonLd: {
+			name: 'docx-formatter-cn',
+			description: '中文 Word 文档智能排版工具，支持 Markdown 转 Word、LaTeX 公式与三线表。',
+			offerFreeName: '免费版',
+			offerProName: 'Pro 个人版',
+		},
 	},
 	en: {
-		title: `Services - ${SITE_TITLE}`,
-		description: 'Independent developer offering web development, AI automation, document tooling, and content strategy services.',
+		title: `Services & Pricing - ${SITE_TITLE}`,
+		description: 'Independent developer offering web development, AI automation, document tooling, and content strategy services, plus pricing for docx-formatter-cn.',
 		heroTitle: 'What I Can Do for You',
 		heroDesc1: 'In the age of one-person companies, technology and content are the best leverage.',
 		heroDesc2: 'Leave repetitive work to code and AI; keep your time for creating and deciding.',
@@ -124,7 +224,7 @@ const dicts = {
 				links: [
 					{ text: 'Try online', href: '/tools/md2docx' },
 					{ text: 'Product page', href: '/en/tools/' },
-					{ text: 'Pricing', href: '/en/pricing/' },
+					{ text: 'Pricing', href: '#pricing' },
 					{ text: 'Thesis formatting', href: '/en/services/thesis-formatting/' },
 				],
 			},
@@ -138,6 +238,96 @@ const dicts = {
 				links: [] as { text: string; href: string }[],
 			},
 		],
+		pricingTitle: 'Pricing',
+		pricingDesc: 'Whether you prefer doing it yourself or saving time with professional formatting, there is an option for you.',
+		badge: 'Recommended',
+		plans: [
+			{
+				name: 'Free',
+				price: '¥0',
+				period: 'Forever',
+				desc: 'Open-source CLI + online tool, for hands-on users or those who want to try first.',
+				features: [
+					'Open-source CLI tool',
+					'Online Markdown to Word (runs in the browser)',
+					'5 built-in templates (graduation thesis / course paper / WUT graduation design / math modeling / official documents)',
+					'LaTeX formulas → native Word OMML',
+					'Three-line tables & auto numbering',
+					'Community support',
+				],
+				cta: 'Try online for free',
+				ctaHref: '/tools/md2docx',
+				ctaExternal: false,
+				highlight: false,
+			},
+			{
+				name: 'Pro Personal',
+				price: '¥49',
+				period: 'One-time purchase',
+				desc: 'A desktop app tailor-made for thesis writing. Install and go.',
+				features: [
+					'PySide6 GUI drag-and-drop conversion',
+					'Batch Markdown → Word',
+					'Chinese thesis + arXiv / Nature / Science / IEEE / APA templates',
+					'Custom JSON/YAML templates',
+					'Local images & relative path resolution',
+					'Reformat existing Word documents',
+					'Buy once, free updates forever',
+				],
+				cta: 'Buy on Afdian',
+				ctaHref: 'https://afdian.com/a/jk342joy',
+				ctaExternal: true,
+				highlight: true,
+			},
+			{
+				name: 'Thesis Formatting Service',
+				price: 'From ¥199',
+				period: 'Per paper',
+				desc: 'No time to tweak formatting? Send me your thesis and requirements — I format it to your school’s template.',
+				features: [
+					'Bachelor’s / master’s / graduation thesis formatting',
+					'Cover, TOC, headers & footers, references',
+					'Standards-compliant formulas, figures, three-line tables',
+					'2 free revision rounds after delivery',
+					'Optional 24h rush service',
+				],
+				cta: 'Learn more',
+				ctaHref: '/en/services/thesis-formatting/',
+				ctaExternal: false,
+				highlight: false,
+			},
+			{
+				name: 'Custom Software Development',
+				price: 'From ¥2,800',
+				period: 'Per project',
+				desc: 'Websites, mini programs, automation scripts to enterprise systems. Source code delivered, milestone-driven.',
+				features: [
+					'Website / web tool development',
+					'Mini programs / automation scripts',
+					'Custom enterprise systems',
+					'Full delivery of source code + deployment docs',
+					'30 days of free fixes, long-term maintenance available',
+				],
+				cta: 'Learn more',
+				ctaHref: '/en/services/custom-development/',
+				ctaExternal: false,
+				highlight: false,
+			},
+		],
+		compareTitle: 'Feature Comparison',
+		compareHeaders: ['Feature', 'Free', 'Pro', 'Service'],
+		compareRows: [
+			['Markdown → Word', '✓', '✓', '✓'],
+			['LaTeX formulas → OMML', '✓', '✓', '✓'],
+			['Three-line tables / auto numbering', '✓', '✓', '✓'],
+			['GUI desktop app', '—', '✓', '—'],
+			['Batch conversion', '—', '✓', 'Negotiable'],
+			['Chinese thesis templates', '✓', '✓', '✓'],
+			['Journal / preprint templates', 'Online version', '✓', '✓'],
+			['Custom templates', 'CLI editing', '✓', '✓'],
+			['Local image path resolution', '—', '✓', '✓'],
+			['Manual formatting service', '—', '—', '✓'],
+		],
 		processTitle: 'How We Work',
 		process: [
 			{ step: '01', title: 'Discovery', desc: 'A 15-minute call or chat to clarify your goals, budget, and timeline.' },
@@ -150,15 +340,25 @@ const dicts = {
 			{ q: 'Can we work together if I have no technical background?', a: 'Absolutely. I communicate in plain language — just tell me what you want, and I handle the rest.' },
 			{ q: 'Can I see samples or a trial first?', a: 'Yes. Some services support small-scale trials (e.g. one SEO article or a landing page prototype) to lower your decision risk.' },
 			{ q: 'How long does delivery take?', a: 'Websites 1–2 weeks, AI automation 3–7 days, document tooling 3–14 days depending on complexity. Rush jobs negotiable.' },
+			{ q: 'What’s the core difference between Pro and Free?', a: 'The core formatting engine is identical. Pro adds a GUI, batch conversion, custom templates, and local image path resolution — ideal for thesis writers who prefer not to use the command line.' },
+			{ q: 'How do I get updates after buying Pro?', a: 'Download links and update notices are currently distributed via Afdian. All future versions are free after purchase.' },
+			{ q: 'How is custom school template work priced?', a: 'Minor tweaks to existing fields are usually covered by Pro support; complex school template customization is quoted by workload — let’s discuss it under the thesis formatting service.' },
+			{ q: 'What’s the difference between the online tool and Pro?', a: 'The online tool runs in the browser and suits quick one-off use, but doesn’t support local images yet. Pro is desktop software with batch conversion, custom templates, and a full local file workflow.' },
 			{ q: 'Can you issue invoices?', a: 'Yes. Invoices are available for payments via Afdian or corporate transfer.' },
 		],
 		ctaTitle: 'Have an idea? Let’s talk',
 		ctaDesc: 'Even if it’s not fully formed yet, reach out. No sales pitch — just honest advice.',
 		ctaBtn: 'Start a conversation →',
+		jsonLd: {
+			name: 'docx-formatter-cn',
+			description: 'Smart formatting tool for Chinese Word documents: Markdown to Word, LaTeX formulas, and three-line tables.',
+			offerFreeName: 'Free',
+			offerProName: 'Pro Personal',
+		},
 	},
 	ja: {
-		title: `サービス - ${SITE_TITLE}`,
-		description: '独立開発者によるウェブ開発、AI 自動化、ドキュメントツール、コンテンツ戦略サービス。',
+		title: `サービスと料金 - ${SITE_TITLE}`,
+		description: '独立開発者によるウェブ開発、AI 自動化、ドキュメントツール、コンテンツ戦略サービスと、docx-formatter-cn の料金プラン。',
 		heroTitle: 'できること',
 		heroDesc1: '一人会社の時代、技術とコンテンツは最高のレバレッジです。',
 		heroDesc2: '繰り返しの作業はコードと AI に任せ、時間は創造と決断に使いましょう。',
@@ -197,7 +397,7 @@ const dicts = {
 				links: [
 					{ text: 'オンラインで試す', href: '/tools/md2docx' },
 					{ text: '製品ページ', href: '/ja/tools/' },
-					{ text: '料金', href: '/ja/pricing/' },
+					{ text: '料金', href: '#pricing' },
 					{ text: '論文フォーマット', href: '/ja/services/thesis-formatting/' },
 				],
 			},
@@ -211,6 +411,96 @@ const dicts = {
 				links: [] as { text: string; href: string }[],
 			},
 		],
+		pricingTitle: '料金プラン',
+		pricingDesc: '自分でやりたい方も、プロに任せて時間を節約したい方も、ぴったりの選択肢があります。',
+		badge: 'おすすめ',
+		plans: [
+			{
+				name: '無料版',
+				price: '¥0',
+				period: '永久',
+				desc: 'オープンソース CLI + オンラインツール。自分で触れる方や、まず試したい方に。',
+				features: [
+					'オープンソース CLI ツール',
+					'オンライン Markdown → Word（ブラウザ内で動作）',
+					'5 種類の内蔵テンプレート（卒業論文/課題論文/武漢理工大学卒業設計/数学モデリング/公文書）',
+					'LaTeX 数式 → Word ネイティブ OMML',
+					'三線表と自動番号付け',
+					'コミュニティサポート',
+				],
+				cta: 'オンラインで無料体験',
+				ctaHref: '/tools/md2docx',
+				ctaExternal: false,
+				highlight: false,
+			},
+			{
+				name: 'Pro 個人版',
+				price: '¥49',
+				period: '買い切り',
+				desc: '論文執筆のために作られたデスクトップアプリ。インストールしてすぐ使えます。',
+				features: [
+					'PySide6 GUI ドラッグ＆ドロップ変換',
+					'一括 Markdown → Word',
+					'中国語学位論文 + arXiv / Nature / Science / IEEE / APA テンプレート',
+					'カスタム JSON/YAML テンプレート',
+					'ローカル画像・相対パス解決',
+					'既存 Word の再フォーマット対応',
+					'一度の購入で永久アップデート',
+				],
+				cta: 'Afdian で購入',
+				ctaHref: 'https://afdian.com/a/jk342joy',
+				ctaExternal: true,
+				highlight: true,
+			},
+			{
+				name: '論文フォーマットサービス',
+				price: '¥199〜',
+				period: '1 篇ごと',
+				desc: '書式調整の時間がない？論文と要件を送ってください。学校のテンプレート通りに仕上げます。',
+				features: [
+					'学士/修士/卒業論文の書式調整',
+					'表紙、目次、ヘッダー・フッター、参考文献',
+					'数式、図表、三線表の規格処理',
+					'納品後 2 回の無料修正',
+					'24 時間特急オプションあり',
+				],
+				cta: '詳しく見る',
+				ctaHref: '/ja/services/thesis-formatting/',
+				ctaExternal: false,
+				highlight: false,
+			},
+			{
+				name: 'ソフトウェア受託開発',
+				price: '¥2,800〜',
+				period: '案件ごと',
+				desc: 'ウェブサイト、ミニプログラム、自動化スクリプトから企業システムまで。ソースコード納品、マイルストーン制。',
+				features: [
+					'ウェブサイト / Web ツール開発',
+					'ミニプログラム / 自動化スクリプト',
+					'企業向けカスタムシステム',
+					'ソースコード + デプロイ文書を完全納品',
+					'30 日間無料修正、長期保守も契約可能',
+				],
+				cta: '詳しく見る',
+				ctaHref: '/ja/services/custom-development/',
+				ctaExternal: false,
+				highlight: false,
+			},
+		],
+		compareTitle: '機能比較',
+		compareHeaders: ['機能', '無料版', 'Pro 版', 'サービス'],
+		compareRows: [
+			['Markdown → Word', '✓', '✓', '✓'],
+			['LaTeX 数式 → OMML', '✓', '✓', '✓'],
+			['三線表 / 自動番号付け', '✓', '✓', '✓'],
+			['GUI デスクトップアプリ', '—', '✓', '—'],
+			['一括変換', '—', '✓', '要相談'],
+			['中国語論文テンプレート', '✓', '✓', '✓'],
+			['学術誌 / プレプリントテンプレート', 'オンライン版', '✓', '✓'],
+			['カスタムテンプレート', 'CLI で編集', '✓', '✓'],
+			['ローカル画像パス解決', '—', '✓', '✓'],
+			['手動フォーマット代行', '—', '—', '✓'],
+		],
 		processTitle: '進め方',
 		process: [
 			{ step: '01', title: 'ヒアリング', desc: '15 分の通話またはチャットで、目標・予算・スケジュールを確認。' },
@@ -223,15 +513,46 @@ const dicts = {
 			{ q: '技術の知識がなくても依頼できますか？', a: 'もちろんです。専門用語を使わずに説明します。「何が欲しいか」だけ教えてください。' },
 			{ q: '事例やお試しはありますか？', a: 'あります。一部サービスは小規模なお試し（SEO 記事 1 本、LP プロトタイプなど）が可能です。' },
 			{ q: '納期はどのくらいですか？', a: 'ウェブサイト 1〜2 週間、AI 自動化 3〜7 日、ドキュメントツールは複雑さにより 3〜14 日です。急ぎの案件も相談可。' },
+			{ q: 'Pro 版と無料版の本質的な違いは？', a: 'コアの整形エンジンは完全に同じです。Pro 版は GUI、一括変換、カスタムテンプレート、ローカル画像パス解決を提供し、コマンドラインを使いたくない論文執筆者に最適です。' },
+			{ q: 'Pro 購入後のアップデートは？', a: '現在は Afdian 経由でダウンロードリンクと更新通知を配布しています。購入後は以降のバージョンを永久に無料で入手できます。' },
+			{ q: '学校テンプレートのカスタマイズ料金は？', a: '既存フィールドの微調整なら Pro 版のサポート範囲に含まれることがほとんどです。複雑な学校テンプレートのカスタマイズは工数で別途お見積もりします。論文フォーマットサービスでご相談ください。' },
+			{ q: 'オンラインツールと Pro 版の違いは？', a: 'オンラインツールはブラウザ内で動作し、単発のお手軽利用向けで、ローカル画像には未対応です。Pro 版はデスクトップソフトで、一括変換、カスタムテンプレート、完全なローカルファイルワークフローに対応しています。' },
 			{ q: '請求書（インボイス）は発行できますか？', a: 'はい。Afdian または法人振込でのお支払いに発行可能です。' },
 		],
 		ctaTitle: 'アイデアがありますか？',
 		ctaDesc: 'まだ固まっていなくても大丈夫。営業はしません、正直な提案だけをします。',
 		ctaBtn: '相談してみる →',
+		jsonLd: {
+			name: 'docx-formatter-cn',
+			description: '中国語 Word ドキュメントのスマート整形ツール。Markdown → Word、LaTeX 数式、三線表に対応。',
+			offerFreeName: '無料版',
+			offerProName: 'Pro 個人版',
+		},
 	},
 } as const;
 
 const t = dicts[lang];
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Product',
+	name: t.jsonLd.name,
+	description: t.jsonLd.description,
+	offers: [
+		{
+			'@type': 'Offer',
+			name: t.jsonLd.offerFreeName,
+			price: '0',
+			priceCurrency: 'CNY',
+		},
+		{
+			'@type': 'Offer',
+			name: t.jsonLd.offerProName,
+			price: '49',
+			priceCurrency: 'CNY',
+		},
+	],
+};
 ---
 
 <BaseLayout title={t.title} description={t.description} lang={lang}>
@@ -345,6 +666,106 @@ const t = dicts[lang];
 			color: var(--accent-dark);
 		}
 
+		/* Pricing */
+		.pricing-section {
+			margin: 3em 0;
+			scroll-margin-top: 4.5em;
+		}
+		.pricing-desc {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 560px;
+			margin: 0 0 1.5em;
+			line-height: 1.7;
+		}
+		.plans {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 1.2em;
+			margin: 2em 0;
+			align-items: start;
+		}
+		.plan-card {
+			padding: 1.6em;
+			display: flex;
+			flex-direction: column;
+			position: relative;
+			transition: border-color 0.2s, box-shadow 0.2s;
+		}
+		.plan-card:hover {
+			border-color: var(--accent);
+		}
+		.plan-card.highlight {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 3px var(--accent-soft);
+		}
+		.plan-badge {
+			position: absolute;
+			top: -0.7em;
+			right: 1em;
+			background: var(--accent);
+			color: #fff;
+			font-size: var(--text-xs);
+			font-weight: 700;
+			padding: 0.3em 0.8em;
+			border-radius: 999px;
+		}
+		.plan-card h3 {
+			margin: 0 0 0.2em;
+			font-size: 1.25em;
+		}
+		.plan-price {
+			font-size: 1.7em;
+			font-weight: 800;
+			color: var(--accent);
+			margin: 0.2em 0 0.6em;
+		}
+		.plan-price span {
+			font-size: 0.5em;
+			color: var(--text-secondary);
+			font-weight: 500;
+		}
+		.plan-desc {
+			color: var(--text-secondary);
+			font-size: 0.92em;
+			line-height: 1.6;
+			margin-bottom: 1em;
+		}
+		.plan-features {
+			list-style: none;
+			padding: 0;
+			margin: 0 0 1.5em;
+			flex: 1;
+		}
+		.plan-features li {
+			padding: 0.4em 0 0.4em 1.4em;
+			position: relative;
+			font-size: 0.9em;
+		}
+		.plan-features li::before {
+			content: '✓';
+			position: absolute;
+			left: 0;
+			color: var(--accent);
+			font-weight: 700;
+		}
+		.plan-cta {
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		/* Compare */
+		.compare-section {
+			margin: 2em 0 0;
+		}
+		.compare-subtitle {
+			font-size: 1.1em;
+			margin: 0 0 0.8em;
+		}
+		.compare-table td:nth-child(n+2) {
+			text-align: center;
+		}
+
 		/* Process */
 		.process-section {
 			margin: 3em 0;
@@ -420,7 +841,7 @@ const t = dicts[lang];
 			transition: max-height 0.3s ease;
 		}
 		.faq-item.open .faq-a {
-			max-height: 200px;
+			max-height: 300px;
 		}
 		.faq-a-inner {
 			padding: 0 1.2em 1em;
@@ -451,6 +872,7 @@ const t = dicts[lang];
 		@media (max-width: 720px) {
 			.service-grid { grid-template-columns: 1fr; }
 			.process-grid { grid-template-columns: 1fr 1fr; }
+			.compare-table { font-size: 0.85em; }
 		}
 	</style>
 	<main>
@@ -482,6 +904,49 @@ const t = dicts[lang];
 					)}
 				</div>
 			))}
+		</section>
+
+		<section id="pricing" class="pricing-section">
+			<h2 class="section-title">{t.pricingTitle}</h2>
+			<p class="pricing-desc">{t.pricingDesc}</p>
+			<div class="plans">
+				{t.plans.map((plan) => (
+					<div class={`card plan-card ${plan.highlight ? 'highlight' : ''}`}>
+						{plan.highlight && <span class="plan-badge">{t.badge}</span>}
+						<h3>{plan.name}</h3>
+						<div class="plan-price">{plan.price}<span> / {plan.period}</span></div>
+						<p class="plan-desc">{plan.desc}</p>
+						<ul class="plan-features">
+							{plan.features.map((f) => <li>{f}</li>)}
+						</ul>
+						<a
+							href={plan.ctaHref}
+							class={`btn plan-cta ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}
+							target={plan.ctaExternal ? '_blank' : undefined}
+							rel={plan.ctaExternal ? 'noopener' : undefined}
+						>
+							{plan.cta}
+						</a>
+					</div>
+				))}
+			</div>
+			<div class="compare-section">
+				<h3 class="compare-subtitle">{t.compareTitle}</h3>
+				<table class="table compare-table">
+					<thead>
+						<tr>
+							{t.compareHeaders.map((h) => <th>{h}</th>)}
+						</tr>
+					</thead>
+					<tbody>
+						{t.compareRows.map((row) => (
+							<tr>
+								{row.map((cell) => <td>{cell}</td>)}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 		</section>
 
 		<section class="process-section">
@@ -528,4 +993,6 @@ const t = dicts[lang];
 			});
 		});
 	</script>
+
+	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </BaseLayout>

@@ -3,7 +3,8 @@ import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Comments from '../components/Comments.astro';
+// 评论区暂不上线，见下方模板注释；恢复时同时取消此 import 的注释
+// import Comments from '../components/Comments.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	slug: string;
@@ -633,11 +634,13 @@ const { slug, title, description, pubDate, updatedDate, heroImage, tags, draft, 
 			<ul class="toc-list" id="toc-list"></ul>
 		</div>
 
-		<!-- Comments -->
+		{/* 评论区暂不上线：/api/comments 后端（Pages Functions）尚未部署生效，
+		    重新开放时取消注释并确认接口可用。详见 CHANGELOG 2026-08-28。
 		<div class="comments">
 			<h3 class="comments-title">💬 留言</h3>
 			<Comments slug={slug} />
 		</div>
+		*/}
 
 
 

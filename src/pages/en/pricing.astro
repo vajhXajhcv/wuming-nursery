@@ -1,5 +1,17 @@
 ---
-import PricingPage from '../../components/pages/PricingPage.astro';
+// /en/pricing has been merged into /en/services; this page only redirects
+const target = '/en/services/#pricing';
 ---
 
-<PricingPage lang="en" />
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="refresh" content={`0; url=${target}`} />
+		<link rel="canonical" href="https://wumingmp.me/en/services/" />
+		<title>Page moved - Wuming Nursery</title>
+	</head>
+	<body>
+		<p>The pricing page has been merged into Services &amp; Pricing. Redirecting… <a href={target}>Click here if you are not redirected</a>.</p>
+	</body>
+</html>

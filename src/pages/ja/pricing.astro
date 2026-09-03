@@ -1,5 +1,17 @@
 ---
-import PricingPage from '../../components/pages/PricingPage.astro';
+// /ja/pricing は /ja/services に統合されました。このページはリダイレクト専用です
+const target = '/ja/services/#pricing';
 ---
 
-<PricingPage lang="ja" />
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="refresh" content={`0; url=${target}`} />
+		<link rel="canonical" href="https://wumingmp.me/ja/services/" />
+		<title>ページ移動のお知らせ - 无名苗圃</title>
+	</head>
+	<body>
+		<p>料金ページは「サービスと料金」に統合されました。移動しています… <a href={target}>自動で移動しない場合はこちら</a>。</p>
+	</body>
+</html>
