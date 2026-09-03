@@ -263,6 +263,48 @@ $$
 			margin: 0 0 1.2em;
 			font-size: 0.92em;
 		}
+		.howto,
+		.faq {
+			margin: 2.2em 0;
+		}
+		.howto h2,
+		.faq h2 {
+			font-size: 1.15em;
+			margin: 0 0 0.8em;
+		}
+		.howto ol {
+			padding-left: 1.4em;
+			color: var(--text-secondary);
+			line-height: 1.9;
+			font-size: 0.92em;
+		}
+		.howto li {
+			margin-bottom: 0.4em;
+		}
+		.howto strong {
+			color: var(--text);
+		}
+		.faq details {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.7em 1em;
+			margin-bottom: 0.6em;
+		}
+		.faq summary {
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 0.92em;
+		}
+		.faq details p {
+			color: var(--text-secondary);
+			font-size: 0.88em;
+			line-height: 1.8;
+			margin: 0.6em 0 0.2em;
+		}
+		.faq details a {
+			color: var(--accent);
+		}
 	</style>
 
 	<main>
@@ -327,6 +369,39 @@ $$
 				<h3>🔒 本地运行</h3>
 				<p>转换过程在浏览器内完成，文档内容不会上传到服务器。</p>
 			</div>
+		</section>
+
+		<section class="howto">
+			<h2>如何使用：三步完成</h2>
+			<ol>
+				<li><strong>粘贴 Markdown</strong>：把 Typora、Obsidian、VS Code 里写好的 Markdown 全文粘贴到上方文本框（或点「载入示例」先看效果）。</li>
+				<li><strong>选择模板</strong>：毕业论文、课程论文、数学建模、公文，或 arXiv / Nature / Science / IEEE / APA 等英文期刊格式。</li>
+				<li><strong>开始转换并下载</strong>：首次使用需加载转换引擎（约几秒），生成的 .docx 直接用 Word / WPS 打开即可继续编辑。</li>
+			</ol>
+		</section>
+
+		<section class="faq">
+			<h2>常见问题</h2>
+			<details>
+				<summary>Markdown 转 Word 后，公式还能编辑吗？</summary>
+				<p>能。LaTeX 公式会被转换为 Word 原生的 OMML 公式对象，不是截图或图片，在 Word / WPS 里可以继续修改符号和结构。</p>
+			</details>
+			<details>
+				<summary>在线转换会把我的论文上传到服务器吗？</summary>
+				<p>不会。转换引擎（Pyodide）整个在你的浏览器里运行，文档内容不经过本站任何服务器——断网后依然可以转换。这与大多数"在线转换"网站有本质区别。</p>
+			</details>
+			<details>
+				<summary>和 Pandoc 直接转换有什么区别？</summary>
+				<p>Pandoc 转出的 docx 是通用格式：公式常变图片、表格是默认网格样式。本工具针对中文学术规范做了专门处理：三线表、章节标题自动编号、宋体/黑体/字号/行距按学位论文惯例设置，并提供具体学校与期刊模板。</p>
+			</details>
+			<details>
+				<summary>支持插入图片吗？</summary>
+				<p>在线版暂不支持解析本地图片路径（浏览器安全限制）。需要图片、批量转换或自定义学校模板，请使用 Pro 桌面版。</p>
+			</details>
+			<details>
+				<summary>收费吗？</summary>
+				<p>在线版完全免费、无需注册。Pro 桌面版（批量转换、图片解析、自定义模板、离线使用）为付费软件，见<a href="/services#pricing">定价方案</a>。</p>
+			</details>
 		</section>
 
 		<section class="cta-box">
@@ -496,14 +571,51 @@ base64.b64encode(data).decode("ascii")
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
 		"name": "在线 Markdown 转 Word（论文排版）",
+		"url": "https://wumingmp.me/tools/md2docx",
 		"description": "在浏览器里把 Markdown 转成符合中文学术规范的 Word 文档，支持 LaTeX 公式与三线表。",
 		"applicationCategory": "OfficeApplication",
+		"inLanguage": "zh-CN",
+		"browserRequirements": "requires HTML5 support",
+		"featureList": "LaTeX 公式转 OMML, 三线表, 中文学位论文模板, arXiv/Nature/Science/IEEE/APA 期刊模板, 浏览器本地运行",
 		"offers": {
 			"@type": "Offer",
 			"price": "0",
 			"priceCurrency": "CNY"
 		},
 		"operatingSystem": "Any"
+	}
+	</script>
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "FAQPage",
+		"mainEntity": [
+			{
+				"@type": "Question",
+				"name": "Markdown 转 Word 后，公式还能编辑吗？",
+				"acceptedAnswer": { "@type": "Answer", "text": "能。LaTeX 公式会被转换为 Word 原生的 OMML 公式对象，不是截图或图片，在 Word / WPS 里可以继续修改符号和结构。" }
+			},
+			{
+				"@type": "Question",
+				"name": "在线转换会把我的论文上传到服务器吗？",
+				"acceptedAnswer": { "@type": "Answer", "text": "不会。转换引擎（Pyodide）整个在你的浏览器里运行，文档内容不经过本站任何服务器——断网后依然可以转换。" }
+			},
+			{
+				"@type": "Question",
+				"name": "和 Pandoc 直接转换有什么区别？",
+				"acceptedAnswer": { "@type": "Answer", "text": "Pandoc 转出的 docx 是通用格式：公式常变图片、表格是默认网格样式。本工具针对中文学术规范做了专门处理：三线表、章节标题自动编号、宋体/黑体/字号/行距按学位论文惯例设置，并提供具体学校与期刊模板。" }
+			},
+			{
+				"@type": "Question",
+				"name": "支持插入图片吗？",
+				"acceptedAnswer": { "@type": "Answer", "text": "在线版暂不支持解析本地图片路径（浏览器安全限制）。需要图片、批量转换或自定义学校模板，请使用 Pro 桌面版。" }
+			},
+			{
+				"@type": "Question",
+				"name": "收费吗？",
+				"acceptedAnswer": { "@type": "Answer", "text": "在线版完全免费、无需注册。Pro 桌面版（批量转换、图片解析、自定义模板、离线使用）为付费软件。" }
+			}
+		]
 	}
 	</script>
 </BaseLayout>
