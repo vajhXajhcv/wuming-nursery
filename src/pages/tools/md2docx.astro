@@ -414,10 +414,11 @@ $$
 	<script is:inline>
 		(function() {
 			const PYODIDE_VERSION = '0.27.5';
-			// 多源回退：jsdelivr 不可达时自动切换 npmmirror
+			// 多源回退：jsdelivr 主站不可达时，自动切换其 fastly / testingcf 镜像（文件树与主站一致）
 			const PYODIDE_SOURCES = [
 				'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
-				'https://registry.npmmirror.com/pyodide/' + PYODIDE_VERSION + '/files/full/',
+				'https://fastly.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
+				'https://testingcf.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
 			];
 			const LOAD_TIMEOUT_MS = 90000;
 			const CONVERT_TIMEOUT_MS = 120000;
