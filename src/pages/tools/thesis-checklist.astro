@@ -1,0 +1,366 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = '论文排版自查清单 - 无名苗圃';
+const description = '提交论文前的排版自查清单：页面设置、字体字号、标题编号、图表公式、参考文献、导出打印六大类逐项核对，进度自动保存，可导出检查报告。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: 920px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 0.5em;
+		}
+		.hero h1 {
+			font-size: 1.45em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 680px;
+			margin: 0;
+			line-height: 1.7;
+		}
+		.overall {
+			margin: 1.5em 0;
+			padding: 1.2em;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+		}
+		.overall .row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 0.6em;
+			margin-bottom: 0.6em;
+		}
+		.overall .pct {
+			font-size: 1.4em;
+			font-weight: 800;
+			color: var(--accent);
+			font-variant-numeric: tabular-nums;
+		}
+		.progress {
+			height: 8px;
+			border-radius: 999px;
+			background: var(--bg);
+			border: 1px solid var(--border);
+			overflow: hidden;
+		}
+		.progress .bar {
+			height: 100%;
+			width: 0;
+			background: var(--accent);
+			transition: width 0.2s;
+		}
+		.cat {
+			margin: 1.2em 0;
+			padding: 1.2em;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+		}
+		.cat-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			margin-bottom: 0.4em;
+		}
+		.cat-head h2 {
+			font-size: 1.05em;
+			margin: 0;
+		}
+		.cat-head .cat-pct {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			font-variant-numeric: tabular-nums;
+		}
+		.cat .progress {
+			margin-bottom: 0.8em;
+		}
+		.item {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.6em;
+			padding: 0.45em 0;
+			border-bottom: 1px dashed var(--border);
+			font-size: 0.92em;
+			cursor: pointer;
+		}
+		.item:last-child {
+			border-bottom: none;
+		}
+		.item input {
+			margin-top: 0.25em;
+			accent-color: var(--accent);
+			flex-shrink: 0;
+		}
+		.item.done .text {
+			color: var(--text-secondary);
+			text-decoration: line-through;
+		}
+		.actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.6em;
+			margin: 1.5em 0;
+		}
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.55em 1.2em;
+			border-radius: var(--radius-md);
+			border: 1px solid transparent;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+			font-size: 0.92em;
+			min-height: 40px;
+			box-sizing: border-box;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.status {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			min-height: 1.4em;
+		}
+		.cta-box {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 2em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.2em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			margin: 0 0 1.2em;
+			font-size: 0.92em;
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>论文排版自查清单</h1>
+			<p>提交前按清单逐项核对，避免「格式被打回」的循环。勾选进度自动保存在浏览器里，可以随时导出检查报告。</p>
+		</section>
+
+		<div class="overall">
+			<div class="row">
+				<strong>总体进度</strong>
+				<span class="pct" id="overall-pct">0%</span>
+			</div>
+			<div class="progress"><div class="bar" id="overall-bar"></div></div>
+		</div>
+
+		<div id="cats"></div>
+
+		<div class="actions">
+			<button id="export" class="btn btn-primary" type="button">导出检查报告（Markdown）</button>
+			<button id="reset" class="btn btn-secondary" type="button">全部重置</button>
+		</div>
+		<div class="status" id="status"></div>
+
+		<section class="cta-box">
+			<h2>清单太长，想省掉这些手工活？</h2>
+			<p>在线 Markdown 转 Word 自动处理标题编号、三线表、公式与参考文献排版；复杂学校模板可定制。</p>
+			<a href="/tools/md2docx" class="btn btn-primary">免费在线转换 →</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		(function() {
+			const STORE_KEY = 'thesis-checklist-v1';
+
+			const CATS = [
+				{ name: '页面设置', items: [
+					'纸张为 A4，页边距符合学校要求（常见：上下 2.54cm，左右 3.17cm）',
+					'页码位置与格式正确（摘要/目录用罗马数字，正文用阿拉伯数字）',
+					'页眉内容正确（章节名或校名），奇偶页要求已核对',
+					'封面、原创性声明无页码或按要求处理',
+					'分节符使用正确，各节页码连续或按要求重排',
+				]},
+				{ name: '字体与段落', items: [
+					'正文中文为宋体（或学校指定字体），字号符合要求（常见小四）',
+					'英文与数字为 Times New Roman（或学校指定字体）',
+					'行距统一（常见 1.5 倍或固定值 22-28 磅）',
+					'段落首行缩进 2 字符，无手动空格缩进',
+					'段前段后间距统一，无多余空行',
+				]},
+				{ name: '标题与编号', items: [
+					'多级标题使用样式而非手动加粗居中',
+					'章节编号连续无跳号（第 1 章、1.1、1.1.1…）',
+					'目录由 Word 自动生成，页码与正文一致',
+					'修改标题后已更新目录（右键 → 更新域）',
+					'标题层级不超过学校规定深度',
+				]},
+				{ name: '图表与公式', items: [
+					'图题在图下方、表题在表上方，编号按章连续（图 2-1、表 3-2）',
+					'所有图表都在正文中被引用（"如图 2-1 所示"）',
+					'表格使用三线表（顶线、底线加粗，无竖线）',
+					'公式编号右对齐，格式为 (2-1) 或学校要求的形式',
+					'图片清晰度足够，非截图模糊图片',
+				]},
+				{ name: '参考文献', items: [
+					'参考文献格式统一（GB/T 7714 或学校指定）',
+					'正文引用标注 [1] 与文献表一一对应，无遗漏、无多余',
+					'作者超过 3 人已用「等」或「et al」',
+					'英文文献作者姓名格式正确（姓在前，名缩写）',
+					'电子资源包含引用日期与 URL',
+				]},
+				{ name: '导出与打印', items: [
+					'最终通读全文一遍（打印预览模式）',
+					'PDF 导出后字体已嵌入，无乱码或替换字体',
+					'检查空白页、孤行寡行',
+					'文件命名符合学校要求（学号-姓名-题目）',
+					'提交前备份最终版源文件',
+				]},
+			];
+
+			let checked = {};
+			try {
+				checked = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+				if (typeof checked !== 'object' || checked === null) checked = {};
+			} catch (e) {
+				checked = {};
+			}
+
+			const catsBox = document.getElementById('cats');
+			const status = document.getElementById('status');
+
+			function save() {
+				localStorage.setItem(STORE_KEY, JSON.stringify(checked));
+			}
+
+			function render() {
+				catsBox.innerHTML = '';
+				let totalAll = 0;
+				let doneAll = 0;
+				CATS.forEach(function(cat, ci) {
+					const section = document.createElement('section');
+					section.className = 'cat';
+					const head = document.createElement('div');
+					head.className = 'cat-head';
+					const h2 = document.createElement('h2');
+					h2.textContent = (ci + 1) + '. ' + cat.name;
+					const pct = document.createElement('span');
+					pct.className = 'cat-pct';
+					head.appendChild(h2);
+					head.appendChild(pct);
+					const prog = document.createElement('div');
+					prog.className = 'progress';
+					const bar = document.createElement('div');
+					bar.className = 'bar';
+					prog.appendChild(bar);
+					section.appendChild(head);
+					section.appendChild(prog);
+
+					let done = 0;
+					cat.items.forEach(function(text, ii) {
+						const key = ci + '-' + ii;
+						if (checked[key]) done++;
+						const label = document.createElement('label');
+						label.className = 'item' + (checked[key] ? ' done' : '');
+						const box = document.createElement('input');
+						box.type = 'checkbox';
+						box.checked = !!checked[key];
+						box.addEventListener('change', function() {
+							if (box.checked) checked[key] = true; else delete checked[key];
+							save();
+							render();
+						});
+						const span = document.createElement('span');
+						span.className = 'text';
+						span.textContent = text;
+						label.appendChild(box);
+						label.appendChild(span);
+						section.appendChild(label);
+					});
+
+					totalAll += cat.items.length;
+					doneAll += done;
+					const catPct = Math.round((done / cat.items.length) * 100);
+					pct.textContent = done + '/' + cat.items.length;
+					bar.style.width = catPct + '%';
+					catsBox.appendChild(section);
+				});
+
+				const overall = totalAll > 0 ? Math.round((doneAll / totalAll) * 100) : 0;
+				document.getElementById('overall-pct').textContent = overall + '%（' + doneAll + '/' + totalAll + '）';
+				document.getElementById('overall-bar').style.width = overall + '%';
+			}
+
+			document.getElementById('reset').addEventListener('click', function() {
+				if (!confirm('确定清空所有勾选？')) return;
+				checked = {};
+				save();
+				render();
+				status.textContent = '已重置。';
+			});
+
+			document.getElementById('export').addEventListener('click', function() {
+				const lines = ['# 论文排版自查报告', '', '生成时间：' + new Date().toLocaleString(), ''];
+				CATS.forEach(function(cat, ci) {
+					lines.push('## ' + (ci + 1) + '. ' + cat.name);
+					cat.items.forEach(function(text, ii) {
+						const key = ci + '-' + ii;
+						lines.push('- [' + (checked[key] ? 'x' : ' ') + '] ' + text);
+					});
+					lines.push('');
+				});
+				const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+				const a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = '论文排版自查报告.md';
+				a.click();
+				URL.revokeObjectURL(a.href);
+				status.textContent = '已导出检查报告。';
+			});
+
+			render();
+		})();
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "论文排版自查清单",
+		"url": "https://wumingmp.me/tools/thesis-checklist",
+		"description": "提交论文前的排版自查清单：页面设置、字体字号、标题编号、图表公式、参考文献、导出打印逐项核对，进度自动保存，可导出报告。",
+		"applicationCategory": "OfficeApplication",
+		"inLanguage": "zh-CN",
+		"offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+		"operatingSystem": "Any"
+	}
+	</script>
+</BaseLayout>

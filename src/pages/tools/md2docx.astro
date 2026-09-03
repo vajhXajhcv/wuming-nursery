@@ -414,7 +414,14 @@ $$
 	<script is:inline>
 		(function() {
 			const PYODIDE_VERSION = '0.27.5';
-			const PYODIDE_INDEX = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/';
+			// 多源回退：jsdelivr 不可达时自动切换 npmmirror
+			const PYODIDE_SOURCES = [
+				'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
+				'https://registry.npmmirror.com/pyodide/' + PYODIDE_VERSION + '/files/full/',
+			];
+			const LOAD_TIMEOUT_MS = 90000;
+			const CONVERT_TIMEOUT_MS = 120000;
+			const MAX_INPUT_BYTES = 2 * 1024 * 1024;
 			const WHEELS = [
 				'/tools/md2docx/wheels/python_docx-1.2.0-py3-none-any.whl',
 				'/tools/md2docx/wheels/latex2mathml-3.81.0-py3-none-any.whl',
@@ -430,20 +437,89 @@ $$
 			const resultMsg = document.getElementById('result-msg');
 			const download = document.getElementById('download');
 
-			let pyodideReady = false;
-			let pyodideLoading = false;
-			let pyodide = null;
+			// 共享 Promise：并发调用共享同一次加载；失败后复位，允许重试
+			let pyodidePromise = null;
+			let lastObjectUrl = null;
 
 			function setStatus(message, busy) {
 				status.innerHTML = busy ? '<span class="dot"></span>' + message : message;
 			}
 
 			function setError(message) {
-				status.innerHTML = '<span style="color:#dc2626;">错误：' + message + '</span>';
+				status.innerHTML = '<span style="color:#dc2626;">错误：' + message + '（可重试）</span>';
 			}
 
-			function absoluteWheelUrl(path) {
-				return new URL(path, location.href).href;
+			function withTimeout(promise, ms, label) {
+				return Promise.race([
+					promise,
+					new Promise(function(_, reject) {
+						setTimeout(function() {
+							reject(new Error(label + '超时，请检查网络后重试'));
+						}, ms);
+					}),
+				]);
+			}
+
+			function friendlyMessage(e) {
+				const raw = (e && e.message) || String(e);
+				if (/Failed to fetch|NetworkError|fetch failed|Load failed/i.test(raw)) {
+					return '网络加载失败，请检查网络（或切换网络环境）后重新点击「开始转换」。';
+				}
+				if (/超时/.test(raw)) return raw;
+				// Python traceback 很长，只保留最后一行关键错误
+				const lines = raw.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
+				const last = lines.length ? lines[lines.length - 1] : raw;
+				return last.length > 200 ? last.slice(0, 200) + '…' : last;
+			}
+
+			function loadScript(src) {
+				return new Promise(function(resolve, reject) {
+					const s = document.createElement('script');
+					s.src = src;
+					s.onload = resolve;
+					s.onerror = function() { reject(new Error('脚本加载失败（' + src + '）')); };
+					document.head.appendChild(s);
+				});
+			}
+
+			async function loadPyodideEngine() {
+				let lastError = null;
+				for (const source of PYODIDE_SOURCES) {
+					try {
+						setStatus('正在加载 Python 运行环境（首次约 10-20 MB）...', true);
+						if (typeof loadPyodide === 'undefined') {
+							await withTimeout(loadScript(source + 'pyodide.js'), LOAD_TIMEOUT_MS, '运行环境加载');
+						}
+						const py = await withTimeout(
+							loadPyodide({ indexURL: source }), LOAD_TIMEOUT_MS, '运行环境加载'
+						);
+						setStatus('正在加载基础依赖（lxml、PyYAML）...', true);
+						await withTimeout(
+							py.loadPackage(['lxml', 'pyyaml', 'typing-extensions']), LOAD_TIMEOUT_MS, '依赖加载'
+						);
+						setStatus('正在安装文档转换组件...', true);
+						const micropip = py.pyimport('micropip');
+						for (const wheel of WHEELS) {
+							await micropip.install(new URL(wheel, location.href).href);
+						}
+						setStatus('环境就绪，可以转换了。', false);
+						return py;
+					} catch (e) {
+						console.error('Pyodide 源加载失败：' + source, e);
+						lastError = e;
+					}
+				}
+				throw lastError || new Error('运行环境加载失败');
+			}
+
+			function ensurePyodide() {
+				if (!pyodidePromise) {
+					pyodidePromise = loadPyodideEngine().catch(function(err) {
+						pyodidePromise = null; // 复位，下次点击可重新加载
+						throw err;
+					});
+				}
+				return pyodidePromise;
 			}
 
 			sampleBtn.addEventListener('click', function() {
@@ -454,47 +530,14 @@ $$
 				}
 			});
 
-			async function ensurePyodide() {
-				if (pyodideReady && pyodide) return pyodide;
-				if (pyodideLoading) {
-					while (!pyodideReady) {
-						await new Promise(r => setTimeout(r, 200));
-					}
-					return pyodide;
-				}
-				pyodideLoading = true;
-				try {
-					setStatus('正在加载 Python 运行环境（首次约 10-20 MB）...', true);
-					if (typeof loadPyodide === 'undefined') {
-						await new Promise(function(resolve, reject) {
-							const s = document.createElement('script');
-							s.src = PYODIDE_INDEX + 'pyodide.js';
-							s.onload = resolve;
-							s.onerror = function() { reject(new Error('Pyodide 加载失败')); };
-							document.head.appendChild(s);
-						});
-					}
-					pyodide = await loadPyodide({ indexURL: PYODIDE_INDEX });
-					setStatus('正在加载基础依赖（lxml、PyYAML）...', true);
-					await pyodide.loadPackage(['lxml', 'pyyaml', 'typing-extensions']);
-					setStatus('正在安装文档转换组件...', true);
-					const micropip = pyodide.pyimport('micropip');
-					for (const wheel of WHEELS) {
-						await micropip.install(absoluteWheelUrl(wheel));
-					}
-					pyodideReady = true;
-					setStatus('环境就绪，可以转换了。', false);
-					return pyodide;
-				} catch (e) {
-					pyodideLoading = false;
-					throw e;
-				}
-			}
-
 			convertBtn.addEventListener('click', async function() {
 				const md = input.value.trim();
 				if (!md) {
 					setError('请先粘贴 Markdown 内容。');
+					return;
+				}
+				if (new Blob([md]).size > MAX_INPUT_BYTES) {
+					setError('文档超过 2 MB，超出在线轻量版能力，请使用 Pro 桌面版处理大文件或批量转换。');
 					return;
 				}
 				convertBtn.disabled = true;
@@ -543,14 +586,18 @@ with open(output_path, "rb") as f:
     data = f.read()
 base64.b64encode(data).decode("ascii")
 `;
-					const b64 = await py.runPythonAsync(code);
+					const b64 = await withTimeout(
+						py.runPythonAsync(code), CONVERT_TIMEOUT_MS, '文档转换'
+					);
 					const raw = atob(b64);
 					const bytes = new Uint8Array(raw.length);
 					for (let i = 0; i < raw.length; i++) {
 						bytes[i] = raw.charCodeAt(i);
 					}
 					const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+					if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
 					const url = URL.createObjectURL(blob);
+					lastObjectUrl = url;
 					download.href = url;
 					download.download = 'docx-formatter_' + templateName + '_' + new Date().toISOString().slice(0,10) + '.docx';
 					resultMsg.textContent = '已使用「' + templateName + '」模板生成文档，共 ' + bytes.length + ' 字节。';
@@ -558,7 +605,7 @@ base64.b64encode(data).decode("ascii")
 					setStatus('转换完成。', false);
 				} catch (e) {
 					console.error(e);
-					setError((e && e.message) || String(e));
+					setError(friendlyMessage(e));
 				} finally {
 					convertBtn.disabled = false;
 				}

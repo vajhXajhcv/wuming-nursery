@@ -1,0 +1,607 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'GB/T 7714 参考文献格式化器 - 无名苗圃';
+const description = '免费在线生成符合 GB/T 7714-2015 顺序编码制的参考文献条目，支持期刊、专著、学位论文、会议、报纸、标准、专利、电子资源，浏览器本地运行，可批量管理与导出。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: 920px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 0.5em;
+		}
+		.hero h1 {
+			font-size: 1.45em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 680px;
+			margin: 0;
+			line-height: 1.7;
+		}
+		.panel {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.2em;
+			margin: 1.5em 0 1em;
+		}
+		.toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.8em;
+			align-items: end;
+			margin-bottom: 1em;
+		}
+		.field {
+			display: flex;
+			flex-direction: column;
+			gap: 0.3em;
+			margin-bottom: 0.7em;
+		}
+		.field label {
+			font-size: 0.85em;
+			font-weight: 600;
+		}
+		.field .hint {
+			font-size: 0.78em;
+			color: var(--text-secondary);
+			font-weight: 400;
+		}
+		.field input,
+		.field select {
+			padding: 0.5em 0.7em;
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			background: transparent;
+			color: inherit;
+			font-size: 0.92em;
+			box-sizing: border-box;
+		}
+		.field input:focus,
+		.field select:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.fields-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 0 1em;
+		}
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.55em 1.2em;
+			border-radius: var(--radius-md);
+			border: 1px solid transparent;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+			font-size: 0.92em;
+			transition: background 0.15s, border-color 0.2s, color 0.15s, opacity 0.15s;
+			min-height: 40px;
+			box-sizing: border-box;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.preview {
+			margin-top: 1em;
+			padding: 0.9em 1em;
+			border-radius: var(--radius-md);
+			background: var(--accent-soft);
+			border: 1px solid var(--border);
+			font-size: 0.92em;
+			line-height: 1.7;
+			word-break: break-all;
+		}
+		.preview:empty {
+			display: none;
+		}
+		.status {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			min-height: 1.4em;
+			margin-top: 0.4em;
+		}
+		.list-head {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.6em;
+			align-items: center;
+			justify-content: space-between;
+			margin: 2em 0 0.8em;
+		}
+		.list-head h2 {
+			font-size: 1.15em;
+			margin: 0;
+		}
+		.list-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5em;
+		}
+		.ref-list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+		.ref-item {
+			display: flex;
+			gap: 0.7em;
+			align-items: flex-start;
+			padding: 0.7em 0.9em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg-elevated);
+			margin-bottom: 0.6em;
+			font-size: 0.9em;
+			line-height: 1.7;
+		}
+		.ref-item .text {
+			flex: 1;
+			word-break: break-all;
+		}
+		.ref-item .ops {
+			display: flex;
+			gap: 0.4em;
+			flex-shrink: 0;
+		}
+		.ref-item .ops button {
+			border: 1px solid var(--border);
+			background: transparent;
+			color: var(--text-secondary);
+			border-radius: var(--radius-sm);
+			cursor: pointer;
+			font-size: 0.78em;
+			padding: 0.2em 0.6em;
+		}
+		.ref-item .ops button:hover {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.empty {
+			color: var(--text-secondary);
+			font-size: 0.9em;
+			padding: 1em;
+			text-align: center;
+			border: 1px dashed var(--border);
+			border-radius: var(--radius-md);
+		}
+		.faq {
+			margin: 2.2em 0;
+		}
+		.faq h2 {
+			font-size: 1.15em;
+			margin: 0 0 0.8em;
+		}
+		.faq details {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.7em 1em;
+			margin-bottom: 0.6em;
+		}
+		.faq summary {
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 0.92em;
+		}
+		.faq details p {
+			color: var(--text-secondary);
+			font-size: 0.88em;
+			line-height: 1.8;
+			margin: 0.6em 0 0.2em;
+		}
+		.cta-box {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 2em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.2em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			margin: 0 0 1.2em;
+			font-size: 0.92em;
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>GB/T 7714 参考文献格式化器</h1>
+			<p>按 GB/T 7714-2015 顺序编码制生成参考文献条目。填字段、点添加，逐条积累成完整文献表，最后一键复制或导出。全部在浏览器本地完成，不上传任何内容。</p>
+		</section>
+
+		<section class="panel">
+			<div class="toolbar">
+				<div class="field" style="min-width:200px;margin:0;">
+					<label for="ref-type">文献类型</label>
+					<select id="ref-type"></select>
+				</div>
+				<div class="field" style="min-width:140px;margin:0;">
+					<label for="ref-lang">文献语言</label>
+					<select id="ref-lang">
+						<option value="zh" selected>中文</option>
+						<option value="en">英文</option>
+					</select>
+				</div>
+			</div>
+			<div id="fields" class="fields-grid"></div>
+			<div style="margin-top:0.8em;display:flex;gap:0.6em;flex-wrap:wrap;">
+				<button id="add" class="btn btn-primary" type="button">添加到文献表</button>
+				<button id="clear-form" class="btn btn-secondary" type="button">清空表单</button>
+			</div>
+			<div class="preview" id="preview"></div>
+			<div class="status" id="status"></div>
+		</section>
+
+		<div class="list-head">
+			<h2>文献表（<span id="count">0</span> 条）</h2>
+			<div class="list-actions">
+				<button id="copy-all" class="btn btn-secondary" type="button">复制全部</button>
+				<button id="export" class="btn btn-secondary" type="button">导出 .txt</button>
+				<button id="clear-list" class="btn btn-secondary" type="button">清空</button>
+			</div>
+		</div>
+		<ol class="ref-list" id="ref-list"></ol>
+
+		<section class="faq">
+			<h2>常见问题</h2>
+			<details>
+				<summary>作者超过 3 人怎么处理？</summary>
+				<p>按 GB/T 7714-2015，主要责任者超过 3 个时，只列前 3 个，中文文献后加「，等」，英文文献后加「, et al」。本工具会自动处理——作者在输入框中用逗号、顿号或分号分隔即可。</p>
+			</details>
+			<details>
+				<summary>数据会保存吗？</summary>
+				<p>文献表保存在你浏览器的 localStorage 里，关掉页面再打开还在；清除浏览器数据会删除。工具不上传任何内容到服务器。</p>
+			</details>
+			<details>
+				<summary>生成后还要排版进 Word 吗？</summary>
+				<p>导出的条目可以直接粘贴进论文。如果你的整篇论文还在 Markdown 阶段，可以用本站「在线 Markdown 转 Word」一次性完成正文、公式、三线表和参考文献的排版。</p>
+			</details>
+		</section>
+
+		<section class="cta-box">
+			<h2>整篇论文还没排版？</h2>
+			<p>用在线 Markdown 转 Word，把正文、公式、三线表按学位论文规范一次排好。</p>
+			<a href="/tools/md2docx" class="btn btn-primary">免费在线转换 →</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		(function() {
+			const STORE_KEY = 'gbt7714-refs-v1';
+
+			// 字段定义：key -> [标签, 占位提示, 是否整行]
+			const FIELDS = {
+				authors: ['作者', '多人用逗号、顿号或分号分隔，如：张三, 李四, 王五'],
+				title: ['题名', '文献标题'],
+				journal: ['刊名', '如：计算机学报'],
+				year: ['出版年', '如：2021'],
+				volume: ['卷', '如：15（无卷可留空）'],
+				issue: ['期', '如：2'],
+				pages: ['起止页码', '如：100-105'],
+				edition: ['版本', '第 1 版留空；其他填阿拉伯数字，如：2'],
+				place: ['出版地 / 地点', '如：北京'],
+				publisher: ['出版者', '如：清华大学出版社'],
+				school: ['授予单位', '如：武汉理工大学'],
+				proceedings: ['论文集名', '如：第十二届全国XX会议论文集'],
+				newspaper: ['报纸名', '如：人民日报'],
+				date: ['日期', '报纸为 2021-05-01；专利为公开（公告）日'],
+				banci: ['版次', '如：3'],
+				stdNo: ['标准编号', '如：GB/T 7714-2015'],
+				patentNo: ['专利号', '如：ZL201810012345.6'],
+				pubDate: ['发布或更新日期', '如：2021-05-01（可留空）'],
+				citeDate: ['引用日期', '如：2026-01-15'],
+				url: ['获取路径（URL）', 'https://...'],
+			};
+
+			const TYPES = {
+				'J': { label: '期刊论文 [J]', fields: ['authors', 'title', 'journal', 'year', 'volume', 'issue', 'pages'] },
+				'M': { label: '专著 [M]', fields: ['authors', 'title', 'edition', 'place', 'publisher', 'year', 'pages'] },
+				'D': { label: '学位论文 [D]', fields: ['authors', 'title', 'place', 'school', 'year'] },
+				'C': { label: '会议论文 [C]', fields: ['authors', 'title', 'proceedings', 'place', 'publisher', 'year', 'pages'] },
+				'N': { label: '报纸文章 [N]', fields: ['authors', 'title', 'newspaper', 'date', 'banci'] },
+				'S': { label: '标准 [S]', fields: ['stdNo', 'title', 'place', 'publisher', 'year'] },
+				'P': { label: '专利 [P]', fields: ['authors', 'title', 'patentNo', 'date'] },
+				'EB/OL': { label: '电子资源 [EB/OL]', fields: ['authors', 'title', 'pubDate', 'citeDate', 'url'] },
+			};
+
+			const typeSel = document.getElementById('ref-type');
+			const langSel = document.getElementById('ref-lang');
+			const fieldsBox = document.getElementById('fields');
+			const preview = document.getElementById('preview');
+			const status = document.getElementById('status');
+			const listEl = document.getElementById('ref-list');
+			const countEl = document.getElementById('count');
+
+			let refs = [];
+			try {
+				refs = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+				if (!Array.isArray(refs)) refs = [];
+			} catch (e) {
+				refs = [];
+			}
+
+			function fmtAuthors(raw, lang) {
+				const parts = raw.split(/[,，、;；\n]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+				if (parts.length === 0) return '';
+				if (parts.length <= 3) return parts.join(', ');
+				return parts.slice(0, 3).join(', ') + (lang === 'en' ? ', et al' : ', 等');
+			}
+
+			function v(values, key) {
+				return (values[key] || '').trim();
+			}
+
+			function format(type, values, lang) {
+				const authors = fmtAuthors(v(values, 'authors'), lang);
+				const title = v(values, 'title');
+				const year = v(values, 'year');
+				const place = v(values, 'place');
+				const publisher = v(values, 'publisher');
+				const pages = v(values, 'pages');
+				switch (type) {
+					case 'J': {
+						let s = authors + '. ' + title + '[J]. ' + v(values, 'journal') + ', ' + year;
+						if (v(values, 'volume')) s += ', ' + v(values, 'volume');
+						if (v(values, 'issue')) s += '(' + v(values, 'issue') + ')';
+						if (pages) s += ': ' + pages;
+						return s + '.';
+					}
+					case 'M': {
+						let s = authors + '. ' + title + '[M].';
+						const ed = v(values, 'edition');
+						if (ed && ed !== '1') s += ' ' + ed.replace(/^第?|版$/g, '') + '版.';
+						s += ' ' + place + ': ' + publisher + ', ' + year;
+						if (pages) s += ': ' + pages;
+						return s + '.';
+					}
+					case 'D':
+						return authors + '. ' + title + '[D]. ' + place + ': ' + v(values, 'school') + ', ' + year + '.';
+					case 'C': {
+						let s = authors + '. ' + title + '[C]//' + v(values, 'proceedings') + '. ' + place + ': ' + publisher + ', ' + year;
+						if (pages) s += ': ' + pages;
+						return s + '.';
+					}
+					case 'N': {
+						let s = authors + '. ' + title + '[N]. ' + v(values, 'newspaper') + ', ' + v(values, 'date');
+						if (v(values, 'banci')) s += '(' + v(values, 'banci') + ')';
+						return s + '.';
+					}
+					case 'S':
+						return v(values, 'stdNo') + ' ' + title + '[S]. ' + place + ': ' + publisher + ', ' + year + '.';
+					case 'P':
+						return authors + '. ' + title + ': ' + v(values, 'patentNo') + '[P]. ' + v(values, 'date') + '.';
+					case 'EB/OL': {
+						let s = authors + '. ' + title + '[EB/OL].';
+						if (v(values, 'pubDate')) s += ' (' + v(values, 'pubDate') + ')';
+						if (v(values, 'citeDate')) s += ' [' + v(values, 'citeDate') + ']';
+						s += '. ' + v(values, 'url') + '.';
+						return s;
+					}
+					default:
+						return '';
+				}
+			}
+
+			function currentType() {
+				return typeSel.value;
+			}
+
+			function collectValues() {
+				const values = {};
+				fieldsBox.querySelectorAll('input[data-key]').forEach(function(inp) {
+					values[inp.dataset.key] = inp.value;
+				});
+				return values;
+			}
+
+			function renderForm() {
+				const type = TYPES[currentType()];
+				fieldsBox.innerHTML = '';
+				type.fields.forEach(function(key) {
+					const def = FIELDS[key];
+					const wrap = document.createElement('div');
+					wrap.className = 'field';
+					const label = document.createElement('label');
+					label.textContent = def[0];
+					const input = document.createElement('input');
+					input.type = 'text';
+					input.dataset.key = key;
+					input.placeholder = def[1] || '';
+					input.addEventListener('input', updatePreview);
+					wrap.appendChild(label);
+					wrap.appendChild(input);
+					fieldsBox.appendChild(wrap);
+				});
+				updatePreview();
+			}
+
+			function updatePreview() {
+				const values = collectValues();
+				if (!v(values, 'title')) {
+					preview.textContent = '';
+					return;
+				}
+				preview.textContent = format(currentType(), values, langSel.value);
+			}
+
+			function save() {
+				localStorage.setItem(STORE_KEY, JSON.stringify(refs));
+			}
+
+			function renderList() {
+				countEl.textContent = String(refs.length);
+				listEl.innerHTML = '';
+				if (refs.length === 0) {
+					const empty = document.createElement('div');
+					empty.className = 'empty';
+					empty.textContent = '文献表为空。在上方填写字段并点击「添加到文献表」。';
+					listEl.appendChild(empty);
+					return;
+				}
+				refs.forEach(function(text, i) {
+					const li = document.createElement('li');
+					li.className = 'ref-item';
+					const span = document.createElement('span');
+					span.className = 'text';
+					span.textContent = '[' + (i + 1) + '] ' + text;
+					const ops = document.createElement('span');
+					ops.className = 'ops';
+					const copyBtn = document.createElement('button');
+					copyBtn.type = 'button';
+					copyBtn.textContent = '复制';
+					copyBtn.addEventListener('click', function() {
+						copyText('[' + (i + 1) + '] ' + text, '已复制该条。');
+					});
+					const delBtn = document.createElement('button');
+					delBtn.type = 'button';
+					delBtn.textContent = '删除';
+					delBtn.addEventListener('click', function() {
+						refs.splice(i, 1);
+						save();
+						renderList();
+					});
+					ops.appendChild(copyBtn);
+					ops.appendChild(delBtn);
+					li.appendChild(span);
+					li.appendChild(ops);
+					listEl.appendChild(li);
+				});
+			}
+
+			function copyText(text, okMsg) {
+				const done = function() {
+					status.textContent = okMsg;
+				};
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(text).then(done, function() {
+						fallbackCopy(text);
+						done();
+					});
+				} else {
+					fallbackCopy(text);
+					done();
+				}
+			}
+
+			function fallbackCopy(text) {
+				const ta = document.createElement('textarea');
+				ta.value = text;
+				document.body.appendChild(ta);
+				ta.select();
+				try { document.execCommand('copy'); } catch (e) { /* 忽略 */ }
+				document.body.removeChild(ta);
+			}
+
+			Object.keys(TYPES).forEach(function(key) {
+				const opt = document.createElement('option');
+				opt.value = key;
+				opt.textContent = TYPES[key].label;
+				typeSel.appendChild(opt);
+			});
+
+			typeSel.addEventListener('change', renderForm);
+			langSel.addEventListener('change', updatePreview);
+
+			document.getElementById('add').addEventListener('click', function() {
+				const values = collectValues();
+				if (!v(values, 'title')) {
+					status.textContent = '请至少填写「题名」。';
+					return;
+				}
+				const text = format(currentType(), values, langSel.value);
+				refs.push(text);
+				save();
+				renderList();
+				status.textContent = '已添加为第 ' + refs.length + ' 条。';
+			});
+
+			document.getElementById('clear-form').addEventListener('click', function() {
+				fieldsBox.querySelectorAll('input').forEach(function(inp) { inp.value = ''; });
+				updatePreview();
+				status.textContent = '';
+			});
+
+			document.getElementById('copy-all').addEventListener('click', function() {
+				if (refs.length === 0) {
+					status.textContent = '文献表为空。';
+					return;
+				}
+				const text = refs.map(function(r, i) { return '[' + (i + 1) + '] ' + r; }).join('\n');
+				copyText(text, '已复制全部 ' + refs.length + ' 条。');
+			});
+
+			document.getElementById('export').addEventListener('click', function() {
+				if (refs.length === 0) {
+					status.textContent = '文献表为空。';
+					return;
+				}
+				const text = refs.map(function(r, i) { return '[' + (i + 1) + '] ' + r; }).join('\n');
+				const blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
+				const a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = '参考文献-GBT7714.txt';
+				a.click();
+				URL.revokeObjectURL(a.href);
+				status.textContent = '已导出 ' + refs.length + ' 条。';
+			});
+
+			document.getElementById('clear-list').addEventListener('click', function() {
+				if (refs.length === 0) return;
+				if (!confirm('确定清空全部 ' + refs.length + ' 条文献？')) return;
+				refs = [];
+				save();
+				renderList();
+				status.textContent = '已清空。';
+			});
+
+			renderForm();
+			renderList();
+		})();
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "GB/T 7714 参考文献格式化器",
+		"url": "https://wumingmp.me/tools/gbt7714",
+		"description": "按 GB/T 7714-2015 顺序编码制生成参考文献条目，支持期刊、专著、学位论文、会议、报纸、标准、专利、电子资源，浏览器本地运行。",
+		"applicationCategory": "OfficeApplication",
+		"inLanguage": "zh-CN",
+		"offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+		"operatingSystem": "Any"
+	}
+	</script>
+</BaseLayout>

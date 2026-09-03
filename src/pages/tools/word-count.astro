@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = '论文写作字数统计 - 无名苗圃';
+const description = '免费在线字数统计工具，针对中英混排的论文写作：中文字符、英文单词、总字符、段落、句子、标点占比与预计阅读时间，浏览器本地实时统计。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: 920px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 0.5em;
+		}
+		.hero h1 {
+			font-size: 1.45em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 680px;
+			margin: 0;
+			line-height: 1.7;
+		}
+		.panel {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.2em;
+			margin: 1.5em 0 1em;
+		}
+		.panel textarea {
+			width: 100%;
+			min-height: 320px;
+			resize: vertical;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.75em;
+			font-size: 0.95em;
+			line-height: 1.7;
+			background: transparent;
+			color: inherit;
+			box-sizing: border-box;
+			font-family: inherit;
+		}
+		.panel textarea:focus {
+			outline: none;
+			border-color: var(--accent);
+		}
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			gap: 0.8em;
+			margin: 1.2em 0;
+		}
+		.stat-card {
+			padding: 1em;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--bg-elevated);
+			text-align: center;
+		}
+		.stat-card .num {
+			font-size: 1.5em;
+			font-weight: 800;
+			color: var(--accent);
+			font-variant-numeric: tabular-nums;
+		}
+		.stat-card .label {
+			font-size: 0.82em;
+			color: var(--text-secondary);
+			margin-top: 0.2em;
+		}
+		.progress-wrap {
+			margin: 0.4em 0 1.2em;
+		}
+		.progress-wrap .row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-bottom: 0.4em;
+			gap: 0.8em;
+			flex-wrap: wrap;
+		}
+		.progress-wrap input {
+			width: 110px;
+			padding: 0.3em 0.6em;
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			background: transparent;
+			color: inherit;
+			font-size: 0.95em;
+		}
+		.progress {
+			height: 8px;
+			border-radius: 999px;
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			overflow: hidden;
+		}
+		.progress .bar {
+			height: 100%;
+			width: 0;
+			background: var(--accent);
+			transition: width 0.2s;
+		}
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.55em 1.2em;
+			border-radius: var(--radius-md);
+			border: 1px solid transparent;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+			font-size: 0.92em;
+			min-height: 40px;
+			box-sizing: border-box;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.note {
+			font-size: 0.82em;
+			color: var(--text-secondary);
+			margin-top: 0.6em;
+			line-height: 1.7;
+		}
+		.cta-box {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 2em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.2em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			margin: 0 0 1.2em;
+			font-size: 0.92em;
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>论文写作字数统计</h1>
+			<p>为中英混排的论文写作设计：分开统计中文字符与英文单词，给出总字符数、段落与句子数、标点占比和预计阅读时间。实时统计，内容只留在你的浏览器里。</p>
+		</section>
+
+		<section class="panel">
+			<textarea id="input" placeholder="在这里粘贴论文正文或草稿…" spellcheck="false"></textarea>
+			<p class="note">说明：中文字符按汉字计数；英文按单词计数；「总字符（不计空格）」与 Word 字数统计口径接近，可直接对照学校的字数要求。</p>
+		</section>
+
+		<div class="progress-wrap">
+			<div class="row">
+				<span>目标字数进度（按总字符不计空格计）</span>
+				<span>
+					目标 <input id="target" type="number" min="0" step="1000" value="30000" /> 字
+					· <strong id="progress-text">0%</strong>
+				</span>
+			</div>
+			<div class="progress"><div class="bar" id="bar"></div></div>
+		</div>
+
+		<div class="stats-grid">
+			<div class="stat-card"><div class="num" id="s-cjk">0</div><div class="label">中文字符</div></div>
+			<div class="stat-card"><div class="num" id="s-en">0</div><div class="label">英文单词</div></div>
+			<div class="stat-card"><div class="num" id="s-total">0</div><div class="label">总字符（含空格）</div></div>
+			<div class="stat-card"><div class="num" id="s-nospace">0</div><div class="label">总字符（不计空格）</div></div>
+			<div class="stat-card"><div class="num" id="s-para">0</div><div class="label">段落</div></div>
+			<div class="stat-card"><div class="num" id="s-sent">0</div><div class="label">句子</div></div>
+			<div class="stat-card"><div class="num" id="s-punct">0%</div><div class="label">标点占比</div></div>
+			<div class="stat-card"><div class="num" id="s-time">0 分钟</div><div class="label">预计阅读时长</div></div>
+		</div>
+
+		<section class="cta-box">
+			<h2>字数达标了，格式呢？</h2>
+			<p>用在线 Markdown 转 Word，把论文按学位论文规范一次排好，公式、三线表、自动编号全搞定。</p>
+			<a href="/tools/md2docx" class="btn btn-primary">免费在线转换 →</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		(function() {
+			const input = document.getElementById('input');
+			const target = document.getElementById('target');
+			const el = function(id) { return document.getElementById(id); };
+
+			function count() {
+				const text = input.value;
+				const cjk = (text.match(/[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g) || []).length;
+				const enWords = (text.match(/[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*/g) || []).length;
+				const total = text.length;
+				const noSpace = (text.match(/\S/g) || []).length;
+				const paras = text.trim() === '' ? 0 : text.trim().split(/\n\s*\n|\n/).filter(function(s) { return s.trim() !== ''; }).length;
+				const sents = (text.match(/[^。！？.!?\n]+[。！？.!?]+/g) || []).length;
+				const puncts = (text.match(/[，。；：？！、（）《》〈〉「」『』【】—…·,.;:?!()\[\]"'<>-]/g) || []).length;
+				const punctRatio = total > 0 ? Math.round((puncts / total) * 100) : 0;
+				// 中文阅读约 400 字/分钟，英文约 200 词/分钟
+				const minutes = cjk / 400 + enWords / 200;
+				const timeText = minutes < 1 ? '不到 1 分钟' : Math.round(minutes) + ' 分钟';
+
+				el('s-cjk').textContent = cjk.toLocaleString();
+				el('s-en').textContent = enWords.toLocaleString();
+				el('s-total').textContent = total.toLocaleString();
+				el('s-nospace').textContent = noSpace.toLocaleString();
+				el('s-para').textContent = paras.toLocaleString();
+				el('s-sent').textContent = sents.toLocaleString();
+				el('s-punct').textContent = punctRatio + '%';
+				el('s-time').textContent = timeText;
+
+				const goal = parseInt(target.value, 10);
+				const pct = goal > 0 ? Math.min(100, Math.round((noSpace / goal) * 100)) : 0;
+				el('bar').style.width = pct + '%';
+				el('progress-text').textContent = pct + '%';
+			}
+
+			input.addEventListener('input', count);
+			target.addEventListener('input', count);
+			count();
+		})();
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "论文写作字数统计",
+		"url": "https://wumingmp.me/tools/word-count",
+		"description": "中英混排字数统计：中文字符、英文单词、总字符、段落、句子、标点占比与预计阅读时间，浏览器本地实时统计。",
+		"applicationCategory": "OfficeApplication",
+		"inLanguage": "zh-CN",
+		"offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+		"operatingSystem": "Any"
+	}
+	</script>
+</BaseLayout>

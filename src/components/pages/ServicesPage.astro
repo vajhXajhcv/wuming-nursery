@@ -172,6 +172,21 @@ const dicts = {
 			{ q: '学校模板定制怎么收费？', a: '如果只是现有字段微调，通常包含在 Pro 版支持范围内；复杂学校模板定制按工时另议，可在论文排版服务中沟通。' },
 			{ q: '在线工具和 Pro 版有什么区别？', a: '在线工具在浏览器内运行，适合单次快速体验，暂不支持本地图片；Pro 版是桌面软件，支持批量、自定义模板和完整本地文件工作流。' },
 			{ q: '支持发票吗？', a: '支持。通过爱发电或企业转账均可开具发票。' },
+			{ q: '在线工具打不开或加载失败怎么办？', a: '在线工具完全在你的浏览器内运行（开源的 Pyodide 运行时），不经过本站服务器。加载失败通常是网络波动，刷新或切换网络后重试即可，页面已内置多个下载源自动切换。仍不稳定的话，可改用开源 CLI 或 Pro 桌面版离线使用。' },
+		],
+		proNote: '爱发电下单后发放下载链接，后续版本免费更新。',
+		trust: [
+			{ text: '透明退款政策', href: '/refund-policy' },
+			{ text: '收支公开账本', href: '/ledger' },
+			{ text: '支持开具发票', href: '' },
+			{ text: '定制开发源码交付', href: '' },
+		],
+		freeToolsPrefix: '还没准备好付费？这些工具一直免费：',
+		freeTools: [
+			{ text: '在线 Markdown 转 Word', href: '/tools/md2docx' },
+			{ text: 'GB/T 7714 引用格式化', href: '/tools/gbt7714' },
+			{ text: '字数统计', href: '/tools/word-count' },
+			{ text: '排版自查清单', href: '/tools/thesis-checklist' },
 		],
 		ctaTitle: '有想法？聊聊看',
 		ctaDesc: '即使还没想清楚，也可以先沟通。我不会推销，只会给建议。',
@@ -345,6 +360,21 @@ const dicts = {
 			{ q: 'How is custom school template work priced?', a: 'Minor tweaks to existing fields are usually covered by Pro support; complex school template customization is quoted by workload — let’s discuss it under the thesis formatting service.' },
 			{ q: 'What’s the difference between the online tool and Pro?', a: 'The online tool runs in the browser and suits quick one-off use, but doesn’t support local images yet. Pro is desktop software with batch conversion, custom templates, and a full local file workflow.' },
 			{ q: 'Can you issue invoices?', a: 'Yes. Invoices are available for payments via Afdian or corporate transfer.' },
+			{ q: 'What if the online tool fails to load?', a: 'The online tool runs entirely in your browser (the open-source Pyodide runtime) and never touches our servers. Load failures are usually network hiccups — refresh or switch networks and retry; the page automatically falls back across multiple download sources. If it stays unstable, use the open-source CLI or the Pro desktop app offline instead.' },
+		],
+		proNote: 'After purchase on Afdian you receive a download link, with free updates for all future versions.',
+		trust: [
+			{ text: 'Transparent refund policy', href: '/refund-policy' },
+			{ text: 'Public income ledger', href: '/ledger' },
+			{ text: 'Invoices available', href: '' },
+			{ text: 'Source code delivered for custom work', href: '' },
+		],
+		freeToolsPrefix: 'Not ready to pay? These tools are always free: ',
+		freeTools: [
+			{ text: 'Online Markdown to Word', href: '/tools/md2docx' },
+			{ text: 'GB/T 7714 citation formatter', href: '/tools/gbt7714' },
+			{ text: 'Word counter', href: '/tools/word-count' },
+			{ text: 'Formatting checklist', href: '/tools/thesis-checklist' },
 		],
 		ctaTitle: 'Have an idea? Let’s talk',
 		ctaDesc: 'Even if it’s not fully formed yet, reach out. No sales pitch — just honest advice.',
@@ -518,6 +548,21 @@ const dicts = {
 			{ q: '学校テンプレートのカスタマイズ料金は？', a: '既存フィールドの微調整なら Pro 版のサポート範囲に含まれることがほとんどです。複雑な学校テンプレートのカスタマイズは工数で別途お見積もりします。論文フォーマットサービスでご相談ください。' },
 			{ q: 'オンラインツールと Pro 版の違いは？', a: 'オンラインツールはブラウザ内で動作し、単発のお手軽利用向けで、ローカル画像には未対応です。Pro 版はデスクトップソフトで、一括変換、カスタムテンプレート、完全なローカルファイルワークフローに対応しています。' },
 			{ q: '請求書（インボイス）は発行できますか？', a: 'はい。Afdian または法人振込でのお支払いに発行可能です。' },
+			{ q: 'オンラインツールが開かない・読み込めない場合は？', a: 'オンラインツールは完全にブラウザ内（オープンソースの Pyodide ランタイム）で動作し、サーバーを経由しません。読み込み失敗は多くの場合ネットワークの問題で、再読み込みや回線変更で解決します。ページには複数のダウンロード元への自動切替も内蔵しています。それでも不安定な場合は、オープンソース CLI または Pro デスクトップ版をオフラインでご利用ください。' },
+		],
+		proNote: 'Afdian で購入後にダウンロードリンクを配布。以降のバージョンは無料で更新できます。',
+		trust: [
+			{ text: '透明な返金ポリシー', href: '/refund-policy' },
+			{ text: '収支公開台帳', href: '/ledger' },
+			{ text: 'インボイス発行可', href: '' },
+			{ text: '受託開発はソースコード納品', href: '' },
+		],
+		freeToolsPrefix: '購入前に試したい方へ。以下のツールは常に無料です：',
+		freeTools: [
+			{ text: 'オンライン Markdown → Word', href: '/tools/md2docx' },
+			{ text: 'GB/T 7714 引用フォーマット', href: '/tools/gbt7714' },
+			{ text: '文字数カウンター', href: '/tools/word-count' },
+			{ text: '書式セルフチェック', href: '/tools/thesis-checklist' },
 		],
 		ctaTitle: 'アイデアがありますか？',
 		ctaDesc: 'まだ固まっていなくても大丈夫。営業はしません、正直な提案だけをします。',
@@ -753,6 +798,36 @@ const jsonLd = {
 			width: 100%;
 			box-sizing: border-box;
 		}
+		.plan-note {
+			font-size: 0.78em;
+			color: var(--text-secondary);
+			text-align: center;
+			margin: 0.6em 0 0;
+		}
+		.trust-bar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5em 1.4em;
+			margin: 1.6em 0 0;
+			font-size: 0.85em;
+			color: var(--text-secondary);
+		}
+		.trust-item {
+			color: var(--text-secondary);
+			text-decoration: none;
+		}
+		a.trust-item:hover {
+			color: var(--accent);
+		}
+		.free-tools {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin: 0.8em 0 0;
+		}
+		.free-tools a {
+			color: var(--accent);
+			text-decoration: none;
+		}
 
 		/* Compare */
 		.compare-section {
@@ -927,6 +1002,7 @@ const jsonLd = {
 						>
 							{plan.cta}
 						</a>
+						{plan.highlight && <p class="plan-note">{t.proNote}</p>}
 					</div>
 				))}
 			</div>
@@ -947,6 +1023,24 @@ const jsonLd = {
 					</tbody>
 				</table>
 			</div>
+			<div class="trust-bar">
+				{t.trust.map((item) =>
+					item.href ? (
+						<a href={item.href} class="trust-item">✓ {item.text}</a>
+					) : (
+						<span class="trust-item">✓ {item.text}</span>
+					),
+				)}
+			</div>
+			<p class="free-tools">
+				{t.freeToolsPrefix}
+				{t.freeTools.map((l, i) => (
+					<>
+						{i > 0 && ' · '}
+						<a href={l.href}>{l.text}</a>
+					</>
+				))}
+			</p>
 		</section>
 
 		<section class="process-section">
