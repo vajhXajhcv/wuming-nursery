@@ -93,7 +93,9 @@ curl -X POST https://wumingmp.me/api/dao/approve-member \
   -H "content-type: application/json" \
   -d '{"handle":"alice","action":"approve"}'
 
-# 成员福利：批准后发放全站订阅令牌（免费读付费内容），把令牌私下发给本人
+# 成员福利（贡献点门槛制）：成员累计贡献点 ≥ 50（= 提案门槛默认值）时，
+# 可领取全站订阅令牌（免费读付费内容）。点数不扣减——贡献点是声誉/投票权重，不是可消耗货币。
+# 发放前到 /dao/members 核对点数，然后签发令牌私下发给本人：
 PAYWALL_TOKEN_SECRET=xxx node scripts/mint-token.mjs subscription 365
 
 # 核定贡献（kind=money 时 ref 填 ledger#<seq>，交叉引用对应的收入记录）
