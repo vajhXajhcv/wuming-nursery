@@ -93,6 +93,39 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 			gap: 0.8em;
 			margin: 1.5em 0 2em;
 		}
+		.why-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 0.8em;
+			margin-bottom: 0.9em;
+		}
+		.why-card {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 1em 1.1em;
+		}
+		.why-card .t {
+			font-weight: 600;
+			margin-bottom: 0.3em;
+		}
+		.why-card .d {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			line-height: 1.7;
+		}
+		.why-honest {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			line-height: 1.8;
+			margin: 0 0 1em;
+		}
+		.why-cta {
+			display: flex;
+			gap: 0.8em;
+			align-items: center;
+			flex-wrap: wrap;
+		}
 		.entry-card {
 			background: var(--bg-elevated);
 			border: 1px solid var(--border);
@@ -124,6 +157,36 @@ const description = '无名苗圃共同体：公开账本、贡献上链、按�
 				无名苗圃共同体是围绕本站形成的创作共同体：金库收支全部记录在公开账本上，贡献逐条上链，
 				治理权重按贡献点计算，任何人都可以下载全链数据独立重放验证。无需信任任何个人——包括创始人——信任由密码学与公开性提供。
 			</p>
+		</section>
+
+		<section class="card dao-panel">
+			<h2>为什么加入？</h2>
+			<div class="why-grid">
+				<div class="why-card">
+					<div class="t">🗳 真正的决策权</div>
+					<div class="d">提案与投票决定金库怎么花、网站做什么内容、乃至治理规则本身。权重按贡献点计算，规则全部公开。</div>
+				</div>
+				<div class="why-card">
+					<div class="t">⛓ 贡献永久留痕</div>
+					<div class="d">每条贡献记录写入公开哈希链，并锚定到比特币。不可篡改、任何人可独立验证——比任何证书都硬。</div>
+				</div>
+				<div class="why-card">
+					<div class="t">📖 成员免费读</div>
+					<div class="d">全部付费内容对成员免费开放（批准后发放访问令牌）。付费内容目前还是实验，而你将参与决定它长成什么样。</div>
+				</div>
+				<div class="why-card">
+					<div class="t">🎭 低门槛假名制</div>
+					<div class="d">不要邮箱、不要手机号。一个化名 + 一对浏览器生成的密钥，就是你的全部身份。</div>
+				</div>
+			</div>
+			<p class="why-honest">
+				也要说清楚这不是什么：不发代币、不承诺财务回报、贡献点不可转让、不代表股权。
+				现在加入最大的特别之处是——规则还没有定死，最早的成员将参与定义它。
+			</p>
+			<div class="why-cta">
+				<a class="btn btn-primary" href="/dao/join">申请加入 →</a>
+				<a class="btn btn-outline" href="/dao/charter">先读章程</a>
+			</div>
 		</section>
 
 		<StatCards>

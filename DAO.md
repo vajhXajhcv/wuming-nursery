@@ -93,6 +93,9 @@ curl -X POST https://wumingmp.me/api/dao/approve-member \
   -H "content-type: application/json" \
   -d '{"handle":"alice","action":"approve"}'
 
+# 成员福利：批准后发放全站订阅令牌（免费读付费内容），把令牌私下发给本人
+PAYWALL_TOKEN_SECRET=xxx node scripts/mint-token.mjs subscription 365
+
 # 核定贡献（kind=money 时 ref 填 ledger#<seq>，交叉引用对应的收入记录）
 curl -X POST https://wumingmp.me/api/dao/contribution \
   -H "Authorization: Bearer <ADMIN_TOKEN>" \
