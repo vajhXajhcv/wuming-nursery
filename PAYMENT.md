@@ -117,6 +117,16 @@ curl -X POST https://wumingmp.me/api/admin/close \
 - 访问令牌有效期 30 天（服务端签发），过期后读者需重新联系你获取。
 - 令牌校验在服务端进行，泄露单个令牌只影响对应文章（订阅令牌影响全站，请谨慎分发）。
 
+## 数据备份
+
+订单的唯一存储是 KV（ORDERS），没有快照机制。定期运行：
+
+```bash
+npm run backup   # 导出 ORDERS/LEDGER/COMMENTS 到 backup/kv-<日期>.json（已 gitignore，勿公开）
+```
+
+对外的退款承诺见站点 `/refund-policy` 页面（支付后 7 天内可协商退款）。
+
 ---
 
 ## 爱发电渠道（订单号兑换）

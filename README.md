@@ -24,6 +24,9 @@ npm run dev
 # 构建生产版本
 npm run build
 
+# 备份 KV 数据（订单/账本/评论 → backup/，不进入仓库）
+npm run backup
+
 # 预览构建结果
 npm run preview
 ```

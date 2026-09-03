@@ -13,6 +13,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "upload:content": "node scripts/upload-paid-content.mjs",
+    "backup": "node scripts/backup-kv.mjs",
     "deploy": "npm run build && npm run upload:content && wrangler pages deploy",
     "pages:dev": "npm run build && wrangler pages dev ./dist"
   },

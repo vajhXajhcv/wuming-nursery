@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<BaseLayout
+	title={`隐私政策 - ${SITE_TITLE}`}
+	description="本站收集什么、不收集什么、数据存在哪里。"
+>
+	<style is:global>
+		.policy {
+			max-width: 720px;
+			margin: 0 auto;
+			padding: 2em 1em 3em;
+		}
+		.policy h1 {
+			font-size: 1.5em;
+			margin-bottom: 0.3em;
+		}
+		.policy h2 {
+			font-size: 1.05em;
+			margin: 1.6em 0 0.5em;
+		}
+		.policy p,
+		.policy li {
+			color: var(--text-secondary);
+			line-height: 1.9;
+			font-size: 0.92em;
+		}
+		.policy ul {
+			padding-left: 1.4em;
+		}
+		.policy .updated {
+			font-size: 0.82em;
+			color: var(--text-secondary);
+		}
+	</style>
+	<main class="policy">
+		<h1>隐私政策</h1>
+		<p class="updated">最后更新：2026-09-03</p>
+
+		<h2>本站收集什么</h2>
+		<ul>
+			<li><strong>付费阅读</strong>：订单号、金额、所购文章、支付状态。支付动作在支付宝完成，本站不接触你的支付宝密码或银行卡信息。</li>
+			<li><strong>评论</strong>（如开放）：你填写的昵称与评论内容。不收集邮箱，不记录 IP；游客评论先审后发。</li>
+			<li><strong>访问统计</strong>：匿名事件计数（例如"多少人看到了付费墙"）。不含 IP、设备指纹或任何可识别身份的信息，不使用 Cookie 追踪，不使用第三方分析脚本。</li>
+			<li><strong>DAO 成员</strong>：化名与公钥。请注意：这两项会<strong>公开写入哈希链并锚定到比特币</strong>，任何人可查、无法删除——申请加入即视为同意。</li>
+		</ul>
+
+		<h2>本站不收集什么</h2>
+		<ul>
+			<li>真实姓名、手机号、身份证号</li>
+			<li>邮箱（除非你主动通过联系页发送邮件）</li>
+			<li>精确地理位置、通讯录、设备权限</li>
+			<li>行为画像与广告追踪</li>
+		</ul>
+
+		<h2>数据存在哪里</h2>
+		<p>
+			数据存于 Cloudflare（KV 存储），服务器分布由其全球网络决定。公开账本与 DAO 治理记录是<strong>公开可读</strong>的：
+			任何人可在 <a href="/ledger">/ledger</a> 拉取全链并独立验证，链头定期锚定到比特币区块链。
+			这意味着写入链上的记录无法删除或修改，请以假名参与 DAO。
+		</p>
+
+		<h2>联系</h2>
+		<p>对本政策有任何疑问，或需要查询、删除你的订单/评论数据，请通过 <a href="/contact">联系页</a> 找到我。</p>
+	</main>
+</BaseLayout>

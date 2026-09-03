@@ -36,3 +36,5 @@ pnpm-debug.log*
 .tmp-*
 .wrangler/
 audit-shots/
+# KV 备份（含订单数据，勿公开）
+backup/

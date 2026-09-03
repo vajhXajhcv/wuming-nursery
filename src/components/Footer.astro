@@ -15,6 +15,7 @@ const dicts = {
 		tools: '工具总览', md2docx: '在线 Markdown 转 Word', formatter: 'docx-formatter-cn', docs: '使用文档', pricing: '定价方案',
 		allServices: '全部服务', thesis: '论文排版服务', customDev: '软件定制开发', contact: '开始咨询',
 		blog: '写作', notes: '笔记', about: '关于我', archive: '归档', ledger: '公开账本',
+		privacy: '隐私政策', refund: '退款政策',
 		rights: '无名苗圃. All rights reserved.',
 		runtimePrefix: '本站自 2026 年 5 月 7 日上线，已运行 ',
 		musicCredit: '背景音乐：',
@@ -26,6 +27,7 @@ const dicts = {
 		tools: 'All Tools', md2docx: 'Online Markdown → Word', formatter: 'docx-formatter-cn', docs: 'Docs', pricing: 'Pricing',
 		allServices: 'All Services', thesis: 'Thesis Formatting', customDev: 'Custom Development', contact: 'Get in Touch',
 		blog: 'Blog', notes: 'Notes', about: 'About', archive: 'Archive', ledger: 'Open Ledger',
+		privacy: 'Privacy Policy', refund: 'Refund Policy',
 		rights: 'Wuming Nursery. All rights reserved.',
 		runtimePrefix: 'Online since May 7, 2026 — running for ',
 		musicCredit: 'Background music: ',
@@ -37,6 +39,7 @@ const dicts = {
 		tools: 'ツール一覧', md2docx: 'オンライン Markdown → Word', formatter: 'docx-formatter-cn', docs: 'ドキュメント', pricing: '料金',
 		allServices: 'サービス一覧', thesis: '論文フォーマットサービス', customDev: 'ソフトウェア受託開発', contact: 'お問い合わせ',
 		blog: 'ブログ', notes: 'ノート', about: '私について', archive: 'アーカイブ', ledger: '公開台帳',
+		privacy: 'プライバシーポリシー', refund: '返金ポリシー',
 		rights: 'Wuming Nursery. All rights reserved.',
 		runtimePrefix: '2026年5月7日開設 · 運営時間 ',
 		musicCredit: 'BGM：',
@@ -107,6 +110,9 @@ const gardenLinks = [
 		</div>
 	</div>
 	<div class="copyright">&copy; {today.getFullYear()} {t.rights}</div>
+	<div class="legal-links">
+		<a href="/privacy">{t.privacy}</a> · <a href="/refund-policy">{t.refund}</a> · <a href="/rss.xml">RSS</a>
+	</div>
 	<div class="site-runtime">{t.runtimePrefix}<span id="site-runtime" data-lang={lang}>…</span></div>
 	<div class="music-credit">
 		{t.musicCredit}<a href="https://incompetech.com" target="_blank" rel="noopener">Kevin MacLeod (incompetech.com)</a>，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> {t.license}
@@ -220,6 +226,18 @@ const gardenLinks = [
 		border-top: 1px solid var(--border);
 		max-width: 960px;
 		margin: 0 auto;
+	}
+	.legal-links {
+		text-align: center;
+		font-size: 0.78em;
+		margin-top: 0.5em;
+	}
+	.legal-links a {
+		color: var(--text-secondary);
+		text-decoration: none;
+	}
+	.legal-links a:hover {
+		color: var(--accent);
 	}
 	.site-runtime {
 		text-align: center;

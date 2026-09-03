@@ -6,6 +6,8 @@
 
 - **付费转化漏斗**：`functions/api/track.ts` 匿名事件统计（白名单事件按天计数存 ORDERS KV，不收集 IP/UA）；Paywall 组件埋点（`paywall_view` / `alipay_click` / `afdian_click` / `redeem_click`，sendBeacon 上报、失败静默）；`/dao/admin` 新增「转化漏斗」面板（累计数、view→click 转化率、近 7 天趋势）。
 - **锚定自动化**：`.github/workflows/anchor-ots.yml`，每周一 03:17 UTC 自动执行 `scripts/anchor-ots.mjs`（锚定新链头 + 升级待定证明），变更由 github-actions[bot] 提交回仓库；配置 `ADMIN_TOKEN` secret 后同时把锚定事件写回链上。
+- **KV 数据备份**：`npm run backup` 把 ORDERS / LEDGER / COMMENTS 全量导出到 `backup/kv-<日期>.json`（已 gitignore，含订单数据勿公开）。CONTENT 不备份（可由仓库重建）。
+- **合规页面**：`/privacy` 隐私政策、`/refund-policy` 退款政策（页脚全站可见，三语言标签）。
 - **首次链头锚定**：seq 2 已通过 OpenTimestamps 提交至 alice 日历（finney 日历本地网络不可达，交由 CI 补齐），证明文件在 `/dao/anchors/`。
 - **博客文章**：《网站阶段总结：支付、账本与组织》。
 - **DAO 招募区**：`/dao` 新增「为什么加入」板块（决策权 / 贡献留痕 / 贡献点兑换阅读 / 假名制 + 诚实声明 + CTA），`/dao/join` 页头补充成员权益说明；成员阅读福利采用贡献点门槛制（累计 ≥ 50 点可领全站订阅令牌，点数不扣减），运营手册已同步。
