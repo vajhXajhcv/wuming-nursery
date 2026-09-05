@@ -5,7 +5,17 @@
 // 自增为 read-modify-write，极端并发下可能丢计数，业务上可接受。
 import { json, type Env } from './_lib/alipay';
 
-const EVENTS = ['paywall_view', 'alipay_click', 'afdian_click', 'redeem_click'] as const;
+const EVENTS = [
+	'paywall_view',
+	'alipay_click',
+	'afdian_click',
+	'redeem_click',
+	// 工具漏斗：在线工具曝光与真实使用
+	'tool_md2docx_view',
+	'tool_md2docx_convert',
+	'tool_docxcheck_view',
+	'tool_docxcheck_run',
+] as const;
 type EventName = (typeof EVENTS)[number];
 
 // 与站点口径一致按 GMT+8 的日期分桶

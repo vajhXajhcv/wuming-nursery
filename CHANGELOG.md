@@ -1,5 +1,22 @@
 # 更新日志
 
+## 2026-09-05（Word 排版检测重排工具 + 引擎 wheel 修复）
+
+### 新增
+
+- **`/tools/docx-check` Word 论文排版检测与一键重排**：上传 docx，按模板逐项体检（A4 页面、页边距、正文字体/字号/行距、首行缩进），一键重排输出规范文档；浏览器本地运行，文档不上传。面向不写 Markdown 的存量 Word 用户，卡位「查重平台只检测、不代改」的空档。
+- **工具转化漏斗**：`/api/track` 白名单新增 `tool_md2docx_view / tool_md2docx_convert / tool_docxcheck_view / tool_docxcheck_run`，md2docx 与 docx-check 页面已埋点（sendBeacon，失败静默），`/dao/admin` 漏斗面板自动可见。
+- 样例新增 `samples/柑橘病害识别-公文重排示例.docx`（由重排引擎产出）。
+
+### 修复
+
+- **wheel 级 bug**：`docx_formatter/formatter.py` 的 `_format_table` 使用 `WD_TABLE_ALIGNMENT` 却未导入，任何含表格的 docx 重排都会 NameError 崩溃。已补 `from docx.enum.table import WD_TABLE_ALIGNMENT` 并重打包为 `docx_formatter_cn-0.1.0.post1`（RECORD 重新生成）。上游源码仓库需同步此一行修复。
+
+### 调整
+
+- `check-md2docx` 自检扩展为双页（md2docx + docx-check）WHEELS 一致性校验。
+- 服务页/工具页三语登记新工具入口；FAQ 新增「不会 Markdown 只有 Word 文档怎么办」。
+
 ## 2026-09-03（工具箱扩展 + 文档工具可靠性加固）
 
 ### 新增

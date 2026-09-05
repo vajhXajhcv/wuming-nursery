@@ -427,7 +427,7 @@ $$
 			const WHEELS = [
 				'/tools/md2docx/wheels/python_docx-1.2.0-py3-none-any.whl',
 				'/tools/md2docx/wheels/latex2mathml-3.81.0-py3-none-any.whl',
-				'/tools/md2docx/wheels/docx_formatter_cn-0.1.0-py3-none-any.whl',
+				'/tools/md2docx/wheels/docx_formatter_cn-0.1.0.post1-py3-none-any.whl',
 			];
 
 			const input = document.getElementById('md-input');
@@ -442,6 +442,19 @@ $$
 			// 共享 Promise：并发调用共享同一次加载；失败后复位，允许重试
 			let pyodidePromise = null;
 			let lastObjectUrl = null;
+
+			// 匿名转化漏斗埋点：sendBeacon 优先，失败静默
+			function track(event) {
+				try {
+					const body = JSON.stringify({ event: event });
+					if (navigator.sendBeacon) {
+						navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }));
+					} else {
+						fetch('/api/track', { method: 'POST', body: body, keepalive: true }).catch(function() {});
+					}
+				} catch (e) {}
+			}
+			track('tool_md2docx_view');
 
 			function setStatus(message, busy) {
 				status.innerHTML = busy ? '<span class="dot"></span>' + message : message;
@@ -605,6 +618,7 @@ base64.b64encode(data).decode("ascii")
 					resultMsg.textContent = '已使用「' + templateName + '」模板生成文档，共 ' + bytes.length + ' 字节。';
 					result.classList.add('visible');
 					setStatus('转换完成。', false);
+					track('tool_md2docx_convert');
 				} catch (e) {
 					console.error(e);
 					setError(friendlyMessage(e));

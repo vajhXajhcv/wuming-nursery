@@ -50,6 +50,7 @@ const dicts = {
 				price: '¥1,500 起',
 				links: [
 					{ text: '在线试用', href: '/tools/md2docx' },
+					{ text: 'Word 一键重排', href: '/tools/docx-check' },
 					{ text: '产品主页', href: '/tools' },
 					{ text: '查看定价', href: '#pricing' },
 					{ text: '论文排版服务', href: '/services/thesis-formatting' },
@@ -173,6 +174,7 @@ const dicts = {
 			{ q: '在线工具和 Pro 版有什么区别？', a: '在线工具在浏览器内运行，适合单次快速体验，暂不支持本地图片；Pro 版是桌面软件，支持批量、自定义模板和完整本地文件工作流。' },
 			{ q: '支持发票吗？', a: '支持。通过爱发电或企业转账均可开具发票。' },
 			{ q: '在线工具打不开或加载失败怎么办？', a: '在线工具完全在你的浏览器内运行（开源的 Pyodide 运行时），不经过本站服务器。加载失败通常是网络波动，刷新或切换网络后重试即可，页面已内置多个下载源自动切换。仍不稳定的话，可改用开源 CLI 或 Pro 桌面版离线使用。' },
+			{ q: '不会 Markdown，只有现成的 Word 文档怎么办？', a: '用「Word 排版检测与一键重排」工具：上传 docx 后按模板逐项体检格式问题，一键重排直接下载规范文档，全程本地运行。入口在工具页或本页上方的免费工具区。' },
 		],
 		proNote: '爱发电下单后发放下载链接，后续版本免费更新。',
 		trust: [
@@ -184,6 +186,7 @@ const dicts = {
 		freeToolsPrefix: '还没准备好付费？这些工具一直免费：',
 		freeTools: [
 			{ text: '在线 Markdown 转 Word', href: '/tools/md2docx' },
+			{ text: 'Word 排版检测重排', href: '/tools/docx-check' },
 			{ text: 'GB/T 7714 引用格式化', href: '/tools/gbt7714' },
 			{ text: '字数统计', href: '/tools/word-count' },
 			{ text: '排版自查清单', href: '/tools/thesis-checklist' },
@@ -238,6 +241,7 @@ const dicts = {
 				price: 'From ¥1,500',
 				links: [
 					{ text: 'Try online', href: '/tools/md2docx' },
+					{ text: 'Word reformatter', href: '/tools/docx-check' },
 					{ text: 'Product page', href: '/en/tools/' },
 					{ text: 'Pricing', href: '#pricing' },
 					{ text: 'Thesis formatting', href: '/en/services/thesis-formatting/' },
@@ -361,6 +365,7 @@ const dicts = {
 			{ q: 'What’s the difference between the online tool and Pro?', a: 'The online tool runs in the browser and suits quick one-off use, but doesn’t support local images yet. Pro is desktop software with batch conversion, custom templates, and a full local file workflow.' },
 			{ q: 'Can you issue invoices?', a: 'Yes. Invoices are available for payments via Afdian or corporate transfer.' },
 			{ q: 'What if the online tool fails to load?', a: 'The online tool runs entirely in your browser (the open-source Pyodide runtime) and never touches our servers. Load failures are usually network hiccups — refresh or switch networks and retry; the page automatically falls back across multiple download sources. If it stays unstable, use the open-source CLI or the Pro desktop app offline instead.' },
+			{ q: 'I don’t write in Markdown — I only have a Word document. Now what?', a: 'Use the Word Format Checker & Reformatter: upload your .docx, get an itemized format check against the target template, and download a one-click reformatted document. Everything runs locally in your browser. Find it on the tools page or in the free-tools line above.' },
 		],
 		proNote: 'After purchase on Afdian you receive a download link, with free updates for all future versions.',
 		trust: [
@@ -372,6 +377,7 @@ const dicts = {
 		freeToolsPrefix: 'Not ready to pay? These tools are always free: ',
 		freeTools: [
 			{ text: 'Online Markdown to Word', href: '/tools/md2docx' },
+			{ text: 'Word format checker & reformatter', href: '/tools/docx-check' },
 			{ text: 'GB/T 7714 citation formatter', href: '/tools/gbt7714' },
 			{ text: 'Word counter', href: '/tools/word-count' },
 			{ text: 'Formatting checklist', href: '/tools/thesis-checklist' },
@@ -426,6 +432,7 @@ const dicts = {
 				price: '¥1,500〜',
 				links: [
 					{ text: 'オンラインで試す', href: '/tools/md2docx' },
+					{ text: 'Word 自動整形', href: '/tools/docx-check' },
 					{ text: '製品ページ', href: '/ja/tools/' },
 					{ text: '料金', href: '#pricing' },
 					{ text: '論文フォーマット', href: '/ja/services/thesis-formatting/' },
@@ -549,6 +556,7 @@ const dicts = {
 			{ q: 'オンラインツールと Pro 版の違いは？', a: 'オンラインツールはブラウザ内で動作し、単発のお手軽利用向けで、ローカル画像には未対応です。Pro 版はデスクトップソフトで、一括変換、カスタムテンプレート、完全なローカルファイルワークフローに対応しています。' },
 			{ q: '請求書（インボイス）は発行できますか？', a: 'はい。Afdian または法人振込でのお支払いに発行可能です。' },
 			{ q: 'オンラインツールが開かない・読み込めない場合は？', a: 'オンラインツールは完全にブラウザ内（オープンソースの Pyodide ランタイム）で動作し、サーバーを経由しません。読み込み失敗は多くの場合ネットワークの問題で、再読み込みや回線変更で解決します。ページには複数のダウンロード元への自動切替も内蔵しています。それでも不安定な場合は、オープンソース CLI または Pro デスクトップ版をオフラインでご利用ください。' },
+			{ q: 'Markdown が使えず、既存の Word 文書しかない場合は？', a: '「Word 書式チェック＆自動リフォーマット」をご利用ください。docx をアップロードするとテンプレートに基づく書式チェックを行い、ワンクリックで整形済み文書をダウンロードできます。すべてブラウザ内でローカルに動作します。ツールページまたは本ページ上部の無料ツール一覧からどうぞ。' },
 		],
 		proNote: 'Afdian で購入後にダウンロードリンクを配布。以降のバージョンは無料で更新できます。',
 		trust: [
@@ -560,6 +568,7 @@ const dicts = {
 		freeToolsPrefix: '購入前に試したい方へ。以下のツールは常に無料です：',
 		freeTools: [
 			{ text: 'オンライン Markdown → Word', href: '/tools/md2docx' },
+			{ text: 'Word 書式チェック＆整形', href: '/tools/docx-check' },
 			{ text: 'GB/T 7714 引用フォーマット', href: '/tools/gbt7714' },
 			{ text: '文字数カウンター', href: '/tools/word-count' },
 			{ text: '書式セルフチェック', href: '/tools/thesis-checklist' },

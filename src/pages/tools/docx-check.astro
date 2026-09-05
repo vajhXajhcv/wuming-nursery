@@ -1,0 +1,666 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Word 论文排版检测与一键重排 - 无名苗圃';
+const description = '上传 Word 论文，按学校/期刊模板做格式体检（页面、字体、字号、行距、缩进逐项对照），一键重排为规范格式。浏览器本地运行，文档不上传服务器。';
+---
+
+<BaseLayout title={title} description={description}>
+	<style>
+		main {
+			width: 920px;
+			max-width: calc(100% - 2em);
+			margin: auto;
+			padding: 2em 1em 4em;
+		}
+		.hero {
+			padding: 1em 0 0.5em;
+		}
+		.hero h1 {
+			font-size: 1.45em;
+			margin: 0 0 0.3em;
+		}
+		.hero p {
+			color: var(--text-secondary);
+			font-size: 0.95em;
+			max-width: 680px;
+			margin: 0;
+			line-height: 1.7;
+		}
+		.notice {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-left: 3px solid var(--accent);
+			border-radius: var(--radius-md);
+			padding: 1em 1.2em;
+			margin: 1.5em 0;
+			font-size: 0.9em;
+			color: var(--text-secondary);
+			line-height: 1.7;
+		}
+		.notice strong {
+			color: var(--text);
+		}
+		.panel {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 1.2em;
+			margin: 1.5em 0 1em;
+		}
+		.toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.8em;
+			align-items: end;
+		}
+		.field label {
+			display: block;
+			font-size: 0.85em;
+			font-weight: 600;
+			margin-bottom: 0.3em;
+		}
+		.field select {
+			padding: 0.45em 0.8em;
+			border-radius: var(--radius-md);
+			border: 1px solid var(--border);
+			background: var(--bg-elevated);
+			color: inherit;
+			font-size: 0.95em;
+			min-height: 40px;
+		}
+		.file-btn {
+			position: relative;
+			overflow: hidden;
+		}
+		.file-btn input[type='file'] {
+			position: absolute;
+			inset: 0;
+			opacity: 0;
+			cursor: pointer;
+		}
+		.file-name {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			align-self: center;
+		}
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			padding: 0.55em 1.2em;
+			border-radius: var(--radius-md);
+			border: 1px solid transparent;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+			font-size: 0.92em;
+			transition: background 0.15s, border-color 0.2s, color 0.15s, opacity 0.15s;
+			min-height: 40px;
+			box-sizing: border-box;
+		}
+		.btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		.btn-primary {
+			background: var(--accent);
+			color: white;
+		}
+		.btn-primary:hover:not(:disabled) {
+			background: var(--accent-dark);
+			color: white;
+		}
+		.btn-secondary {
+			background: transparent;
+			color: var(--text);
+			border-color: var(--border);
+		}
+		.btn-secondary:hover:not(:disabled) {
+			border-color: var(--accent);
+			color: var(--accent);
+		}
+		.status {
+			font-size: 0.88em;
+			color: var(--text-secondary);
+			min-height: 1.4em;
+			margin-top: 0.8em;
+		}
+		.status .dot {
+			display: inline-block;
+			width: 0.5em;
+			height: 0.5em;
+			border-radius: 50%;
+			background: var(--accent);
+			margin-right: 0.4em;
+			animation: pulse 1s infinite;
+			vertical-align: middle;
+		}
+		@keyframes pulse {
+			0%, 100% { opacity: 1; }
+			50% { opacity: 0.4; }
+		}
+		.report {
+			display: none;
+			margin-top: 1.2em;
+		}
+		.report.visible {
+			display: block;
+		}
+		.report table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.88em;
+		}
+		.report th,
+		.report td {
+			text-align: left;
+			padding: 0.5em 0.6em;
+			border-bottom: 1px solid var(--border);
+		}
+		.report td.ok {
+			color: var(--c-ok, #16a34a);
+			font-weight: 700;
+		}
+		.report td.bad {
+			color: var(--c-err, #dc2626);
+			font-weight: 700;
+		}
+		.stats-line {
+			font-size: 0.85em;
+			color: var(--text-secondary);
+			margin-top: 0.6em;
+		}
+		.download-box {
+			display: none;
+			margin-top: 1em;
+			padding: 1.2em;
+			border-radius: var(--radius-md);
+			background: var(--accent-soft);
+			border: 1px solid var(--border);
+		}
+		.download-box.visible {
+			display: block;
+		}
+		.download-box p {
+			font-size: 0.9em;
+			color: var(--text-secondary);
+		}
+		.faq {
+			margin: 2.2em 0;
+		}
+		.faq h2 {
+			font-size: 1.15em;
+			margin: 0 0 0.8em;
+		}
+		.faq details {
+			background: var(--bg-elevated);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			padding: 0.7em 1em;
+			margin-bottom: 0.6em;
+		}
+		.faq summary {
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 0.92em;
+		}
+		.faq details p {
+			color: var(--text-secondary);
+			font-size: 0.88em;
+			line-height: 1.8;
+			margin: 0.6em 0 0.2em;
+		}
+		.faq details a {
+			color: var(--accent);
+		}
+		.cta-box {
+			background: var(--bg-elevated);
+			border-radius: var(--radius-lg);
+			padding: 1.8em;
+			text-align: center;
+			border: 1px solid var(--border);
+			margin-top: 2em;
+		}
+		.cta-box h2 {
+			margin: 0 0 0.4em;
+			font-size: 1.2em;
+		}
+		.cta-box p {
+			color: var(--text-secondary);
+			margin: 0 0 1.2em;
+			font-size: 0.92em;
+		}
+	</style>
+
+	<main>
+		<section class="hero">
+			<h1>Word 论文排版检测与一键重排</h1>
+			<p>不会 Markdown 也能用。上传你的 Word 论文，按模板逐项体检页面设置、字体、字号、行距与缩进；查出问题不用手改——一键重排直接输出规范文档。</p>
+		</section>
+
+		<div class="notice">
+			<strong>与查重平台的区别：</strong>查重/AI 检测平台告诉你格式「有问题」，但改正得靠自己或另付费。本工具直接帮你改好。整个过程在浏览器本地运行，论文内容不经过任何服务器。
+		</div>
+
+		<section class="panel">
+			<div class="toolbar">
+				<div class="field">
+					<label>Word 文档（.docx）</label>
+					<span class="btn btn-secondary file-btn">
+						选择文件
+						<input type="file" id="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+					</span>
+					<span class="file-name" id="file-name">未选择</span>
+				</div>
+				<div class="field">
+					<label for="template">目标模板</label>
+					<select id="template">
+						<optgroup label="中文学术">
+							<option value="毕业论文" selected>毕业论文</option>
+							<option value="课程论文">课程论文</option>
+							<option value="数学建模">数学建模</option>
+							<option value="公文">公文</option>
+							<option value="武汉理工毕业设计">武汉理工毕业设计</option>
+						</optgroup>
+					</select>
+				</div>
+				<button id="check" class="btn btn-primary" type="button" disabled>开始体检</button>
+				<button id="reformat" class="btn btn-secondary" type="button" disabled>一键重排并下载</button>
+			</div>
+			<div class="status" id="status">选择 docx 文件后即可开始。</div>
+
+			<div class="report" id="report">
+				<table>
+					<thead>
+						<tr><th>检查项</th><th>结果</th><th>实际</th><th>模板要求</th></tr>
+					</thead>
+					<tbody id="report-body"></tbody>
+				</table>
+				<p class="stats-line" id="stats-line"></p>
+			</div>
+
+			<div class="download-box" id="download-box">
+				<h3 style="margin:0 0 0.4em;font-size:1.05em;">重排完成</h3>
+				<p id="reformat-msg"></p>
+				<a id="download" class="btn btn-primary" href="#" download="reformatted.docx">下载重排后的文档</a>
+			</div>
+		</section>
+
+		<section class="faq">
+			<h2>常见问题</h2>
+			<details>
+				<summary>我的论文会被上传吗？</summary>
+				<p>不会。检测与重排的转换引擎（Pyodide）完全在你的浏览器里运行，文档不经过本站服务器——断网后依然可用。</p>
+			</details>
+			<details>
+				<summary>重排会改动我的文字内容吗？</summary>
+				<p>不会。重排只调整格式：页面设置、标题样式、正文字体字号行距缩进、三线表、图片居中等，正文文字、表格数据、图片内容都原样保留。建议下载后通读一遍再提交。</p>
+			</details>
+			<details>
+				<summary>支持 .doc 或 WPS 的 .wps 格式吗？</summary>
+				<p>仅支持 .docx。旧版 .doc 请先在 Word / WPS 里「另存为 .docx」再上传。</p>
+			</details>
+			<details>
+				<summary>我们学校的模板不在列表里怎么办？</summary>
+				<p>内置模板覆盖通用学位论文规范。学校有专属模板（特殊封面、页眉、章节样式）的话，可以在<a href="/services/thesis-formatting">论文排版服务</a>里定制，或购买支持自定义模板的 <a href="/services#pricing">Pro 桌面版</a>。</p>
+			</details>
+			<details>
+				<summary>还在用 Markdown 写作？</summary>
+				<p>用「<a href="/tools/md2docx">在线 Markdown 转 Word</a>」可以直接从 Markdown 生成符合规范的 Word，公式自动转原生 OMML。</p>
+			</details>
+		</section>
+
+		<section class="cta-box">
+			<h2>格式没问题，内容想更好？</h2>
+			<p>参考文献著录、字数统计、提交前自查，同系免费工具都在这里。</p>
+			<a href="/tools" class="btn btn-primary">查看全部工具 →</a>
+		</section>
+	</main>
+
+	<script is:inline>
+		(function() {
+			const PYODIDE_VERSION = '0.27.5';
+			// 优先本站自托管运行时（无外网依赖），CDN 镜像后备
+			const PYODIDE_SOURCES = [
+				new URL('/tools/md2docx/pyodide/', location.href).href,
+				'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
+				'https://fastly.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
+				'https://testingcf.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
+			];
+			const LOAD_TIMEOUT_MS = 90000;
+			const RUN_TIMEOUT_MS = 120000;
+			const MAX_FILE_BYTES = 20 * 1024 * 1024;
+			const WHEELS = [
+				'/tools/md2docx/wheels/python_docx-1.2.0-py3-none-any.whl',
+				'/tools/md2docx/wheels/latex2mathml-3.81.0-py3-none-any.whl',
+				'/tools/md2docx/wheels/docx_formatter_cn-0.1.0.post1-py3-none-any.whl',
+			];
+
+			const fileInput = document.getElementById('file');
+			const fileName = document.getElementById('file-name');
+			const template = document.getElementById('template');
+			const checkBtn = document.getElementById('check');
+			const reformatBtn = document.getElementById('reformat');
+			const status = document.getElementById('status');
+			const report = document.getElementById('report');
+			const reportBody = document.getElementById('report-body');
+			const statsLine = document.getElementById('stats-line');
+			const downloadBox = document.getElementById('download-box');
+			const download = document.getElementById('download');
+			const reformatMsg = document.getElementById('reformat-msg');
+
+			let pyodidePromise = null;
+			let docxBytes = null;
+			let lastObjectUrl = null;
+
+			// 匿名转化漏斗埋点：sendBeacon 优先，失败静默
+			function track(event) {
+				try {
+					const body = JSON.stringify({ event: event });
+					if (navigator.sendBeacon) {
+						navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }));
+					} else {
+						fetch('/api/track', { method: 'POST', body: body, keepalive: true }).catch(function() {});
+					}
+				} catch (e) {}
+			}
+			track('tool_docxcheck_view');
+
+			function setStatus(message, busy) {
+				status.innerHTML = busy ? '<span class="dot"></span>' + message : message;
+			}
+			function setError(message) {
+				status.innerHTML = '<span style="color:#dc2626;">错误：' + message + '（可重试）</span>';
+			}
+			function withTimeout(promise, ms, label) {
+				return Promise.race([
+					promise,
+					new Promise(function(_, reject) {
+						setTimeout(function() { reject(new Error(label + '超时，请检查网络后重试')); }, ms);
+					}),
+				]);
+			}
+			function friendlyMessage(e) {
+				const raw = (e && e.message) || String(e);
+				if (/Failed to fetch|NetworkError|fetch failed|Load failed/i.test(raw)) {
+					return '网络加载失败，请检查网络后重试。';
+				}
+				if (/超时/.test(raw)) return raw;
+				const lines = raw.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
+				const last = lines.length ? lines[lines.length - 1] : raw;
+				return last.length > 200 ? last.slice(0, 200) + '…' : last;
+			}
+			function loadScript(src) {
+				return new Promise(function(resolve, reject) {
+					const s = document.createElement('script');
+					s.src = src;
+					s.onload = resolve;
+					s.onerror = function() { reject(new Error('脚本加载失败（' + src + '）')); };
+					document.head.appendChild(s);
+				});
+			}
+			async function loadPyodideEngine() {
+				let lastError = null;
+				for (const source of PYODIDE_SOURCES) {
+					try {
+						setStatus('正在加载转换引擎（首次约 15 MB，之后走缓存）...', true);
+						if (typeof loadPyodide === 'undefined') {
+							await withTimeout(loadScript(source + 'pyodide.js'), LOAD_TIMEOUT_MS, '引擎加载');
+						}
+						const py = await withTimeout(loadPyodide({ indexURL: source }), LOAD_TIMEOUT_MS, '引擎加载');
+						setStatus('正在加载基础依赖...', true);
+						await withTimeout(
+							py.loadPackage(['lxml', 'pyyaml', 'typing-extensions', 'micropip']), LOAD_TIMEOUT_MS, '依赖加载'
+						);
+						setStatus('正在安装排版组件...', true);
+						const micropip = py.pyimport('micropip');
+						for (const wheel of WHEELS) {
+							await micropip.install(new URL(wheel, location.href).href);
+						}
+						setStatus('引擎就绪。', false);
+						return py;
+					} catch (e) {
+						console.error('Pyodide 源加载失败：' + source, e);
+						lastError = e;
+					}
+				}
+				throw lastError || new Error('引擎加载失败');
+			}
+			function ensurePyodide() {
+				if (!pyodidePromise) {
+					pyodidePromise = loadPyodideEngine().catch(function(err) {
+						pyodidePromise = null;
+						throw err;
+					});
+				}
+				return pyodidePromise;
+			}
+
+			fileInput.addEventListener('change', function() {
+				const f = fileInput.files && fileInput.files[0];
+				report.classList.remove('visible');
+				downloadBox.classList.remove('visible');
+				if (!f) {
+					fileName.textContent = '未选择';
+					checkBtn.disabled = true;
+					reformatBtn.disabled = true;
+					return;
+				}
+				if (f.size > MAX_FILE_BYTES) {
+					docxBytes = null;
+					setError('文件超过 20 MB，请先用 Word 压缩图片后再试。');
+					return;
+				}
+				fileName.textContent = f.name + '（' + Math.round(f.size / 1024) + ' KB）';
+				setStatus('已选择文件，点击「开始体检」。', false);
+				const reader = new FileReader();
+				reader.onload = function() {
+					docxBytes = new Uint8Array(reader.result);
+					checkBtn.disabled = false;
+					reformatBtn.disabled = false;
+				};
+				reader.onerror = function() {
+					setError('文件读取失败，请重试。');
+				};
+				reader.readAsArrayBuffer(f);
+			});
+
+			async function prepareDoc(py) {
+				py.FS.writeFile('/home/pyodide/input.docx', docxBytes);
+				const templateName = template.value;
+				const tplB64 = btoa(unescape(encodeURIComponent(templateName)));
+				await py.runPythonAsync(
+					'import base64\n' +
+					'from docx_formatter.config import get_preset\n' +
+					'template_name = base64.b64decode("' + tplB64 + '").decode("utf-8")\n' +
+					'config = get_preset(template_name)\n'
+				);
+			}
+
+			checkBtn.addEventListener('click', async function() {
+				if (!docxBytes) return;
+				checkBtn.disabled = true;
+				reformatBtn.disabled = true;
+				report.classList.remove('visible');
+				downloadBox.classList.remove('visible');
+				try {
+					const py = await ensurePyodide();
+					setStatus('正在体检...', true);
+					await prepareDoc(py);
+					const code = `
+import json
+from collections import Counter
+from docx import Document
+from docx.oxml.ns import qn
+
+doc = Document("/home/pyodide/input.docx")
+sec = doc.sections[0]
+checks = []
+
+w = round(sec.page_width.mm, 1)
+h = round(sec.page_height.mm, 1)
+checks.append({"name": "页面尺寸 A4", "ok": abs(w - 210) < 1 and abs(h - 297) < 1, "actual": f"{w}×{h}mm", "expect": "210×297mm"})
+
+margins = [round(sec.top_margin.mm, 1), round(sec.bottom_margin.mm, 1), round(sec.left_margin.mm, 1), round(sec.right_margin.mm, 1)]
+exp = [config.page.margin_top_mm, config.page.margin_bottom_mm, config.page.margin_left_mm, config.page.margin_right_mm]
+checks.append({"name": "页边距（上下左右 mm）", "ok": all(abs(a - b) < 1.0 for a, b in zip(margins, exp)), "actual": str(margins), "expect": str(exp)})
+
+body = []
+headings = 0
+for p in doc.paragraphs:
+    t = p.text.strip()
+    if not t:
+        continue
+    sname = p.style.name if p.style else ""
+    if sname.startswith("Heading") or sname.startswith("标题"):
+        headings += 1
+    elif len(t) >= 20:
+        body.append(p)
+
+fonts, sizes, spacings, indents = Counter(), Counter(), Counter(), Counter()
+for p in body:
+    fname = None
+    size = None
+    for r in p.runs:
+        if not r.text.strip():
+            continue
+        rpr = r._element.rPr
+        if rpr is not None and rpr.rFonts is not None:
+            fname = rpr.rFonts.get(qn("w:eastAsia")) or rpr.rFonts.get(qn("w:ascii"))
+        if not fname:
+            fname = r.font.name
+        if r.font.size:
+            size = r.font.size.pt
+        break
+    if not fname and p.style is not None and p.style.font is not None:
+        fname = p.style.font.name
+    if size is None and p.style is not None and p.style.font is not None and p.style.font.size:
+        size = p.style.font.size.pt
+    fonts[fname or "(未指定)"] += 1
+    sizes[size if size else "(未指定)"] += 1
+    ls = p.paragraph_format.line_spacing
+    if ls is None and p.style is not None and p.style.paragraph_format is not None:
+        ls = p.style.paragraph_format.line_spacing
+    spacings[round(ls, 2) if ls else "(未指定)"] += 1
+    ind = p.paragraph_format.first_line_indent
+    if ind is None and p.style is not None and p.style.paragraph_format is not None:
+        ind = p.style.paragraph_format.first_line_indent
+    indents["有缩进" if ind and ind.pt > 0 else "无缩进"] += 1
+
+def top(counter):
+    return counter.most_common(1)[0] if counter else ("(无正文样本)", 0)
+
+top_font = top(fonts)
+top_size = top(sizes)
+top_ls = top(spacings)
+top_ind = top(indents)
+
+checks.append({"name": "正文中文字体", "ok": config.font.chinese in str(top_font[0]), "actual": f"多数为 {top_font[0]}", "expect": config.font.chinese})
+checks.append({"name": "正文字号", "ok": top_size[0] == config.body.size_pt, "actual": f"多数为 {top_size[0]}pt", "expect": f"{config.body.size_pt}pt"})
+try:
+    ls_ok = top_ls[0] != "(未指定)" and abs(float(top_ls[0]) - config.body.line_spacing) < 0.05
+except Exception:
+    ls_ok = False
+checks.append({"name": "正文行距", "ok": ls_ok, "actual": f"多数为 {top_ls[0]}", "expect": str(config.body.line_spacing)})
+need_indent = config.body.first_line_indent_chars > 0
+checks.append({"name": "正文首行缩进", "ok": (top_ind[0] == "有缩进") == need_indent, "actual": top_ind[0], "expect": "需要" if need_indent else "不需要"})
+
+json.dumps({
+    "checks": checks,
+    "stats": {"headings": headings, "body_samples": len(body), "tables": len(doc.tables), "images": len(doc.inline_shapes)},
+}, ensure_ascii=False)
+`;
+					const resultJson = await withTimeout(py.runPythonAsync(code), RUN_TIMEOUT_MS, '体检');
+					const result = JSON.parse(resultJson);
+					reportBody.innerHTML = '';
+					let badCount = 0;
+					result.checks.forEach(function(c) {
+						if (!c.ok) badCount++;
+						const tr = document.createElement('tr');
+						tr.innerHTML =
+							'<td>' + c.name + '</td>' +
+							'<td class="' + (c.ok ? 'ok' : 'bad') + '">' + (c.ok ? '✓ 符合' : '✗ 不符') + '</td>' +
+							'<td>' + c.actual + '</td>' +
+							'<td>' + c.expect + '</td>';
+						reportBody.appendChild(tr);
+					});
+					statsLine.textContent = '标题段落 ' + result.stats.headings + ' 个 · 正文采样 ' + result.stats.body_samples + ' 段 · 表格 ' + result.stats.tables + ' 个 · 图片 ' + result.stats.images + ' 张';
+					report.classList.add('visible');
+					setStatus(
+						badCount === 0
+							? '体检完成：全部符合「' + template.value + '」模板要求。'
+							: '体检完成：' + badCount + ' 项不符合，可点击「一键重排并下载」自动修正。',
+						false
+					);
+					track('tool_docxcheck_run');
+				} catch (e) {
+					console.error(e);
+					setError(friendlyMessage(e));
+				} finally {
+					checkBtn.disabled = false;
+					reformatBtn.disabled = false;
+				}
+			});
+
+			reformatBtn.addEventListener('click', async function() {
+				if (!docxBytes) return;
+				checkBtn.disabled = true;
+				reformatBtn.disabled = true;
+				downloadBox.classList.remove('visible');
+				try {
+					const py = await ensurePyodide();
+					setStatus('正在重排...', true);
+					await prepareDoc(py);
+					const code = `
+from docx_formatter.formatter import format_existing_docx
+import base64, os
+out = "/home/pyodide/reformatted.docx"
+if os.path.exists(out):
+    os.remove(out)
+format_existing_docx("/home/pyodide/input.docx", out, config)
+with open(out, "rb") as f:
+    data = f.read()
+base64.b64encode(data).decode("ascii")
+`;
+					const b64 = await withTimeout(py.runPythonAsync(code), RUN_TIMEOUT_MS, '重排');
+					const raw = atob(b64);
+					const bytes = new Uint8Array(raw.length);
+					for (let i = 0; i < raw.length; i++) {
+						bytes[i] = raw.charCodeAt(i);
+					}
+					const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+					if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+					const url = URL.createObjectURL(blob);
+					lastObjectUrl = url;
+					download.href = url;
+					download.download = '重排-' + template.value + '-' + new Date().toISOString().slice(0, 10) + '.docx';
+					reformatMsg.textContent = '已按「' + template.value + '」模板重排，共 ' + Math.round(bytes.length / 1024) + ' KB。文字与图片内容未改动，下载后请通读确认。';
+					downloadBox.classList.add('visible');
+					setStatus('重排完成。', false);
+					track('tool_docxcheck_run');
+				} catch (e) {
+					console.error(e);
+					setError(friendlyMessage(e));
+				} finally {
+					checkBtn.disabled = false;
+					reformatBtn.disabled = false;
+				}
+			});
+		})();
+	</script>
+
+	<script type="application/ld+json" is:inline>
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "Word 论文排版检测与一键重排",
+		"url": "https://wumingmp.me/tools/docx-check",
+		"description": "上传 Word 论文，按学校/期刊模板做格式体检并一键重排为规范格式。浏览器本地运行，文档不上传服务器。",
+		"applicationCategory": "OfficeApplication",
+		"inLanguage": "zh-CN",
+		"offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+		"operatingSystem": "Any"
+	}
+	</script>
+</BaseLayout>

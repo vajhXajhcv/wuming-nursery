@@ -1,4 +1,4 @@
-// 构建前自检：在线 Markdown 转 Word 工具（/tools/md2docx）的运行时资源完整性。
+// 构建前自检：在线 Markdown 转 Word（/tools/md2docx）与 Word 检测重排（/tools/docx-check）的运行时资源完整性。
 // 校验三件事：
 //   1. 页面引用的 wheel / 模板文件在 public/ 下真实存在（防止改名后线上 404）
 //   2. wheel 是合法 zip 且包含 *.dist-info/METADATA（能被 micropip 安装）
@@ -7,7 +7,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
-const PAGE = 'src/pages/tools/md2docx.astro';
+const PAGES = ['src/pages/tools/md2docx.astro', 'src/pages/tools/docx-check.astro'];
+const MD2DOCX_PAGE = PAGES[0];
 const PUBLIC_DIR = 'public';
 const WHEELS_DIR = 'public/tools/md2docx/wheels';
 const TEMPLATES_DIR = 'public/tools/md2docx/templates';
@@ -15,14 +16,22 @@ const TEMPLATES_DIR = 'public/tools/md2docx/templates';
 const failures = [];
 const fail = (msg) => failures.push(msg);
 
-const src = readFileSync(PAGE, 'utf8');
+const src = readFileSync(MD2DOCX_PAGE, 'utf8');
 
-// --- 页面引用的 wheel 列表（WHEELS 常量） ---
-const wheelsBlock = src.match(/const WHEELS = \[([\s\S]*?)\]/);
-if (!wheelsBlock) {
-	fail('无法在页面中找到 WHEELS 常量');
+// --- 各工具页引用的 wheel 列表（WHEELS 常量，两页必须一致） ---
+const wheelLists = PAGES.map((p) => {
+	const pageSrc = readFileSync(p, 'utf8');
+	const block = pageSrc.match(/const WHEELS = \[([\s\S]*?)\]/);
+	if (!block) {
+		fail(`无法在页面中找到 WHEELS 常量: ${p}`);
+		return [];
+	}
+	return [...block[1].matchAll(/'([^']+\.whl)'/g)].map((m) => m[1]);
+});
+const pageWheels = wheelLists[0];
+if (wheelLists.length > 1 && JSON.stringify(wheelLists[0]) !== JSON.stringify(wheelLists[1])) {
+	fail(`两个工具页的 WHEELS 列表不一致: ${PAGES.join(' vs ')}`);
 }
-const pageWheels = wheelsBlock ? [...wheelsBlock[1].matchAll(/'([^']+\.whl)'/g)].map((m) => m[1]) : [];
 
 // --- 页面引用的 JSON 模板（data-source="json" 的 option value） ---
 const pageTemplates = [...src.matchAll(/value="([^"]+)"\s+data-source="json"/g)].map((m) => m[1]);
