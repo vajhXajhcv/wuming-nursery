@@ -414,8 +414,9 @@ $$
 	<script is:inline>
 		(function() {
 			const PYODIDE_VERSION = '0.27.5';
-			// 多源回退：jsdelivr 主站不可达时，自动切换其 fastly / testingcf 镜像（文件树与主站一致）
+			// 优先使用本站自托管的 Pyodide 运行时（无外网依赖），CDN 镜像作为后备
 			const PYODIDE_SOURCES = [
+				new URL('/tools/md2docx/pyodide/', location.href).href,
 				'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
 				'https://fastly.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
 				'https://testingcf.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/',
@@ -494,9 +495,9 @@ $$
 						const py = await withTimeout(
 							loadPyodide({ indexURL: source }), LOAD_TIMEOUT_MS, '运行环境加载'
 						);
-						setStatus('正在加载基础依赖（lxml、PyYAML）...', true);
+						setStatus('正在加载基础依赖（lxml、PyYAML、micropip）...', true);
 						await withTimeout(
-							py.loadPackage(['lxml', 'pyyaml', 'typing-extensions']), LOAD_TIMEOUT_MS, '依赖加载'
+							py.loadPackage(['lxml', 'pyyaml', 'typing-extensions', 'micropip']), LOAD_TIMEOUT_MS, '依赖加载'
 						);
 						setStatus('正在安装文档转换组件...', true);
 						const micropip = py.pyimport('micropip');

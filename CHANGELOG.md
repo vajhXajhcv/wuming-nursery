@@ -9,11 +9,18 @@
   - `/tools/word-count` 中英混排字数统计（中英文分列、段落/句子/标点占比、阅读时长、目标字数进度）；
   - `/tools/thesis-checklist` 论文排版自查清单（6 大类 30 项、进度自动保存、导出 Markdown 报告）；
   - 三语 `/tools` 列表页已登记。
-- **构建自检** `scripts/check-md2docx.mjs`（`npm run check:tools`，已挂入 `build`）：校验 md2docx 页面引用的 wheel/模板与磁盘文件一致、wheel 为合法 zip 且含 dist-info、模板 JSON 可解析。
+- **构建自检** `scripts/check-md2docx.mjs`（`npm run check:tools`，已挂入 `build`）：校验 md2docx 页面引用的 wheel/模板与磁盘文件一致、wheel 为合法 zip 且含 dist-info、模板 JSON 可解析；Pyodide 运行时按 `pyodide-lock.json` 的 `depends` 递归校验传递依赖完整性。
+
+### 修复（浏览器实测发现的存量严重 bug）
+
+- **CSP 拦截 Pyodide**：全局 `script-src 'self'` 使在线转换工具的自 CDN 加载从未生效；`_headers` 全局 CSP 增加 `wasm-unsafe-eval` 与 jsdelivr 镜像源（Pages 对同名响应头是叠加而非覆盖，按路径放宽不可行）。
+- **micropip 未加载**：Pyodide 中 micropip 不在标准库，`pyimport('micropip')` 前必须先 `loadPackage('micropip')`。
+- **packaging 传递依赖漏下载**：micropip 依赖 packaging，自托管时漏掉导致 404 → micropip 导入失败。
 
 ### 调整
 
-- **在线 Markdown 转 Word 可靠性**：Pyodide 运行时支持 jsdelivr → npmmirror 双源自动回退；加载改为共享 Promise（修复首个加载失败后并发调用方永久挂起的竞态）；加载/转换增加超时；错误信息友好化并支持重试；修复 objectURL 泄漏；超过 2 MB 的输入提示改用 Pro 桌面版。
+- **Pyodide 运行时改为自托管**（`public/tools/md2docx/pyodide/`，约 15 MB）：脚本、WASM、标准库与全部依赖包同源分发，不再依赖外部 CDN；jsdelivr 三镜像作为代码内后备。运行时与 wheels 目录加 immutable 长缓存头。
+- **在线 Markdown 转 Word 前端加固**：共享 Promise 修复加载失败后的并发挂起竞态；加载/转换超时；错误信息友好化并支持重试；objectURL 清理；超 2 MB 输入提示改用 Pro 桌面版。
 - **服务与定价页**：定价区新增信任条（退款政策 / 公开账本 / 发票 / 源码交付）与免费工具交叉引导；Pro 卡片补充交付方式说明；FAQ 新增「在线工具加载失败怎么办」；三语言同步。
 
 ## 2026-09-03（服务定价融合 + 转化漏斗 + 锚定自动化）

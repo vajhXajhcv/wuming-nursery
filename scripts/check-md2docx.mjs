@@ -78,11 +78,62 @@ for (const f of diskWheels) {
 	}
 }
 
+// --- 4. 自托管 Pyodide 运行时完整性（页面 loadPackage 列表 -> lock -> 磁盘） ---
+const PYODIDE_DIR = 'public/tools/md2docx/pyodide';
+const PYODIDE_CORE = ['pyodide.js', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
+for (const f of PYODIDE_CORE) {
+	const rel = join(PYODIDE_DIR, f);
+	try {
+		if (statSync(rel).size === 0) fail(`Pyodide 运行时文件为空: ${rel}`);
+	} catch {
+		fail(`Pyodide 运行时缺失: ${rel}`);
+	}
+}
+const pkgBlock = src.match(/py\.loadPackage\(\[([\s\S]*?)\]\)/);
+if (!pkgBlock) {
+	fail('无法在页面中找到 loadPackage 调用');
+}
+const pagePackages = pkgBlock ? [...pkgBlock[1].matchAll(/'([^']+)'/g)].map((m) => m[1]) : [];
+let pyodideChecked = 0;
+if (pagePackages.length > 0) {
+	let lock = null;
+	try {
+		lock = JSON.parse(readFileSync(join(PYODIDE_DIR, 'pyodide-lock.json'), 'utf8'));
+	} catch (e) {
+		fail(`pyodide-lock.json 无法解析: ${e.message}`);
+	}
+	if (lock) {
+		// 递归解析 depends 传递依赖（如 micropip -> packaging），逐个验证 wheel 在磁盘上
+		const needed = new Set();
+		const walk = (name) => {
+			if (needed.has(name)) return;
+			const pkg = lock.packages?.[name];
+			if (!pkg) {
+				fail(`pyodide-lock.json 中找不到页面所需依赖包: ${name}`);
+				return;
+			}
+			needed.add(name);
+			for (const dep of pkg.depends || []) walk(dep);
+		};
+		for (const pkg of pagePackages) walk(pkg);
+		for (const name of needed) {
+			const file = lock.packages[name].file_name;
+			const rel = join(PYODIDE_DIR, file);
+			try {
+				if (statSync(rel).size === 0) fail(`Pyodide 依赖包文件为空: ${rel}`);
+			} catch {
+				fail(`Pyodide 依赖包文件缺失: ${rel}（${name} 的依赖，漏下载了？）`);
+			}
+			pyodideChecked++;
+		}
+	}
+}
+
 if (failures.length > 0) {
 	console.error('[check-md2docx] 自检失败：');
 	for (const f of failures) console.error(`  - ${f}`);
 	process.exit(1);
 }
 console.log(
-	`[check-md2docx] OK：${pageWheels.length} 个 wheel、${pageTemplates.length} 个 JSON 模板，页面引用与磁盘文件一致。`,
+	`[check-md2docx] OK：${pageWheels.length} 个 wheel、${pageTemplates.length} 个 JSON 模板、Pyodide 运行时（${PYODIDE_CORE.length} 个核心文件 + ${pyodideChecked} 个依赖包），页面引用与磁盘文件一致。`,
 );
