@@ -24,6 +24,7 @@ const COVERS = [
 	{ slug: 'astro-music-player-and-draft-posts', title: '给 Astro 加上背景音乐', subtitle: '与「非公开文章」机制', icon: 'music', from: '#0f766e', to: '#5ec4b6' },
 	{ slug: 'blockchain-ai-learning-plan', title: '区块链核心技术', subtitle: 'AI 增强型 24 周进阶计划', icon: 'link', from: '#3730a3', to: '#9aa8f5' },
 	{ slug: 'docx-formatter-online-and-templates', title: '在线 Markdown 转 Word', subtitle: '期刊模板更新', icon: 'fileText', from: '#ea580c', to: '#f5b183' },
+	{ slug: 'docx-check-word-reformat-tool', title: 'Word 排版检测与重排', subtitle: '检测只报告，我们直接改好', icon: 'shield', from: '#1d4ed8', to: '#93c5fd' },
 	{ slug: 'federalist-papers-elite-discussion', title: '联邦党人文集', subtitle: '精英概念与国家制度', icon: 'bookOpen', from: '#1e40af', to: '#8fb3f0' },
 	{ slug: 'finite-being-power-faith-dialogue', title: '有限者的广延', subtitle: '权力、信仰与行动', icon: 'message', from: '#5b21b6', to: '#b79df0' },
 	{ slug: 'overseas-development-guide', title: '海外发展', subtitle: '参考指南', icon: 'compass', from: '#0369a1', to: '#7cc4e8' },

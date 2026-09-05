@@ -5,6 +5,8 @@
 ### 新增
 
 - **`/tools/docx-check` Word 论文排版检测与一键重排**：上传 docx，按模板逐项体检（A4 页面、页边距、正文字体/字号/行距、首行缩进），一键重排输出规范文档；浏览器本地运行，文档不上传。面向不写 Markdown 的存量 Word 用户，卡位「查重平台只检测、不代改」的空档。
+- **博客文章**：《Word 排版检测与一键重排：检测只报告问题，我们直接改好》（含三个存量 bug 的诚实记录），封面已生成。
+- 首页产品区新增 Word 检测重排卡片（三语），置于首位。
 - **工具转化漏斗**：`/api/track` 白名单新增 `tool_md2docx_view / tool_md2docx_convert / tool_docxcheck_view / tool_docxcheck_run`，md2docx 与 docx-check 页面已埋点（sendBeacon，失败静默），`/dao/admin` 漏斗面板自动可见。
 - 样例新增 `samples/柑橘病害识别-公文重排示例.docx`（由重排引擎产出）。
 
